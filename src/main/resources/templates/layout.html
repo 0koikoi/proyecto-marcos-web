@@ -1,10 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
 </head>
 <body>
-
+<nav th:fragment="menu-lateral" id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse p-3 shadow" style="min-height: 100vh;">
+    <h5 class="text-white fw-bold text-center border-bottom pb-3">SISTEMA VET</h5>
+    <ul class="nav flex-column gap-2">
+        <li><a th:href="@{/dashboard}" class="nav-link text-white">Dashboard</a></li>
+        <li><a th:href="@{/pacientes}" class="nav-link text-white">Pacientes</a></li>
+        <li><a th:href="@{/personal}" class="nav-link text-white">Personal Staff</a></li>
+    </ul>
+</nav>
 </body>
 </html>
