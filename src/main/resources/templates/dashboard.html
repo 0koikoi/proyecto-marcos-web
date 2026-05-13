@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}">
+    <title>Dashboard - Huellitas</title>
+</head>
+<body class="bg-light">
+
+<div th:replace="~{layout :: header-mobile}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{layout :: sidebar('dashboard')}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <h2 class="pt-3 pb-2 mb-3 border-bottom fw-bold">PANEL DE CONTROL PRINCIPAL</h2>
+
+            <section class="row g-4 mb-4"><div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="card border-0 bg-primary text-white shadow p-4">
+                        <h6>PACIENTES TOTALES</h6>
+                        <h2 class="fw-bold">124</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 bg-danger text-white shadow p-4">
+                        <h6>STOCK CRÍTICO</h6>
+                        <h2 class="fw-bold">02</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 bg-success text-white shadow p-4">
+                        <h6>CITAS HOY</h6>
+                        <h2 class="fw-bold">08</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 bg-warning text-dark shadow p-4">
+                        <h6>PENDIENTES</h6>
+                        <h2 class="fw-bold">05</h2>
+                    </div>
+                </div>
+            </div>
+                <div class="card p-4 shadow-sm border-0">
+                    <h5 class="fw-bold mb-3 text-secondary">ACTIVIDAD RECIENTE</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            Nuevo paciente registrado: Firu (Canino)
+                        </li>
+                        <li class="list-group-item">Cita completada: Mimi (Felino)</li>
+                        <li class="list-group-item text-danger fw-bold">
+                            Alerta: Bajo stock de Amoxicilina
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

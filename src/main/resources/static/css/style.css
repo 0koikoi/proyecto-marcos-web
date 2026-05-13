@@ -1,0 +1,23 @@
+/* Limpieza de márgenes globales para evitar el scroll horizontal */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.container-fluid {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+/* Fix para el contenido principal en móvil */
+main {
+    padding-top: 20px;
+}
+
+@media (max-width: 767.98px) {
+    /* Asegura que el contenido principal baje cuando el menú móvil se despliega */
+    .sidebar.show + main {
+        margin-top: 250px; /* Ajusta según el tamaño de tu menú */
+        transition: margin-top 0.3s ease;
+    }
+}
