@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}">
+    <title>Pacientes - Huellitas</title>
+</head>
+<body class="bg-light">
+
+<div th:replace="~{layout :: header-mobile}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{layout :: sidebar('pacientes')}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-5">
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <h2 class="fw-bold">GESTIÓN DE PACIENTES</h2>
+                <a th:href="@{/pacientes/nuevo}" class="btn btn-primary">Nuevo paciente</a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Especie</th>
+                            <th>Raza</th>
+                            <th>Fecha nacimiento</th>
+                            <th>Género</th>
+                            <th>Propietario</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="paciente : ${pacientes}">
+                            <td th:text="${paciente.id}"></td>
+                            <td th:text="${paciente.nombre}"></td>
+                            <td th:text="${paciente.especie}"></td>
+                            <td th:text="${paciente.raza}"></td>
+                            <td th:text="${paciente.fechaNacimiento}"></td>
+                            <td th:text="${paciente.genero}"></td>
+                            <td th:text="${paciente.propietario.nombreCompleto}"></td>
+                            <td>
+                                <a th:href="@{/pacientes/editar/{id}(id=${paciente.id})}" class="btn btn-sm btn-warning">
+                                    Editar
+                                </a>
+
+                                <a th:href="@{/pacientes/eliminar/{id}(id=${paciente.id})}"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('¿Seguro que desea eliminar este paciente?')">
+                                    Eliminar
+                                </a>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(pacientes)}">
+                            <td colspan="8" class="text-center text-muted">
+                                No hay pacientes registrados.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

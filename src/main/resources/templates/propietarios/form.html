@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}">
+    <title>Formulario propietario</title>
+</head>
+<body class="bg-light">
+
+<div th:replace="~{layout :: header-mobile}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{layout :: sidebar('propietarios')}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-5">
+            <h2 class="fw-bold mb-4 border-bottom pb-3" th:text="${titulo}">Formulario propietario</h2>
+
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <div class="card p-4 shadow-sm border-0">
+                <form th:action="@{/propietarios/guardar}" th:object="${propietario}" method="post" class="row g-3">
+
+                    <input type="hidden" th:field="*{id}">
+
+                    <div class="col-md-4">
+                        <label class="form-label">DNI</label>
+                        <input type="text" th:field="*{dni}" maxlength="8" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-8">
+                        <label class="form-label">Nombre completo</label>
+                        <input type="text" th:field="*{nombreCompleto}" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" th:field="*{telefono}" maxlength="9" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-8">
+                        <label class="form-label">Correo</label>
+                        <input type="email" th:field="*{correo}" class="form-control">
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label">Dirección</label>
+                        <textarea th:field="*{direccion}" class="form-control"></textarea>
+                    </div>
+
+                    <div class="col-md-12 mt-4">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <a th:href="@{/propietarios}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

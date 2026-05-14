@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Registro de Mascota</title></head>
+<body>
+    <h2>Nueva Mascota</h2>
+    <form th:action="@{/pacientes/guardar}" th:object="${paciente}" method="post">
+        <label>Nombre:</label>
+        <input type="text" th:field="*{nombre}" required><br>
+
+        <label>Especie:</label>
+        <input type="text" th:field="*{especie}" required><br>
+
+        <label>Seleccione el Dueño:</label>
+        <select th:field="*{propietario}" required>
+            <option value="">-- Seleccione un Dueño --</option>
+            <option th:each="prop : ${propietarios}" 
+                    th:value="${prop.id}" 
+                    th:text="${prop.nombreCompleto}"></option>
+        </select><br>
+
+        <button type="submit">Guardar Mascota</button>
+    </form>
+</body>
+</html>
