@@ -39,4 +39,15 @@ public class WebController {
 
     @GetMapping("/ayuda")
     public String verAyuda() { return "ayuda"; }
+
+    @GetMapping("/") //sim
+    public String mostrarLogin() {
+        return "login";
+    }
+
+    @GetMapping("/logout") //parche temporal
+    public String simularLogout() {
+        //nos faltó login profe
+        return "redirect:/";
+    }
 }

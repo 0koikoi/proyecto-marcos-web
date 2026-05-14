@@ -1,23 +1,105 @@
-/* Limpieza de márgenes globales para evitar el scroll horizontal */
+/*SISTEMA VET - DISEÑO MINIMALISTA GLOBAL*/
+
+/* 1. Reset y Tipografía Global */
 html, body {
     overflow-x: hidden;
     width: 100%;
+    background-color: #f8f9fa !important;
+    font-family: 'Poppins', sans-serif;
+    color: #334155;
 }
 
-.container-fluid {
-    padding-right: 0;
-    padding-left: 0;
+/* 2. Tarjetas Minimalistas (Sobreescribe Bootstrap) */
+.card {
+    border: none !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+    background-color: #ffffff;
+    transition: transform 0.2s ease-in-out;
 }
 
-/* Fix para el contenido principal en móvil */
-main {
-    padding-top: 20px;
+.card-header {
+    background-color: transparent !important;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 1.5rem 1.5rem 0.5rem;
 }
+
+/* 3. Botones Estilizados */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+    letter-spacing: 0.3px;
+    border: none;
+}
+
+.btn-primary, .btn-custom {
+    background-color: #4f46e5 !important; /* Azul/Indigo SaaS */
+    color: white !important;
+    box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+}
+
+.btn-primary:hover, .btn-custom:hover {
+    background-color: #4338ca !important;
+    transform: translateY(-1px);
+}
+
+.btn-success { background-color: #10b981 !important; }
+.btn-danger { background-color: #ef4444 !important; }
+.btn-warning { background-color: #f59e0b !important; color: white !important; }
+
+/* 4. Formularios Limpios */
+.form-control, .form-select {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    background-color: #f8fafc;
+    color: #334155;
+    font-size: 0.95rem;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #ffffff;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+label.form-label, .text-muted.small.d-block {
+    font-weight: 500;
+    color: #64748b;
+    margin-bottom: 0.4rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 5. Tablas Modernas */
+.table {
+    vertical-align: middle;
+}
+.table thead th {
+    border-bottom: 2px solid #f1f5f9;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    padding: 1rem;
+    background-color: transparent !important;
+}
+.table tbody td {
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: #475569;
+}
+
+/* 6. Layout y Responsive */
+.container-fluid { padding-right: 0; padding-left: 0; }
+main { padding-top: 20px; min-height: 100vh; }
 
 @media (max-width: 767.98px) {
-    /* Asegura que el contenido principal baje cuando el menú móvil se despliega */
     .sidebar.show + main {
-        margin-top: 250px; /* Ajusta según el tamaño de tu menú */
+        margin-top: 250px;
         transition: margin-top 0.3s ease;
     }
+    main { padding-left: 15px !important; padding-right: 15px !important; }
 }
