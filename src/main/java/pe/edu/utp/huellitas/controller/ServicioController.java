@@ -34,4 +34,15 @@ public class ServicioController {
         service.guardar(servicio);
         return "redirect:/servicios";
     }
+
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable("id") Long id, Model model) {
+        Servicio servicio = service.buscarPorId(id);
+        if (servicio != null) {
+            model.addAttribute("servicio", servicio);
+            // Reutilizamos el mismo formulario de 'nuevo' para editar
+            return "formulario-servicio";
+        }
+        return "redirect:/servicios";
+    }
 }
