@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<div th:replace="~{layout :: header-mobile}"></div>
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{layout :: sidebar('servicios')}"></nav>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-4">
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                <h2>Gestión de Servicios</h2>
+                <a th:href="@{/servicios/nuevo}" class="btn btn-primary">Nuevo Servicio</a>
+            </div>
+            <div class="table-responsive shadow-sm bg-white p-3 rounded">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="s : ${servicios}">
+                        <td th:text="${s.nombre}"></td>
+                        <td th:text="${s.descripcion}"></td>
+                        <td th:text="'S/ ' + ${s.precio}"></td>
+                        <td>
+                            <a th:href="@{/servicios/editar/{id}(id=${s.id})}" class="btn btn-sm btn-warning">Editar</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+<div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

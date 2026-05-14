@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<div th:replace="~{layout :: header-mobile}"></div>
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{layout :: sidebar('ayuda')}"></nav>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-4">
+            <h2>Centro de Soporte</h2>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Preguntas Frecuentes</h5>
+                    <div class="accordion" id="faq">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#q1">
+                                    ¿Cómo registro un nuevo servicio?
+                                </button>
+                            </h2>
+                            <div id="q1" class="accordion-collapse collapse show" data-bs-parent="#faq">
+                                <div class="accordion-body">
+                                    Dirígete a la sección de "Servicios" y pulsa el botón azul de "Nuevo Servicio".
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h5>Contacto Técnico</h5>
+                    <p>Correo: soporte@sistema.com</p>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>
