@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Huellitas - Registro de Proveedores</title>
+    <!-- Bootstrap para la estructura rápida -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-vet: #2c5d63; /* Color azulado/verdoso de la imagen */
+            --bg-light: #f8f9fa;
+        }
+        body { background-color: var(--bg-light); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        .header-banner {
+            background-color: var(--primary-vet);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .card-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: none;
+        }
+
+        /* Estilo de inputs lineales como en la imagen */
+        .form-control-line {
+            border: none;
+            border-bottom: 1px solid #ced4da;
+            border-radius: 0;
+            padding: 10px 5px;
+            background-color: transparent;
+        }
+        .form-control-line:focus {
+            box-shadow: none;
+            border-bottom: 2px solid var(--primary-vet);
+        }
+
+        .btn-custom {
+            background-color: var(--primary-vet);
+            color: white;
+            border-radius: 4px;
+            padding: 10px 25px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-custom:hover {
+            background-color: #1f4449;
+            color: white;
+        }
+
+        .img-placeholder {
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #fff;
+            max-width: 200px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Banner Superior -->
+    <div class="header-banner text-center">
+        <h2 class="m-0">Sistema de Gestión Huellitas</h2>
+    </div>
+
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                
+                <div class="card card-container">
+                    <div class="card-body p-4 p-md-5">
+                        <h4 class="text-center mb-5 text-muted">Registrar proveedores</h4>
+
+                        <form th:action="@{/proveedores/guardar}" th:object="${nuevoProveedor}" method="post">
+                            <div class="row">
+                                
+                                <!-- Sección Izquierda: Visual (Inspirada en la imagen) -->
+                                <div class="col-md-4 text-center border-end d-flex flex-column align-items-center justify-content-center">
+                                    <p class="text-muted small mb-2">Imagen Referencial</p>
+                                    <div class="img-placeholder rounded mb-3">
+                                        <!-- Puedes poner un icono de una patita o un logo -->
+                                        <img src="https://cdn-icons-png.flaticon.com/512/1043/1043444.png" 
+                                             class="img-fluid" style="opacity: 0.6;" alt="Logotipo">
+                                    </div>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm mb-2">SUBIR</button>
+                                    <p class="text-uppercase small text-muted">Imagen</p>
+                                </div>
+
+                                <!-- Sección Derecha: Formulario Real -->
+                                <div class="col-md-8 ps-md-5">
+                                    <div class="mb-4">
+                                        <label class="text-muted small d-block">Razón Social</label>
+                                        <input type="text" th:field="*{razonSocial}" class="form-control form-control-line" placeholder="Nombre de la empresa" required>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <label class="text-muted small d-block">RUC</label>
+                                            <input type="text" th:field="*{ruc}" class="form-control form-control-line" placeholder="Ej: 20123456789" required>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <label class="text-muted small d-block">Teléfono</label>
+                                            <input type="text" th:field="*{telefono}" class="form-control form-control-line" placeholder="999 999 999">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="text-muted small d-block">Contacto</label>
+                                        <input type="text" th:field="*{contacto}" class="form-control form-control-line" placeholder="Nombre del representante">
+                                    </div>
+
+                                    <div class="mt-4 text-start">
+                                        <button type="submit" class="btn btn-custom">REGISTRAR</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
+                <!-- Footer del Sistema -->
+                <div class="text-center mt-4">
+                    <p class="text-muted small">© 2026 Huellitas VET - Panel de Administración</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de proveedores abajo (Opcional, para ver resultados) -->
+    <div class="container mb-5">
+        <div class="card card-container p-4">
+            <h5 class="mb-3">Proveedores Registrados</h5>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>RUC</th>
+                            <th>Razón Social</th>
+                            <th>Contacto</th>
+                            <th>Teléfono</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${listaProveedores}">
+                            <td th:text="${p.ruc}"></td>
+                            <td th:text="${p.razonSocial}"></td>
+                            <td th:text="${p.contacto}"></td>
+                            <td th:text="${p.telefono}"></td>
+                            <td>
+                                <a th:href="@{/proveedores/eliminar/{id}(id=${p.id})}" class="btn btn-sm btn-outline-danger">Borrar</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
