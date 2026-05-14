@@ -25,8 +25,7 @@ public class WebController {
         //manda de la bd, no datos estáticos
         model.addAttribute("totalPacientes", pacienteRepo.count());
         model.addAttribute("citasHoy", citaRepo.count()); // Aquí podrías filtrar por fecha
-        model.addAttribute("stockCritico", productoRepo.findByStockActualLessThanEqualStockMinimo().size());
-        return "dashboard";
+        model.addAttribute("stockCritico", productoRepo.findProductosConStockCritico().size());        return "dashboard";
     }
 
     @GetMapping("/inventario")
