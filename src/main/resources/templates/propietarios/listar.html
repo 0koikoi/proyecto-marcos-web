@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}">
+    <title>Propietarios - Huellitas</title>
+</head>
+<body class="bg-light">
+
+<div th:replace="~{layout :: header-mobile}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{layout :: sidebar('propietarios')}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-5">
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <h2 class="fw-bold">GESTIÓN DE PROPIETARIOS</h2>
+                <a th:href="@{/propietarios/nuevo}" class="btn btn-primary">Nuevo propietario</a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>DNI</th>
+                            <th>Nombre completo</th>
+                            <th>Teléfono</th>
+                            <th>Correo</th>
+                            <th>Dirección</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="propietario : ${propietarios}">
+                            <td th:text="${propietario.id}"></td>
+                            <td th:text="${propietario.dni}"></td>
+                            <td th:text="${propietario.nombreCompleto}"></td>
+                            <td th:text="${propietario.telefono}"></td>
+                            <td th:text="${propietario.correo}"></td>
+                            <td th:text="${propietario.direccion}"></td>
+                            <td>
+                                <a th:href="@{/propietarios/editar/{id}(id=${propietario.id})}" class="btn btn-sm btn-warning">
+                                    Editar
+                                </a>
+
+                                <a th:href="@{/propietarios/eliminar/{id}(id=${propietario.id})}"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('¿Seguro que desea eliminar este propietario?')">
+                                    Eliminar
+                                </a>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(propietarios)}">
+                            <td colspan="7" class="text-center text-muted">
+                                No hay propietarios registrados.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>
