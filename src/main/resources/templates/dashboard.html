@@ -1,0 +1,50 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard - Huellitas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-dt@1.13.6/css/jquery.dataTables.min.css">
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; }
+    .sidebar { width:220px; position:fixed; top:0; bottom:0; background:#2c3e50; color:white; padding:1rem; }
+    .main { margin-left:240px; padding:1rem; }
+    iframe.site-preview { width:100%; height:500px; border:1px solid #ccc; }
+    .report-section { margin-top:1rem; }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Huellitas</h2>
+    <nav>
+      <ul>
+        <li><a href="#" onclick="showTab('site')">Vista Web</a></li>
+        <li><a href="#" onclick="showTab('report')">Reporte Productos</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="main">
+    <div id="tab-site">
+      <h3>Vista pública de la clínica</h3>
+      <iframe class="site-preview" src="/" title="Vista web"></iframe>
+    </div>
+
+    <div id="tab-report" style="display:none;">
+      <h3>Reporte de productos</h3>
+      <button id="exportBtn">Exportar CSV</button>
+      <div class="report-section">
+        <canvas id="stockChart" width="400" height="150"></canvas>
+      </div>
+      <table id="productsTable" class="display" style="width:100%">
+        <thead><tr><th>ID</th><th>Nombre</th><th>Categoría</th><th>Stock</th><th>Precio</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/datatables.net@1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
