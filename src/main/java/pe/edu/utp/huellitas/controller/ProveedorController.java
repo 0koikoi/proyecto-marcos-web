@@ -1,40 +1,45 @@
 package pe.edu.utp.huellitas.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 import pe.edu.utp.huellitas.model.Proveedor;
 import pe.edu.utp.huellitas.service.ProveedorService;
 
-import java.util.List;
-
-@RestController
+@Controller
 @RequestMapping("/proveedores")
 public class ProveedorController {
 
     @Autowired
     private ProveedorService proveedorService;
 
-    // LISTAR
-    @GetMapping
-    public List<Proveedor> listar() {
-        return proveedorService.listar();
-    }
+    // MOSTRAR VISTA + LISTAR
+  @GetMapping
+public String listar(Model model) {
+    model.addAttribute("listaProveedores", proveedorService.listar());
+    model.addAttribute("nuevoProveedor", new Proveedor());
+    model.addAttribute("activePage", "proveedores"); // Esto activa el color azul en el menú
+    return "proveedores";
+}
+    
 
     // GUARDAR
-    @PostMapping
-    public Proveedor guardar(@RequestBody Proveedor proveedor) {
-        return proveedorService.guardar(proveedor);
-    }
+    @PostMapping("/guardar")
+    public String guardar(@ModelAttribute Proveedor proveedor) {
 
-    // BUSCAR POR ID
-    @GetMapping("/{id}")
-    public Proveedor buscar(@PathVariable Long id) {
-        return proveedorService.buscarPorId(id);
+        proveedorService.guardar(proveedor);
+
+        return "redirect:/proveedores";
     }
 
     // ELIMINAR
-    @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Long id) {
+    @GetMapping("/eliminar/{id}")
+    public String eliminar(@PathVariable Long id) {
+
         proveedorService.eliminar(id);
+
+        return "redirect:/proveedores";
     }
 }

@@ -21,7 +21,7 @@ public class ProductoService {
     // GUARDAR
     public Producto guardar(Producto producto) {
 
-        // 🔴 VALIDACIONES (RESPETANDO TU MODELO)
+        //VALIDACIONES
 
         if (producto.getPrecioCompra() != null &&
                 producto.getPrecioCompra().compareTo(BigDecimal.ZERO) < 0) {

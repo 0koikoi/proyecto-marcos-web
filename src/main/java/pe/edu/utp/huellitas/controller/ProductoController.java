@@ -1,40 +1,44 @@
 package pe.edu.utp.huellitas.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 import pe.edu.utp.huellitas.model.Producto;
 import pe.edu.utp.huellitas.service.ProductoService;
 
-import java.util.List;
-
-@RestController
+@Controller
 @RequestMapping("/productos")
 public class ProductoController {
 
     @Autowired
     private ProductoService productoService;
 
-    // LISTAR
-    @GetMapping
-    public List<Producto> listar() {
-        return productoService.listar();
-    }
+    // MOSTRAR VISTA + LISTAR
+  @GetMapping
+public String listar(Model model) {
+    model.addAttribute("listaProductos", productoService.listar());
+    model.addAttribute("nuevoProducto", new Producto());
+    model.addAttribute("activePage", "productos"); // Esto activa el color azul en el menú
+    return "productos";
+}
 
     // GUARDAR
-    @PostMapping
-    public Producto guardar(@RequestBody Producto producto) {
-        return productoService.guardar(producto);
-    }
+    @PostMapping("/guardar")
+    public String guardar(@ModelAttribute Producto producto) {
 
-    // BUSCAR
-    @GetMapping("/{id}")
-    public Producto buscar(@PathVariable Long id) {
-        return productoService.buscarPorId(id);
+        productoService.guardar(producto);
+
+        return "redirect:/productos";
     }
 
     // ELIMINAR
-    @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Long id) {
+    @GetMapping("/eliminar/{id}")
+    public String eliminar(@PathVariable Long id) {
+
         productoService.eliminar(id);
+
+        return "redirect:/productos";
     }
 }
