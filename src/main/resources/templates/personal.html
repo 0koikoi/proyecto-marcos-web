@@ -20,15 +20,43 @@
                     <div class="col-md-2">
                         <input type="text" th:field="*{codigoInstitucional}" class="form-control" placeholder="C123456" required>
                     </div>
-                    <div class="col-md-4">
-                        <input type="text" th:field="*{nombreCompleto}" class="form-control" placeholder="Nombre Completo" required>
-                    </div>
-                    <div class="col-md-3">
-                        <input type="text" th:field="*{username}" class="form-control" placeholder="Usuario Login" required>
-                    </div>
-                    <div class="col-md-3">
-                        <input type="password" th:field="*{passwordHash}" class="form-control" placeholder="Contraseña" required>
-                    </div>
+                   <div class="col-md-4">
+    <input type="text"
+           th:field="*{nombreCompleto}"
+           class="form-control"
+           placeholder="Nombre Completo"
+           required>
+
+    <div class="text-danger small"
+         th:if="${#fields.hasErrors('nombreCompleto')}"
+         th:errors="*{nombreCompleto}">
+    </div>
+</div>
+                    
+         <div class="col-md-3">
+    <input type="text"
+           th:field="*{username}"
+           class="form-control"
+           placeholder="Usuario Login"
+           required>
+
+    <div class="text-danger small"
+         th:if="${#fields.hasErrors('username')}"
+         th:errors="*{username}">
+    </div>
+</div>
+                  <div class="col-md-3">
+    <input type="password"
+           th:field="*{passwordHash}"
+           class="form-control"
+           placeholder="Contraseña"
+           required>
+
+    <div class="text-danger small"
+         th:if="${#fields.hasErrors('passwordHash')}"
+         th:errors="*{passwordHash}">
+    </div>
+</div>
                     <div class="col-md-4">
                         <select th:field="*{cargo}" class="form-select">
                             <option value="VETERINARIO">Veterinario</option>
@@ -36,9 +64,20 @@
                             <option value="ADMINISTRADOR">Administrador</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
-                        <input type="text" th:field="*{telefono}" class="form-control" placeholder="Teléfono">
-                    </div>
+                <div class="col-md-4">
+    <input type="text"
+           th:field="*{telefono}"
+           class="form-control"
+           placeholder="999999999"
+           maxlength="9"
+           required>
+
+    <div class="text-danger small"
+         th:if="${#fields.hasErrors('telefono')}"
+         th:errors="*{telefono}">
+    </div>
+</div>
+                    
                     <div class="col-md-4">
                         <button type="submit" class="btn btn-primary w-100">Registrar Personal</button>
                     </div>
