@@ -51,3 +51,4 @@ public class WebController {
         return "redirect:/";
     }
 }
+

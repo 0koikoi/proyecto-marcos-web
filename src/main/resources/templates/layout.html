@@ -1,117 +1,113 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="head">
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Veterinaria Huellitas</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link th:href="@{/css/style.css}" rel="stylesheet" />
-
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
-        .sidebar { min-height: 100vh; z-index: 100; background-color: #ffffff; border-right: 1px solid #eaeaea; }
-        .nav-link { color: #6c757d; font-weight: 500; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; transition: all 0.2s ease;}
-        .nav-link:hover { background-color: #f1f3f5; color: #212529; }
-        .nav-link.active { background-color: #eef2ff; color: #4f46e5; font-weight: 600; }
-        .menu-header { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #adb5bd; margin-top: 1.5rem; margin-bottom: 0.5rem; padding-left: 15px;}
+        :root {
+            --primary: #6366f1; /* Indigo */
+            --secondary: #ec4899; /* Pink */
+            --bg-gradient: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-main: #1f2937;
+        }
 
-        @media (max-width: 767.98px) {
-            .sidebar { position: fixed; top: 0; left: -100%; width: 250px; height: 100%; transition: left 0.3s ease; }
-            .sidebar.show { left: 0; }
-            /* Overlay oscuro para el móvil */
-            .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 99;}
-            .sidebar-overlay.show { display: block; }
+        body { 
+            background: var(--bg-gradient); 
+            font-family: 'Inter', sans-serif; 
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(17, 24, 39, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-brand { font-weight: 700; color: #fff !important; letter-spacing: -0.5px; }
+        .navbar-brand i { margin-right: 8px; color: var(--secondary); }
+        
+        /* Glassmorphism Card Style */
+        .card { 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+        }
+
+        .btn-primary { 
+            background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%); 
+            border: none; 
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-primary:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); 
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            padding: 0.6rem 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .error-message { color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem; }
+        
+        h2.fw-bold {
+            color: var(--text-main);
+            letter-spacing: -1px;
         }
     </style>
 </head>
 <body>
+    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/web/clientes}">
+                <i class="fa-solid fa-paw"></i> Huellitas
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/web/clientes}"><i class="fa-solid fa-users"></i> Clientes</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-<header th:fragment="header-mobile" class="navbar navbar-light sticky-top bg-white p-3 shadow-sm d-md-none border-bottom">
-    <div class="container-fluid d-flex justify-content-between">
-        <a class="navbar-brand fw-bold" style="color: #4f46e5;" href="#">HUELLITAS.</a>
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <div th:fragment="scripts">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </div>
-</header>
-
-<nav th:fragment="sidebar(activePage)" id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
-    <h4 class="fw-bold text-center border-bottom pb-4 mb-4 d-none d-md-block" style="color: #4f46e5; letter-spacing: -0.5px;">Huellitas.</h4>
-
-    <ul class="nav flex-column">
-        <li class="nav-item">
-            <a th:href="@{/dashboard}" class="nav-link" th:classappend="${activePage == 'dashboard'} ? 'active' : ''">
-                <i class="fas fa-home me-2 w-20px"></i> Dashboard
-            </a>
-        </li>
-
-        <div class="menu-header">Recepción</div>
-        <li class="nav-item">
-            <a th:href="@{/citas}" class="nav-link" th:classappend="${activePage == 'citas'} ? 'active' : ''">
-                <i class="far fa-calendar-alt me-2"></i> Citas Médicas
-            </a>
-        </li>
-        <li class="nav-item">
-            <a th:href="@{/propietarios}" class="nav-link" th:classappend="${activePage == 'propietarios'} ? 'active' : ''">
-                <i class="far fa-user me-2"></i> Propietarios
-            </a>
-        </li>
-        <li class="nav-item">
-            <a th:href="@{/pacientes}" class="nav-link" th:classappend="${activePage == 'pacientes'} ? 'active' : ''">
-                <i class="fas fa-paw me-2"></i> Pacientes
-            </a>
-        </li>
-
-        <div class="menu-header">Catálogo & Clínica</div>
-        <li class="nav-item">
-            <a th:href="@{/servicios}" class="nav-link" th:classappend="${activePage == 'servicios'} ? 'active' : ''">
-                <i class="fas fa-stethoscope me-2"></i> Servicios
-            </a>
-        </li>
-        <li class="nav-item">
-            <a th:href="@{/productos}" class="nav-link" th:classappend="${activePage == 'productos'} ? 'active' : ''">
-                <i class="fas fa-box me-2"></i> Productos
-            </a>
-        </li>
-        <li class="nav-item">
-            <a th:href="@{/proveedores}" class="nav-link" th:classappend="${activePage == 'proveedores'} ? 'active' : ''">
-                <i class="fas fa-truck me-2"></i> Proveedores
-            </a>
-        </li>
-
-        <div class="menu-header">Caja & Sistema</div>
-        <li class="nav-item">
-            <a th:href="@{/ventas}" class="nav-link" th:classappend="${activePage == 'ventas'} ? 'active' : ''">
-                <i class="fas fa-cash-register me-2"></i> Ventas / Caja
-            </a>
-        </li>
-        <li class="nav-item">
-            <a th:href="@{/personal}" class="nav-link" th:classappend="${activePage == 'personal'} ? 'active' : ''">
-                <i class="fas fa-user-md me-2"></i> Personal
-            </a>
-        </li>
-
-        <li class="nav-item mt-4">
-            <a th:href="@{/logout}" class="nav-link text-danger" style="background-color: #fff5f5;">
-                <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
-            </a>
-        </li>
-    </ul>
-</nav>
-
-<div th:fragment="scripts">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Script simple para cerrar el menú móvil al hacer clic fuera
-        document.addEventListener('DOMContentLoaded', function() {
-            // Se puede extender si necesitas el overlay oscuro en móviles
-        });
-    </script>
-</div>
 </body>
 </html>

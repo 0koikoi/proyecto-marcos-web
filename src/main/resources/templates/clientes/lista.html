@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Gestión de Clientes')}"></head>
+<body>
+    <nav th:replace="~{layout :: navbar}"></nav>
+
+    <div class="container content-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fa-solid fa-users"></i> Gestión de Clientes</h2>
+            <a th:href="@{/web/clientes/nuevo}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo Cliente</a>
+        </div>
+
+        <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-check-circle"></i> <span th:text="${mensaje}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-triangle-exclamation"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <form class="mb-4 d-flex" th:action="@{/web/clientes}" method="get">
+            <input class="form-control me-2" type="search" name="keyword" th:value="${keyword}" placeholder="Buscar por Nombre, Apellidos o DNI..." aria-label="Search">
+            <button class="btn btn-outline-secondary" type="submit"><i class="fa-solid fa-search"></i> Buscar</button>
+            <a th:if="${keyword != null and keyword != ''}" th:href="@{/web/clientes}" class="btn btn-outline-danger ms-2"><i class="fa-solid fa-xmark"></i> Limpiar</a>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>DNI</th>
+                        <th>Nombre Completo</th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="cliente : ${clientes}">
+                        <td th:text="${cliente.dni}"></td>
+                        <td th:text="${cliente.nombre + ' ' + cliente.apellidos}"></td>
+                        <td th:text="${cliente.telefono}"></td>
+                        <td th:text="${cliente.email}"></td>
+                        <td>
+                            <a th:href="@{/web/clientes/editar/{id}(id=${cliente.id})}" class="btn btn-sm btn-outline-primary" title="Editar"><i class="fa-solid fa-pen-to-square"></i></a>
+                            <a th:href="@{/web/clientes/eliminar/{id}(id=${cliente.id})}" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="return confirm('¿Está seguro de eliminar este cliente?');"><i class="fa-solid fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(clientes)}">
+                        <td colspan="5" class="text-center py-4 text-muted">No se encontraron clientes.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

@@ -22,28 +22,33 @@
                     <input type="hidden" th:field="*{id}">
 
                     <div class="col-md-4">
-                        <label class="form-label">DNI</label>
-                        <input type="text" th:field="*{dni}" maxlength="8" class="form-control" required>
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-id-card text-primary"></i> DNI <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{dni}" maxlength="8" class="form-control" th:classappend="${#fields.hasErrors('dni')} ? 'is-invalid' : ''" placeholder="Ej. 12345678" required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
                     </div>
 
                     <div class="col-md-8">
-                        <label class="form-label">Nombre completo</label>
-                        <input type="text" th:field="*{nombreCompleto}" class="form-control" required>
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-user text-primary"></i> Nombre completo <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{nombreCompleto}" class="form-control" th:classappend="${#fields.hasErrors('nombreCompleto')} ? 'is-invalid' : ''" placeholder="Ej. Juan Pérez" required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('nombreCompleto')}" th:errors="*{nombreCompleto}"></div>
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label">Teléfono</label>
-                        <input type="text" th:field="*{telefono}" maxlength="9" class="form-control" required>
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-phone text-primary"></i> Teléfono <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{telefono}" maxlength="15" class="form-control" th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid' : ''" placeholder="+51 9XXXXXXXX" required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
                     </div>
 
                     <div class="col-md-8">
-                        <label class="form-label">Correo</label>
-                        <input type="email" th:field="*{correo}" class="form-control">
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-envelope text-primary"></i> Correo</label>
+                        <input type="email" th:field="*{correo}" class="form-control" th:classappend="${#fields.hasErrors('correo')} ? 'is-invalid' : ''" placeholder="ejemplo@gmail.com">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('correo')}" th:errors="*{correo}"></div>
                     </div>
 
                     <div class="col-md-12">
-                        <label class="form-label">Dirección</label>
-                        <textarea th:field="*{direccion}" class="form-control"></textarea>
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-location-dot text-primary"></i> Dirección</label>
+                        <textarea th:field="*{direccion}" class="form-control" th:classappend="${#fields.hasErrors('direccion')} ? 'is-invalid' : ''" placeholder="Escribe la dirección aquí..." rows="3"></textarea>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}"></div>
                     </div>
 
                     <div class="col-md-12 mt-4">

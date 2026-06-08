@@ -92,3 +92,4 @@ public class PropietarioService {
         return texto == null || texto.trim().isEmpty();
     }
 }
+

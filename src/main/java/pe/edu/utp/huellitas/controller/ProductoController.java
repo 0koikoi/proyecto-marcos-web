@@ -42,3 +42,4 @@ public String listar(Model model) {
         return "redirect:/productos";
     }
 }
+

@@ -5,3 +5,4 @@ import pe.edu.utp.huellitas.model.Personal;
 
 public interface PersonalRepository extends JpaRepository<Personal, Long> {
 }
+

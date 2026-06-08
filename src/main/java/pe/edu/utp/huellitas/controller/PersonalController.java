@@ -36,3 +36,4 @@ public class PersonalController {
         return "redirect:/personal";
     }
 }
+
