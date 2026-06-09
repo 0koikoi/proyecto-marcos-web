@@ -24,11 +24,6 @@ public class PersonalService {
             return "Error: El código debe empezar con 'C' seguido de 6 dígitos.";
         }
 
-        // Simulación de encriptación de contraseña (para el avance)
-        if(personal.getId() == null) {
-            personal.setPasswordHash("{noop}" + personal.getPasswordHash());
-        }
-
         repository.save(personal);
         return null; // Null significa que no hay errores
     }
