@@ -1,113 +1,244 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="head(title)">
+<head th:fragment="head">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title}">Veterinaria Huellitas</title>
-    <!-- Bootstrap 5 CSS -->
+    <title>Sistema de Gestión - Huellitas</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --primary: #6366f1; /* Indigo */
-            --secondary: #ec4899; /* Pink */
-            --bg-gradient: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            /* Nueva Paleta de Colores */
+            --old-lace: #FFF8E9;
+            --grapefruit-pink: #FE6D73;
+            --apricot-cream: #FFCB77;
+            --turquoise: #24E5D2;
+            --cerulean: #2584A7;
+
             --text-main: #1f2937;
+            --sidebar-bg: #ffffff;
+            --border-color: #e5e7eb;
         }
 
-        body { 
-            background: var(--bg-gradient); 
-            font-family: 'Inter', sans-serif; 
+        body {
+            background-color: var(--old-lace);
+            font-family: 'Inter', sans-serif;
             color: var(--text-main);
             min-height: 100vh;
+            padding-top: 60px; /* Reducido para mayor limpieza */
         }
 
+        /* Navbar Minimalista */
         .navbar {
-            background: rgba(17, 24, 39, 0.95) !important;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: var(--cerulean) !important;
+            border-bottom: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        .navbar-brand { font-weight: 700; color: #fff !important; letter-spacing: -0.5px; }
-        .navbar-brand i { margin-right: 8px; color: var(--secondary); }
-        
-        /* Glassmorphism Card Style */
-        .card { 
-            background: var(--glass-bg); 
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+        .navbar-brand {
+            font-weight: 600;
+            color: #fff !important;
+            letter-spacing: -0.5px;
         }
 
-        .btn-primary { 
-            background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%); 
-            border: none; 
+        .navbar-brand i {
+            margin-right: 8px;
+            color: var(--apricot-cream); /* Acento cálido en el logo */
+        }
+
+        /* Cards Planas (Flat Design) */
+        .card {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            transition: none; /* Sin animaciones innecesarias */
+        }
+
+        /* Botones Sólidos */
+        .btn-primary {
+            background-color: var(--cerulean);
+            border: none;
+            border-radius: 6px;
             font-weight: 500;
-            padding: 0.5rem 1.5rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-        
-        .btn-primary:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); 
+            padding: 0.5rem 1.25rem;
+            color: #ffffff;
         }
 
+        .btn-primary:hover {
+            background-color: #1e6c8a;
+            color: #ffffff;
+        }
+
+        /* Inputs Limpios */
         .form-control, .form-select {
-            border-radius: 8px;
-            border: 1px solid #d1d5db;
-            padding: 0.6rem 1rem;
-            transition: all 0.2s ease;
-        }
-        
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            box-shadow: none;
         }
 
-        .error-message { color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem; }
-        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--cerulean);
+            box-shadow: 0 0 0 3px rgba(37, 132, 167, 0.1);
+        }
+
+        .error-message {
+            color: var(--grapefruit-pink);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
         h2.fw-bold {
-            color: var(--text-main);
-            letter-spacing: -1px;
+            color: var(--cerulean);
+            letter-spacing: -0.5px;
+        }
+
+        /* Sidebar Minimalista */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 70px 0 0;
+            background-color: var(--sidebar-bg) !important;
+            border-right: 1px solid var(--border-color);
+            width: 260px;
+        }
+
+        .sidebar .nav-link {
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            color: #4b5563;
+            border-left: 4px solid transparent;
+            margin-bottom: 2px;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: rgba(37, 132, 167, 0.05);
+            color: var(--cerulean);
+        }
+
+        .sidebar .nav-link.active {
+            background-color: rgba(36, 229, 210, 0.1); /* Fondo Turquesa suave */
+            color: var(--cerulean);
+            border-left-color: var(--turquoise); /* Borde Turquesa brillante */
+            font-weight: 600;
+        }
+
+        .sidebar .nav-link i {
+            width: 24px;
+            margin-right: 12px;
+            color: #9ca3af;
+        }
+
+        .sidebar .nav-link.active i {
+            color: var(--cerulean);
+        }
+
+        /* Ajustes Principales */
+        main {
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        @media (max-width: 767.98px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                padding-top: 0;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            main {
+                margin-left: 0 !important;
+                padding: 15px;
+            }
+            body {
+                padding-top: 56px;
+            }
         }
     </style>
 </head>
 <body>
-    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" th:href="@{/web/clientes}">
-                <i class="fa-solid fa-paw"></i> Huellitas
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/web/clientes}"><i class="fa-solid fa-users"></i> Clientes</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
-    <div th:fragment="scripts">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/dashboard}">
+            <i class="fa-solid fa-paw"></i> Huellitas
+        </a>
+        <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fa-solid fa-user-circle"></i> Administrador
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
+                        <li><a class="dropdown-item text-danger" th:href="@{/logout}"><i class="fa-solid fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
+</nav>
+
+<nav th:fragment="sidebar(activePage)" class="sidebar">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column gap-1">
+            <li class="nav-item">
+                <a th:classappend="${activePage == 'dashboard'} ? 'active'" class="nav-link" th:href="@{/dashboard}">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:classappend="${activePage == 'propietarios'} ? 'active'" class="nav-link" th:href="@{/propietarios}">
+                    <i class="fa-solid fa-users"></i> Clientes
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:classappend="${activePage == 'pacientes'} ? 'active'" class="nav-link" th:href="@{/pacientes}">
+                    <i class="fa-solid fa-dog"></i> Pacientes
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:classappend="${activePage == 'citas'} ? 'active'" class="nav-link" th:href="@{/citas}">
+                    <i class="fa-solid fa-calendar-check"></i> Citas
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:classappend="${activePage == 'productos'} ? 'active'" class="nav-link" th:href="@{/productos}">
+                    <i class="fa-solid fa-box"></i> Inventario
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:classappend="${activePage == 'servicios'} ? 'active'" class="nav-link" th:href="@{/servicios}">
+                    <i class="fa-solid fa-briefcase-medical"></i> Servicios
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:classappend="${activePage == 'personal'} ? 'active'" class="nav-link" th:href="@{/personal}">
+                    <i class="fa-solid fa-user-doctor"></i> Personal
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:classappend="${activePage == 'proveedores'} ? 'active'" class="nav-link" th:href="@{/proveedores}">
+                    <i class="fa-solid fa-truck"></i> Proveedores
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div th:fragment="scripts">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</div>
 </body>
 </html>

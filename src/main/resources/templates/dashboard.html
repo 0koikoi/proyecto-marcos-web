@@ -1,63 +1,147 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout :: head}">
+<head th:replace="~{layout :: head(title='Dashboard - Huellitas')}">
     <title>Dashboard - Huellitas</title>
 </head>
 <body class="bg-light">
 
-<div th:replace="~{layout :: header-mobile}"></div>
+<!-- Incluir navbar -->
+<div th:replace="~{layout :: navbar}"></div>
 
 <div class="container-fluid">
     <div class="row">
+
         <nav th:replace="~{layout :: sidebar('dashboard')}"></nav>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <h2 class="pt-3 pb-2 mb-3 border-bottom fw-bold">PANEL DE CONTROL PRINCIPAL</h2>
+            <div class="pt-3 pb-2 mb-3 border-bottom">
+                <h2 class="fw-bold">PANEL DE CONTROL PRINCIPAL</h2>
+                <p class="text-muted">Bienvenido al sistema de gestión veterinaria</p>
+            </div>
 
-            <section class="row g-4 mb-4"><div class="row g-4 mb-4">
-                <div class="col-md-3">
+            <!-- Tarjetas de estadísticas -->
+            <section class="row g-4 mb-4">
+                <div class="col-md-4">
                     <div class="card border-0 bg-primary text-white shadow p-4">
-                        <h6>PACIENTES TOTALES</h6>
-                        <h2 class="fw-bold">124</h2>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-white-50 mb-2">PACIENTES TOTALES</h6>
+                                <h2 class="fw-bold mb-0" th:text="${totalPacientes}">0</h2>
+                                <small class="text-white-50">Mascotas registradas</small>
+                            </div>
+                            <i class="fa-solid fa-dog fa-2x opacity-50"></i>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+
+                <div class="col-md-4">
                     <div class="card border-0 bg-danger text-white shadow p-4">
-                        <h6>STOCK CRÍTICO</h6>
-                        <h2 class="fw-bold">02</h2>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-white-50 mb-2">STOCK CRÍTICO</h6>
+                                <h2 class="fw-bold mb-0" th:text="${stockCritico}">0</h2>
+                                <small class="text-white-50">Productos por debajo del mínimo</small>
+                            </div>
+                            <i class="fa-solid fa-exclamation-triangle fa-2x opacity-50"></i>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+
+                <div class="col-md-4">
                     <div class="card border-0 bg-success text-white shadow p-4">
-                        <h6>CITAS HOY</h6>
-                        <h2 class="fw-bold">08</h2>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-white-50 mb-2">CITAS HOY</h6>
+                                <h2 class="fw-bold mb-0" th:text="${citasHoy}">0</h2>
+                                <small class="text-white-50">Para hoy</small>
+                            </div>
+                            <i class="fa-solid fa-calendar-check fa-2x opacity-50"></i>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="card border-0 bg-warning text-dark shadow p-4">
-                        <h6>PENDIENTES</h6>
-                        <h2 class="fw-bold">05</h2>
+            </section>
+
+            <!-- Actividad Reciente -->
+            <div class="card p-4 shadow-sm border-0">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-secondary">
+                        <i class="fa-solid fa-clock me-2"></i>ACTIVIDAD RECIENTE
+                    </h5>
+                    <button class="btn btn-sm btn-outline-primary" th:onclick="|window.location.href='/web/actividad'|">
+                        Ver todas <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </button>
+                </div>
+
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fa-solid fa-paw text-primary"></i>
+                        </div>
+                        <div>
+                            <strong>Nuevo paciente registrado:</strong> Firu (Canino)
+                            <br>
+                            <small class="text-muted">Hace 2 horas</small>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fa-solid fa-check-circle text-success"></i>
+                        </div>
+                        <div>
+                            <strong>Cita completada:</strong> Mimi (Felino)
+                            <br>
+                            <small class="text-muted">Hace 5 horas</small>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fa-solid fa-exclamation-circle text-danger"></i>
+                        </div>
+                        <div>
+                            <strong class="text-danger">Alerta:</strong> Bajo stock de Amoxicilina
+                            <br>
+                            <small class="text-muted">Quedan 5 unidades</small>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Información adicional (opcional) -->
+            <div class="row g-4 mt-2">
+                <div class="col-md-6">
+                    <div class="card p-3 border-0 shadow-sm">
+                        <h6 class="fw-bold"><i class="fa-solid fa-chart-simple me-2"></i>Próximas citas</h6>
+                        <p class="text-muted small">No hay citas programadas para las próximas horas.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-3 border-0 shadow-sm">
+                        <h6 class="fw-bold"><i class="fa-solid fa-tag me-2"></i>Productos más vendidos</h6>
+                        <p class="text-muted small">1. Alimento Premium | 2. Antipulgas | 3. Juguetes</p>
                     </div>
                 </div>
             </div>
-                <div class="card p-4 shadow-sm border-0">
-                    <h5 class="fw-bold mb-3 text-secondary">ACTIVIDAD RECIENTE</h5>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            Nuevo paciente registrado: Firu (Canino)
-                        </li>
-                        <li class="list-group-item">Cita completada: Mimi (Felino)</li>
-                        <li class="list-group-item text-danger fw-bold">
-                            Alerta: Bajo stock de Amoxicilina
-                        </li>
-                    </ul>
-                </div>
-            </section>
 
         </main>
     </div>
 </div>
 
+<!-- Incluir scripts -->
 <div th:replace="~{layout :: scripts}"></div>
+
+<!-- Script adicional para el sidebar responsive -->
+<script>
+    // Ajustar el padding-top del main cuando el navbar está fijo
+    document.addEventListener('DOMContentLoaded', function() {
+        const navbar = document.querySelector('.navbar');
+        const main = document.querySelector('main');
+        if (navbar && main) {
+            main.style.paddingTop = navbar.offsetHeight + 'px';
+        }
+    });
+</script>
+
 </body>
 </html>

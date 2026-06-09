@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout :: head}">
+<head th:replace="~{layout :: head(title='Personal - Huellitas')}">
     <title>Personal - Huellitas</title>
 </head>
 <body class="bg-light">
-<div th:replace="~{layout :: header-mobile}"></div>
+
+<!-- Usar navbar en lugar de header-mobile -->
+<div th:replace="~{layout :: navbar}"></div>
 
 <div class="container-fluid">
     <div class="row">
+        <!-- Sidebar con página activa 'personal' -->
         <nav th:replace="~{layout :: sidebar('personal')}"></nav>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-5">
@@ -58,6 +61,7 @@
         </main>
     </div>
 </div>
+
 <div th:replace="~{layout :: scripts}"></div>
 </body>
 </html>
