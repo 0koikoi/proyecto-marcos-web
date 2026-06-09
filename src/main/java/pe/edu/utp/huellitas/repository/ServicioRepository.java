@@ -7,3 +7,4 @@ import pe.edu.utp.huellitas.model.Servicio;
 @Repository
 public interface ServicioRepository extends JpaRepository<Servicio, Long> {
 }
+

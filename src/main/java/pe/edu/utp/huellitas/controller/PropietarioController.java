@@ -29,7 +29,11 @@ public class PropietarioController {
 
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
-        model.addAttribute("propietario", new Propietario());
+        Propietario propietario = new Propietario();
+        propietario.setTelefono("+51 9");
+        propietario.setCorreo("@gmail.com");
+        
+        model.addAttribute("propietario", propietario);
         model.addAttribute("titulo", "Registrar propietario");
         return "propietarios/form";
     }
@@ -60,3 +64,4 @@ public class PropietarioController {
         return "redirect:/propietarios";
     }
 }
+

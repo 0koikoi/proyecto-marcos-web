@@ -12,3 +12,4 @@ public interface PropietarioRepository extends JpaRepository<Propietario, Long> 
 
     boolean existsByDni(String dni);
 }
+

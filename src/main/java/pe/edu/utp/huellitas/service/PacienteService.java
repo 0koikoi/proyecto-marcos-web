@@ -21,7 +21,10 @@ public class PacienteService {
         this.propietarioRepository = propietarioRepository;
     }
 
-    public List<Paciente> listarTodos() {
+    public List<Paciente> listarTodos(String buscar) {
+        if (buscar != null && !buscar.trim().isEmpty()) {
+            return pacienteRepository.findByNombreContainingIgnoreCase(buscar.trim());
+        }
         return pacienteRepository.findAll();
     }
 
@@ -85,3 +88,4 @@ public class PacienteService {
         return texto == null || texto.trim().isEmpty();
     }
 }
+

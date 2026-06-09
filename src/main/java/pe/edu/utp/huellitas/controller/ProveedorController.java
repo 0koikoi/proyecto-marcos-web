@@ -43,3 +43,4 @@ public String listar(Model model) {
         return "redirect:/proveedores";
     }
 }
+

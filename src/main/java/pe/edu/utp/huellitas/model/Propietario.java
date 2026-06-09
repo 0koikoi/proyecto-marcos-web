@@ -6,6 +6,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import pe.edu.utp.huellitas.validation.DniPeruano;
 
 @Entity
 @Table(name = "propietario")
@@ -15,18 +20,27 @@ public class Propietario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @DniPeruano
+    @NotBlank(message = "El DNI es obligatorio")
     @Column(name = "dni", length = 8, nullable = false, unique = true)
     private String dni;
 
+    @NotBlank(message = "El nombre completo es obligatorio")
+    @Size(min = 3, max = 100, message = "El nombre debe tener entre 3 y 100 caracteres")
     @Column(name = "nombre_completo", nullable = false)
     private String nombreCompleto;
 
-    @Column(name = "telefono", length = 9, nullable = false)
+    @NotBlank(message = "El teléfono es obligatorio")
+    @NotBlank(message = "El teléfono es obligatorio")
+    @Pattern(regexp = "^(\\+51\\s?)?9\\d{8}$", message = "El teléfono debe ser válido y empezar con 9 (ej. +51 9XXXXXXXX)")
+    @Column(name = "telefono", length = 15, nullable = false)
     private String telefono;
 
+    @Email(message = "Debe ser un correo electrónico válido")
     @Column(name = "correo", length = 150)
     private String correo;
 
+    @Size(max = 255, message = "La dirección no puede exceder los 255 caracteres")
     @Column(name = "direccion", columnDefinition = "TEXT")
     private String direccion;
 

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Formulario de Cliente')}"></head>
+<body>
+    <nav th:replace="~{layout :: navbar}"></nav>
+
+    <div class="container content-container" style="max-width: 800px;">
+        <h2 class="mb-4">
+            <i class="fa-solid fa-user-plus" th:if="${clienteDTO.id == null}"></i>
+            <i class="fa-solid fa-user-pen" th:if="${clienteDTO.id != null}"></i>
+            <span th:text="${clienteDTO.id == null ? ' Registrar Cliente' : ' Editar Cliente'}"></span>
+        </h2>
+
+        <div th:if="${errorGlobal}" class="alert alert-danger">
+            <i class="fa-solid fa-circle-exclamation"></i> <span th:text="${errorGlobal}"></span>
+        </div>
+
+        <form th:action="@{${clienteDTO.id == null ? '/web/clientes/nuevo' : '/web/clientes/editar/' + clienteDTO.id}}" th:object="${clienteDTO}" method="post">
+            
+            <input type="hidden" th:field="*{id}" />
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="dni" class="form-label fw-bold">DNI *</label>
+                    <input type="text" class="form-control" id="dni" th:field="*{dni}" th:classappend="${#fields.hasErrors('dni')} ? 'is-invalid' : ''" placeholder="Ingrese 8 dígitos" maxlength="8">
+                    <div class="error-message" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}">Error</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="telefono" class="form-label fw-bold">Teléfono *</label>
+                    <input type="text" class="form-control" id="telefono" th:field="*{telefono}" th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid' : ''" placeholder="+51 9XXXXXXXX">
+                    <div class="error-message" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}">Error</div>
+                    <small class="text-muted">Debe iniciar con +51 9</small>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="nombre" class="form-label fw-bold">Nombre *</label>
+                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid' : ''">
+                    <div class="error-message" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">Error</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="apellidos" class="form-label fw-bold">Apellidos *</label>
+                    <input type="text" class="form-control" id="apellidos" th:field="*{apellidos}" th:classappend="${#fields.hasErrors('apellidos')} ? 'is-invalid' : ''">
+                    <div class="error-message" th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}">Error</div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="email" class="form-label fw-bold">Correo Electrónico *</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                    <input type="email" class="form-control" id="email" th:field="*{email}" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''" placeholder="ejemplo@gmail.com">
+                </div>
+                <div class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a th:href="@{/web/clientes}" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Cancelar</a>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Guardar Cliente</button>
+            </div>
+        </form>
+    </div>
+
+    <div th:replace="~{layout :: scripts}"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const telefonoInput = document.getElementById('telefono');
+            const emailInput = document.getElementById('email');
+
+            // Autocompletado del prefijo +51 9 en el teléfono
+            telefonoInput.addEventListener('input', function(e) {
+                let val = this.value;
+                if (!val.startsWith('+51 9')) {
+                    // Si el usuario borra todo, permitimos borrar, pero en cuanto escriba algo, forzamos el prefijo
+                    if(val.length > 0 && !'+51 9'.startsWith(val)) {
+                        // Limpiar caracteres no numéricos excepto el +
+                        let numbers = val.replace(/[^\d+]/g, '');
+                        if(numbers.startsWith('9')) {
+                            this.value = '+51 9' + numbers.substring(1);
+                        } else if(numbers.startsWith('+519')) {
+                            this.value = '+51 9' + numbers.substring(4);
+                        } else {
+                            this.value = '+51 9' + val.replace('+51 9', '');
+                        }
+                    }
+                }
+            });
+            
+            telefonoInput.addEventListener('focus', function(e) {
+                if (this.value === '') {
+                    this.value = '+51 9';
+                }
+            });
+
+            telefonoInput.addEventListener('blur', function(e) {
+                if (this.value === '+51 9') {
+                    this.value = '';
+                }
+            });
+
+            // Autocompletado del correo por defecto @gmail.com
+            emailInput.addEventListener('blur', function(e) {
+                let val = this.value.trim();
+                if (val.length > 0 && !val.includes('@')) {
+                    this.value = val + '@gmail.com';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

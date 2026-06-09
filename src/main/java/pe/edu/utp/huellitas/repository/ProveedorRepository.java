@@ -6,3 +6,4 @@ import pe.edu.utp.huellitas.model.Proveedor;
 
 public interface ProveedorRepository extends JpaRepository<Proveedor, Long> {
 }
+

@@ -22,27 +22,40 @@
                     <input type="hidden" th:field="*{id}">
 
                     <div class="col-md-6">
-                        <label class="form-label">Nombre del paciente</label>
-                        <input type="text" th:field="*{nombre}" class="form-control" required>
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-dog text-primary"></i> Nombre del paciente <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{nombre}" class="form-control" th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid' : ''" placeholder="Nombre de la mascota" required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Especie</label>
-                        <input type="text" th:field="*{especie}" class="form-control" placeholder="Ejemplo: Perro, Gato" required>
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-paw text-primary"></i> Especie <span class="text-danger">*</span></label>
+                        <select th:field="*{especie}" class="form-select" th:classappend="${#fields.hasErrors('especie')} ? 'is-invalid' : ''">
+                            <option value="">Seleccione una especie</option>
+                            <option value="Perro">Perro</option>
+                            <option value="Gato">Gato</option>
+                            <option value="Hamster">Hamster</option>
+                            <option value="Ave">Ave</option>
+                            <option value="Conejo">Conejo</option>
+                            <option value="Reptil">Reptil</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('especie')}" th:errors="*{especie}"></div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label">Raza</label>
-                        <input type="text" th:field="*{raza}" class="form-control">
+                        <input type="text" th:field="*{raza}" class="form-control" th:classappend="${#fields.hasErrors('raza')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('raza')}" th:errors="*{raza}"></div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label">Fecha de nacimiento</label>
-                        <input type="date" th:field="*{fechaNacimiento}" class="form-control">
+                        <input type="date" th:field="*{fechaNacimiento}" class="form-control" th:classappend="${#fields.hasErrors('fechaNacimiento')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}"></div>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Género</label>
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-venus-mars text-primary"></i> Género</label>
                         <select th:field="*{genero}" class="form-select">
                             <option value="">Seleccione</option>
                             <option value="Macho">Macho</option>
@@ -51,16 +64,16 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Propietario</label>
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-user-tie text-primary"></i> Propietario <span class="text-danger">*</span></label>
 
-                        <select th:field="*{propietario.id}" class="form-select" required>
+                        <select th:field="*{propietario.id}" class="form-select" th:classappend="${#fields.hasErrors('propietario')} ? 'is-invalid' : ''" required>
                             <option value="">Seleccione un propietario</option>
-
                             <option th:each="propietario : ${propietarios}"
                                     th:value="${propietario.id}"
                                     th:text="${propietario.nombreCompleto + ' - DNI: ' + propietario.dni}">
                             </option>
                         </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('propietario')}" th:errors="*{propietario}"></div>
                     </div>
 
                     <div class="col-md-12 mt-4">

@@ -1,85 +1,129 @@
-/*SISTEMA VET - DISEÑO MINIMALISTA GLOBAL*/
+/* SISTEMA VET HUELLITAS - DISEÑO MINIMALISTA Y SEMÁNTICO (help) */
+:root {
+    /* 1. Paleta Semántica (Fácil de recordar y usar) */
+    --bg-app: #FFF8E9;       /* Antiguo Old Lace (Fondo) */
+    --primary: #2584A7;      /* Antiguo Cerulean (Principal) */
+    --accent: #24E5D2;       /* Antiguo Turquoise (Acentos/Hover) */
+    --danger: #FE6D73;       /* Antiguo Grapefruit Pink (Errores/Eliminar) */
+    --warning: #FFCB77;      /* Antiguo Apricot Cream (Alertas/Edición) */
 
-/* 1. Reset y Tipografía Global */
+    /* 2. Colores Estructurales */
+    --text-main: #1f2937;
+    --text-muted: #64748b;
+    --border-color: #e5e7eb;
+    --sidebar-bg: #ffffff;
+}
+
+/* tipografía */
 html, body {
     overflow-x: hidden;
     width: 100%;
-    background-color: #f8f9fa !important;
-    font-family: 'Poppins', sans-serif;
-    color: #334155;
+    background-color: var(--bg-app) !important;
+    font-family: 'Inter', 'Poppins', sans-serif;
+    color: var(--text-main);
+    min-height: 100vh;
+    padding-top: 60px; /* Espacio para el navbar fijo */
 }
 
-/* 2. Tarjetas Minimalistas (Sobreescribe Bootstrap) */
+::placeholder {
+    color: #cbd5e1 !important;
+    opacity: 1;
+    font-weight: 300;
+}
+
+/* LAYOUT componentes */
+/* Navbar */
+.navbar {
+    background-color: var(--primary) !important;
+    border-bottom: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.navbar-brand { font-weight: 600; color: #fff !important; letter-spacing: -0.5px; }
+.navbar-brand i { margin-right: 8px; color: var(--warning); }
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0; bottom: 0; left: 0; z-index: 100;
+    padding: 70px 0 0;
+    background-color: var(--sidebar-bg) !important;
+    border-right: 1px solid var(--border-color);
+    width: 260px;
+}
+.sidebar .nav-link {
+    font-weight: 500; padding: 0.75rem 1.5rem; color: var(--text-muted);
+    border-left: 4px solid transparent; margin-bottom: 2px;
+}
+.sidebar .nav-link:hover { background-color: rgba(37, 132, 167, 0.05); color: var(--primary); }
+.sidebar .nav-link.active {
+    background-color: rgba(36, 229, 210, 0.1); /* Tono Accent transparente */
+    color: var(--primary);
+    border-left-color: var(--accent);
+    font-weight: 600;
+}
+.sidebar .nav-link i { width: 24px; margin-right: 12px; color: #9ca3af; }
+.sidebar .nav-link.active i { color: var(--primary); }
+
+main { margin-left: 260px; padding: 30px; }
+
+/* la UI */
+/* Tarjetas */
 .card {
-    border: none !important;
+    background-color: #ffffff;
+    border: 1px solid var(--border-color) !important;
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
-    background-color: #ffffff;
-    transition: transform 0.2s ease-in-out;
+    transition: none;
 }
-
 .card-header {
     background-color: transparent !important;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-color);
     padding: 1.5rem 1.5rem 0.5rem;
 }
 
-/* 3. Botones Estilizados */
+/* Botones */
 .btn {
-    border-radius: 8px;
+    border-radius: 6px;
     font-weight: 500;
     padding: 0.5rem 1.25rem;
     letter-spacing: 0.3px;
     border: none;
 }
+.btn-primary { background-color: var(--primary) !important; color: white !important; }
+.btn-primary:hover { background-color: #1e6c8a !important; transform: translateY(-1px); }
+.btn-success { background-color: #10b981 !important; color: white !important;}
+.btn-danger { background-color: var(--danger) !important; color: white !important; }
+.btn-warning { background-color: var(--warning) !important; color: #000 !important; }
 
-.btn-primary, .btn-custom {
-    background-color: #4f46e5 !important; /* Azul/Indigo SaaS */
-    color: white !important;
-    box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
-}
-
-.btn-primary:hover, .btn-custom:hover {
-    background-color: #4338ca !important;
-    transform: translateY(-1px);
-}
-
-.btn-success { background-color: #10b981 !important; }
-.btn-danger { background-color: #ef4444 !important; }
-.btn-warning { background-color: #f59e0b !important; color: white !important; }
-
-/* 4. Formularios Limpios */
+/* Formularios */
 .form-control, .form-select {
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
     padding: 0.6rem 1rem;
-    background-color: #f8fafc;
-    color: #334155;
+    color: var(--text-main);
     font-size: 0.95rem;
+    box-shadow: none;
 }
-
 .form-control:focus, .form-select:focus {
-    background-color: #ffffff;
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 132, 167, 0.1);
 }
-
 label.form-label, .text-muted.small.d-block {
     font-weight: 500;
-    color: #64748b;
+    color: var(--text-muted);
     margin-bottom: 0.4rem;
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
+.error-message { color: var(--danger); font-size: 0.875rem; margin-top: 0.25rem; }
+h2.fw-bold { color: var(--primary); letter-spacing: -0.5px; }
 
-/* 5. Tablas Modernas */
-.table {
-    vertical-align: middle;
-}
+/* Tablas */
+.table { vertical-align: middle; }
 .table thead th {
-    border-bottom: 2px solid #f1f5f9;
-    color: #64748b;
+    border-bottom: 2px solid var(--border-color);
+    color: var(--text-muted);
     font-weight: 600;
     font-size: 0.85rem;
     text-transform: uppercase;
@@ -88,18 +132,16 @@ label.form-label, .text-muted.small.d-block {
 }
 .table tbody td {
     padding: 1rem;
-    border-bottom: 1px solid #f1f5f9;
-    color: #475569;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
 }
 
-/* 6. Layout y Responsive */
-.container-fluid { padding-right: 0; padding-left: 0; }
-main { padding-top: 20px; min-height: 100vh; }
-
+/*responsive */
 @media (max-width: 767.98px) {
-    .sidebar.show + main {
-        margin-top: 250px;
-        transition: margin-top 0.3s ease;
+    .sidebar {
+        position: static; width: 100%; height: auto;
+        padding-top: 0; border-right: none; border-bottom: 1px solid var(--border-color);
     }
-    main { padding-left: 15px !important; padding-right: 15px !important; }
+    main { margin-left: 0 !important; padding: 15px; }
+    body { padding-top: 56px; }
 }

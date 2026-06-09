@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestParam;
+import jakarta.validation.Valid;
+
 import pe.edu.utp.huellitas.model.Paciente;
 import pe.edu.utp.huellitas.model.Propietario;
 import pe.edu.utp.huellitas.service.PacienteService;
@@ -26,8 +30,9 @@ public class PacienteController {
     }
 
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("pacientes", pacienteService.listarTodos());
+    public String listar(@RequestParam(required = false) String buscar, Model model) {
+        model.addAttribute("pacientes", pacienteService.listarTodos(buscar));
+        model.addAttribute("buscar", buscar);
         return "pacientes/listar";
     }
 
@@ -41,7 +46,19 @@ public class PacienteController {
     }
 
     @PostMapping("/guardar")
-    public String guardar(@ModelAttribute Paciente paciente, Model model) {
+    public String guardar(@Valid @ModelAttribute Paciente paciente, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            if (paciente.getPropietario() == null) {
+                paciente.setPropietario(new Propietario());
+            }
+            cargarFormulario(
+                    model,
+                    paciente,
+                    paciente.getId() == null ? "Registrar paciente" : "Editar paciente"
+            );
+            return "pacientes/form";
+        }
+
         try {
             pacienteService.guardar(paciente);
             return "redirect:/pacientes";
@@ -80,3 +97,4 @@ public class PacienteController {
         model.addAttribute("titulo", titulo);
     }
 }
+

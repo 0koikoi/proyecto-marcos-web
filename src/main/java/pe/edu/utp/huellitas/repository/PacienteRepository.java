@@ -9,4 +9,7 @@ import pe.edu.utp.huellitas.model.Paciente;
 public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 
     List<Paciente> findByPropietarioId(Long propietarioId);
+
+    List<Paciente> findByNombreContainingIgnoreCase(String nombre);
 }
+
