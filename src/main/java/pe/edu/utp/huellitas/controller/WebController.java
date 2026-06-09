@@ -26,14 +26,4 @@ public class WebController {
         model.addAttribute("stockCritico", productoRepo.findProductosConStockCritico().size());
         return "dashboard";
     }
-
-    @GetMapping("/")
-    public String mostrarLogin() {
-        return "login";
-    }
-
-    @GetMapping("/logout")
-    public String simularLogout() {
-        return "redirect:/";
-    }
 }
