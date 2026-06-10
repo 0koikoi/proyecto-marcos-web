@@ -83,10 +83,14 @@ public class PropietarioService {
             throw new IllegalArgumentException("El teléfono es obligatorio.");
         }
 
-        if (!propietario.getTelefono().matches("\\d{9}")) {
+        if (!propietario.getTelefono().matches("^(\\+51\\s?)?9\\d{8}$")) {
             throw new IllegalArgumentException("El teléfono debe tener exactamente 9 dígitos.");
         }
+        if (estaVacio(propietario.getDireccion())) {
+            throw new IllegalArgumentException("La dirección es obligatoria.");
+        }
     }
+    
 
     private boolean estaVacio(String texto) {
         return texto == null || texto.trim().isEmpty();

@@ -66,14 +66,14 @@
                     <div class="col-md-6">
                         <label class="form-label fw-semibold"><i class="fa-solid fa-user-tie text-primary"></i> Propietario <span class="text-danger">*</span></label>
 
-                        <select th:field="*{propietario.id}" class="form-select" th:classappend="${#fields.hasErrors('propietario')} ? 'is-invalid' : ''" required>
+                        <select th:field="*{propietarioId}" class="form-select" th:classappend="${#fields.hasErrors('propietarioId')} ? 'is-invalid' : ''" required>
                             <option value="">Seleccione un propietario</option>
                             <option th:each="propietario : ${propietarios}"
                                     th:value="${propietario.id}"
                                     th:text="${propietario.nombreCompleto + ' - DNI: ' + propietario.dni}">
                             </option>
                         </select>
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('propietario')}" th:errors="*{propietario}"></div>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('propietarioId')}" th:errors="*{propietarioId}"></div>
                     </div>
 
                     <div class="col-md-12 mt-4">

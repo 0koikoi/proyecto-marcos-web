@@ -48,7 +48,7 @@
                             <td th:text="${paciente.raza}"></td>
                             <td th:text="${paciente.fechaNacimiento}"></td>
                             <td th:text="${paciente.genero}"></td>
-                            <td th:text="${paciente.propietario.nombreCompleto}"></td>
+                            <td th:text="${paciente.propietarioNombreCompleto}"></td>
                             <td class="text-end px-4">
                                 <a th:href="@{/pacientes/editar/{id}(id=${paciente.id})}" class="btn btn-sm btn-outline-warning rounded-pill px-3 shadow-sm">
                                     <i class="fa-solid fa-pen-to-square"></i> Editar

@@ -23,7 +23,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label fw-semibold"><i class="fa-solid fa-id-card text-primary"></i> DNI <span class="text-danger">*</span></label>
-                        <input type="text" th:field="*{dni}" maxlength="8" class="form-control" th:classappend="${#fields.hasErrors('dni')} ? 'is-invalid' : ''" placeholder="Ej. 12345678" required>
+                        <input type="text" th:field="*{dni}" maxlength="8" pattern="\d{8}" inputmode="numeric" title="El DNI debe contener solo números y tener exactamente 8 dígitos" class="form-control" th:classappend="${#fields.hasErrors('dni')} ? 'is-invalid' : ''" placeholder="Ej. 12345678" required>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
                     </div>
 
@@ -35,7 +35,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label fw-semibold"><i class="fa-solid fa-phone text-primary"></i> Teléfono <span class="text-danger">*</span></label>
-                        <input type="text" th:field="*{telefono}" maxlength="15" class="form-control" th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid' : ''" placeholder="+51 9XXXXXXXX" required>
+                        <input type="text" th:field="*{telefono}" maxlength="15" pattern="(\+51\s?)?9\d{8}" title="Formato válido: 912345678 o +51 912345678" class="form-control" th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid' : ''" placeholder="+51 9XXXXXXXX" required>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
                     </div>
 
@@ -47,7 +47,7 @@
 
                     <div class="col-md-12">
                         <label class="form-label fw-semibold"><i class="fa-solid fa-location-dot text-primary"></i> Dirección</label>
-                        <textarea th:field="*{direccion}" class="form-control" th:classappend="${#fields.hasErrors('direccion')} ? 'is-invalid' : ''" placeholder="Escribe la dirección aquí..." rows="3"></textarea>
+                        <textarea th:field="*{direccion}" class="form-control" th:classappend="${#fields.hasErrors('direccion')} ? 'is-invalid' : ''" placeholder="Escribe la dirección aquí..." rows="3" required></textarea>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}"></div>
                     </div>
 

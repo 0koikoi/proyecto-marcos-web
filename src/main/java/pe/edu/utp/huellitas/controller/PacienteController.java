@@ -1,17 +1,19 @@
 package pe.edu.utp.huellitas.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
-import jakarta.validation.Valid;
 
+import jakarta.validation.Valid;
+import pe.edu.utp.huellitas.dto.PacienteDTO;
 import pe.edu.utp.huellitas.model.Paciente;
 import pe.edu.utp.huellitas.model.Propietario;
 import pe.edu.utp.huellitas.service.PacienteService;
@@ -31,46 +33,47 @@ public class PacienteController {
 
     @GetMapping
     public String listar(@RequestParam(required = false) String buscar, Model model) {
-        model.addAttribute("pacientes", pacienteService.listarTodos(buscar));
+        List<PacienteDTO> pacientesDTO = pacienteService.listarTodos(buscar)
+                .stream()
+                .map(this::convertirADTO)
+                .toList();
+
+        model.addAttribute("pacientes", pacientesDTO);
         model.addAttribute("buscar", buscar);
         return "pacientes/listar";
     }
 
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
-        Paciente paciente = new Paciente();
-        paciente.setPropietario(new Propietario());
+        PacienteDTO pacienteDTO = new PacienteDTO();
 
-        cargarFormulario(model, paciente, "Registrar paciente");
+        cargarFormulario(model, pacienteDTO, "Registrar paciente");
         return "pacientes/form";
     }
 
     @PostMapping("/guardar")
-    public String guardar(@Valid @ModelAttribute Paciente paciente, BindingResult result, Model model) {
+    public String guardar(@Valid @ModelAttribute("paciente") PacienteDTO pacienteDTO,
+                          BindingResult result,
+                          Model model) {
+
         if (result.hasErrors()) {
-            if (paciente.getPropietario() == null) {
-                paciente.setPropietario(new Propietario());
-            }
             cargarFormulario(
                     model,
-                    paciente,
-                    paciente.getId() == null ? "Registrar paciente" : "Editar paciente"
+                    pacienteDTO,
+                    pacienteDTO.getId() == null ? "Registrar paciente" : "Editar paciente"
             );
             return "pacientes/form";
         }
 
         try {
+            Paciente paciente = convertirAEntidad(pacienteDTO);
             pacienteService.guardar(paciente);
             return "redirect:/pacientes";
         } catch (IllegalArgumentException e) {
-            if (paciente.getPropietario() == null) {
-                paciente.setPropietario(new Propietario());
-            }
-
             cargarFormulario(
                     model,
-                    paciente,
-                    paciente.getId() == null ? "Registrar paciente" : "Editar paciente"
+                    pacienteDTO,
+                    pacienteDTO.getId() == null ? "Registrar paciente" : "Editar paciente"
             );
 
             model.addAttribute("error", e.getMessage());
@@ -81,7 +84,9 @@ public class PacienteController {
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id, Model model) {
         Paciente paciente = pacienteService.obtenerPorId(id);
-        cargarFormulario(model, paciente, "Editar paciente");
+        PacienteDTO pacienteDTO = convertirADTO(paciente);
+
+        cargarFormulario(model, pacienteDTO, "Editar paciente");
         return "pacientes/form";
     }
 
@@ -91,10 +96,47 @@ public class PacienteController {
         return "redirect:/pacientes";
     }
 
-    private void cargarFormulario(Model model, Paciente paciente, String titulo) {
-        model.addAttribute("paciente", paciente);
+    private void cargarFormulario(Model model, PacienteDTO pacienteDTO, String titulo) {
+        model.addAttribute("paciente", pacienteDTO);
         model.addAttribute("propietarios", propietarioService.listarTodos());
         model.addAttribute("titulo", titulo);
     }
-}
 
+    private PacienteDTO convertirADTO(Paciente paciente) {
+        PacienteDTO dto = new PacienteDTO();
+
+        dto.setId(paciente.getId());
+        dto.setNombre(paciente.getNombre());
+        dto.setEspecie(paciente.getEspecie());
+        dto.setRaza(paciente.getRaza());
+        dto.setFechaNacimiento(paciente.getFechaNacimiento());
+        dto.setGenero(paciente.getGenero());
+
+        if (paciente.getPropietario() != null) {
+            dto.setPropietarioId(paciente.getPropietario().getId());
+            dto.setPropietarioNombreCompleto(paciente.getPropietario().getNombreCompleto());
+            dto.setPropietarioDni(paciente.getPropietario().getDni());
+        }
+
+        return dto;
+    }
+
+    private Paciente convertirAEntidad(PacienteDTO dto) {
+        Paciente paciente = new Paciente();
+
+        paciente.setId(dto.getId());
+        paciente.setNombre(dto.getNombre());
+        paciente.setEspecie(dto.getEspecie());
+        paciente.setRaza(dto.getRaza());
+        paciente.setFechaNacimiento(dto.getFechaNacimiento());
+        paciente.setGenero(dto.getGenero());
+
+        if (dto.getPropietarioId() != null) {
+            Propietario propietario = new Propietario();
+            propietario.setId(dto.getPropietarioId());
+            paciente.setPropietario(propietario);
+        }
+
+        return paciente;
+    }
+}
