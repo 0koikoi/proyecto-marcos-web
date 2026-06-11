@@ -21,29 +21,41 @@
                             <div class="mb-3">
                                 <label class="form-label">Nombre del Producto</label>
                                 <input type="text" th:field="*{nombre}" class="form-control" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Descripción</label>
                                 <textarea th:field="*{descripcion}" class="form-control" rows="2"></textarea>
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label">Proveedor (Opcional)</label>
+                                <select th:field="*{proveedor}" class="form-select">
+                                    <option value="">-- Seleccione un proveedor --</option>
+                                    <option th:each="prov : ${listaProveedores}" th:value="${prov.id}" th:text="${prov.razonSocial}"></option>
+                                </select>
+                            </div>
                             <div class="row">
                                 <div class="col-6 mb-3">
                                     <label class="form-label">P. Compra</label>
                                     <input type="number" step="0.01" th:field="*{precioCompra}" class="form-control" required>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('precioCompra')}" th:errors="*{precioCompra}"></div>
                                 </div>
                                 <div class="col-6 mb-3">
                                     <label class="form-label">P. Venta</label>
                                     <input type="number" step="0.01" th:field="*{precioVenta}" class="form-control" required>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('precioVenta')}" th:errors="*{precioVenta}"></div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-6 mb-4">
                                     <label class="form-label">Stock Actual</label>
                                     <input type="number" th:field="*{stockActual}" class="form-control" required>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('stockActual')}" th:errors="*{stockActual}"></div>
                                 </div>
                                 <div class="col-6 mb-4">
                                     <label class="form-label">Stock Mínimo</label>
                                     <input type="number" th:field="*{stockMinimo}" class="form-control" required>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('stockMinimo')}" th:errors="*{stockMinimo}"></div>
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Guardar Producto</button>
@@ -59,6 +71,7 @@
                                 <thead>
                                 <tr>
                                     <th>Nombre</th>
+                                    <th>Proveedor</th>
                                     <th>P. Venta</th>
                                     <th>Stock</th>
                                     <th>Acción</th>
@@ -67,6 +80,7 @@
                                 <tbody>
                                 <tr th:each="producto : ${listaProductos}">
                                     <td class="fw-bold" th:text="${producto.nombre}"></td>
+                                    <td th:text="${producto.proveedor != null ? producto.proveedor.razonSocial : 'N/A'}"></td>
                                     <td th:text="'S/ ' + ${producto.precioVenta}"></td>
                                     <td>
                                             <span th:text="${producto.stockActual}"
