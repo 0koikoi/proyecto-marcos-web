@@ -36,8 +36,8 @@
                         <tr th:each="venta : ${ventas}">
                             <td class="ps-4 fw-bold text-secondary" th:text="${venta.nroBoleta}"></td>
                             <td th:text="${#temporals.format(venta.fechaEmision, 'dd/MM/yyyy HH:mm')}"></td>
-                            <td th:text="${venta.propietario != null ? venta.propietario.nombre + ' ' + venta.propietario.apellido : 'Público General'}"></td>
-                            <td th:text="${venta.personal != null ? venta.personal.nombre + ' ' + venta.personal.apellido : ''}"></td>
+                            <td th:text="${venta.propietario != null ? venta.propietario.nombreCompleto : 'Público General'}"></td>
+                            <td th:text="${venta.personal != null ? venta.personal.nombreCompleto : ''}"></td>
                             <td class="text-end pe-4 fw-bold text-success" th:text="'S/ ' + ${venta.total}"></td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(ventas)}">

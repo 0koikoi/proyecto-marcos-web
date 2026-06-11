@@ -29,14 +29,14 @@
                                     <label class="form-label fw-semibold">Vendedor (Personal) *</label>
                                     <select th:field="*{personal}" class="form-select" required>
                                         <option value="" disabled selected>Seleccione un vendedor...</option>
-                                        <option th:each="p : ${personal}" th:value="${p.id}" th:text="${p.nombre + ' ' + p.apellido}"></option>
+                                        <option th:each="p : ${personal}" th:value="${p.id}" th:text="${p.nombreCompleto}"></option>
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-semibold">Cliente (Opcional)</label>
                                     <select th:field="*{propietario}" class="form-select">
                                         <option value="">-- Público General --</option>
-                                        <option th:each="c : ${propietarios}" th:value="${c.id}" th:text="${c.nombre + ' ' + c.apellido + ' (' + c.dni + ')'}"></option>
+                                        <option th:each="c : ${propietarios}" th:value="${c.id}" th:text="${c.nombreCompleto + ' (' + c.dni + ')'}"></option>
                                     </select>
                                 </div>
                             </div>
