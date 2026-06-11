@@ -44,7 +44,7 @@ public class VentaService {
         productoRepository.save(producto);
 
         // 3. Preparar y Guardar la Venta
-        venta.setNroBoleta("BOL-" + UUID.randomWindow().toString().substring(0, 8).toUpperCase());
+        venta.setNroBoleta("BOL-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         BigDecimal subtotal = producto.getPrecioVenta().multiply(new BigDecimal(cantidad));
         venta.setTotal(subtotal);
         ventaRepository.save(venta);
