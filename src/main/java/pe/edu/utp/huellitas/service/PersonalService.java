@@ -1,9 +1,11 @@
 package pe.edu.utp.huellitas.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 import pe.edu.utp.huellitas.model.Personal;
 import pe.edu.utp.huellitas.repository.PersonalRepository;
-import java.util.List;
 
 @Service
 public class PersonalService {
@@ -27,5 +29,6 @@ public class PersonalService {
         repository.save(personal);
         return null; // Null significa que no hay errores
     }
+
 }
 
