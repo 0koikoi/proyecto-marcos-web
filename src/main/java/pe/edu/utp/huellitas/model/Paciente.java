@@ -16,6 +16,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern; // <-- Nueva importación agregada
 
 @Entity
 @Table(name = "paciente")
@@ -27,6 +28,7 @@ public class Paciente {
 
     @NotBlank(message = "El nombre del paciente es obligatorio")
     @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$", message = "El nombre solo debe contener letras y espacios") // <-- Escudo para nombre
     @Column(name = "nombre", length = 100, nullable = false)
     private String nombre;
 
@@ -34,6 +36,7 @@ public class Paciente {
     @Column(name = "especie", length = 50, nullable = false)
     private String especie;
 
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]*$", message = "La raza solo debe contener letras y espacios") // <-- Escudo para raza
     @Column(name = "raza", length = 50)
     private String raza;
 

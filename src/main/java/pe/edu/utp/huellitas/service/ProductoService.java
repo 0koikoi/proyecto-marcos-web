@@ -1,6 +1,5 @@
 package pe.edu.utp.huellitas.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pe.edu.utp.huellitas.model.Producto;
 import pe.edu.utp.huellitas.repository.ProductoRepository;
@@ -11,8 +10,11 @@ import java.util.List;
 @Service
 public class ProductoService {
 
-    @Autowired
-    private ProductoRepository productoRepository;
+    private final ProductoRepository productoRepository;
+
+    public ProductoService(ProductoRepository productoRepository) {
+        this.productoRepository = productoRepository;
+    }
 
     public List<Producto> listar() {
         return productoRepository.findAll();

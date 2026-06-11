@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -28,4 +30,7 @@ public class Venta {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "personal_id", nullable = false)
     private Personal personal;
+
+    @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
+    private List<DetalleVenta> detalles = new ArrayList<>();
 }

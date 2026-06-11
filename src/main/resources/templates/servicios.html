@@ -2,40 +2,47 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head}"></head>
 <body>
-<div th:replace="~{layout :: header-mobile}"></div>
-<div class="container-fluid">
-    <div class="row">
-        <nav th:replace="~{layout :: sidebar('servicios')}"></nav>
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-4">
-            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-                <h2>Gestión de Servicios</h2>
-                <a th:href="@{/servicios/nuevo}" class="btn btn-primary">Nuevo Servicio</a>
-            </div>
-            <div class="table-responsive shadow-sm bg-white p-3 rounded">
-                <table class="table table-hover">
-                    <thead class="table-dark">
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Descripción</th>
-                        <th>Precio</th>
-                        <th>Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="s : ${servicios}">
-                        <td th:text="${s.nombre}"></td>
-                        <td th:text="${s.descripcion}"></td>
-                        <td th:text="'S/ ' + ${s.precio}"></td>
-                        <td>
-                            <a th:href="@{/servicios/editar/{id}(id=${s.id})}" class="btn btn-sm btn-warning">Editar</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </main>
+
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<nav th:replace="~{layout :: sidebar('servicios')}"></nav>
+
+<main>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Gestión de Servicios</h2>
+        <a th:href="@{/servicios/nuevo}" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Nuevo Servicio
+        </a>
     </div>
-</div>
+
+    <div class="card p-3 shadow-sm border-0 bg-white">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="s : ${servicios}">
+                    <td th:text="${s.nombre}"></td>
+                    <td th:text="${s.descripcion}"></td>
+                    <td th:text="'S/ ' + ${s.precio}"></td>
+                    <td>
+                        <a th:href="@{/servicios/editar/{id}(id=${s.id})}" class="btn btn-sm btn-warning">
+                            <i class="fa-solid fa-pen"></i> Editar
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
 <div th:replace="~{layout :: scripts}"></div>
 </body>
 </html>

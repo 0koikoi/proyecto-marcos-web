@@ -2,6 +2,8 @@ package pe.edu.utp.huellitas.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,7 +12,11 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import pe.edu.utp.huellitas.validation.DniPeruano;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "propietario")
@@ -25,6 +31,8 @@ public class Propietario {
     @Column(name = "dni", length = 8, nullable = false, unique = true)
     private String dni;
 
+    @Getter
+    @Setter
     @NotBlank(message = "El nombre completo es obligatorio")
     @Size(min = 3, max = 100, message = "El nombre debe tener entre 3 y 100 caracteres")
     @Column(name = "nombre_completo", nullable = false)
@@ -44,6 +52,8 @@ public class Propietario {
     @Column(name = "direccion", columnDefinition = "TEXT")
     private String direccion;
 
+
+
     public Propietario() {
     }
 
@@ -53,10 +63,6 @@ public class Propietario {
 
     public String getDni() {
         return dni;
-    }
-
-    public String getNombreCompleto() {
-        return nombreCompleto;
     }
 
     public String getTelefono() {
@@ -79,10 +85,6 @@ public class Propietario {
         this.dni = dni;
     }
 
-    public void setNombreCompleto(String nombreCompleto) {
-        this.nombreCompleto = nombreCompleto;
-    }
-
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
@@ -94,4 +96,7 @@ public class Propietario {
     public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
+
+    @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Paciente> pacientes = new ArrayList<>();
 }
