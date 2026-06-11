@@ -26,14 +26,12 @@
             <div class="col-md-6">
                 <label class="form-label fw-semibold">Especie <span class="text-danger">*</span></label>
                 <select th:field="*{especie}" class="form-select" th:classappend="${#fields.hasErrors('especie')} ? 'is-invalid' : ''" required>
-                    <option value="">Seleccione una especie</option>
+                    <option value="" disabled selected hidden>Seleccione una especie</option>
                     <option value="Perro">Perro</option>
                     <option value="Gato">Gato</option>
                     <option value="Hamster">Hamster</option>
                     <option value="Ave">Ave</option>
                     <option value="Conejo">Conejo</option>
-                    <option value="Reptil">Reptil</option>
-                    <option value="Otro">Otro</option>
                 </select>
                 <div class="invalid-feedback" th:if="${#fields.hasErrors('especie')}" th:errors="*{especie}"></div>
             </div>
@@ -45,15 +43,15 @@
             </div>
 
             <div class="col-md-6">
-                <label class="form-label">Fecha de nacimiento</label>
-                <input type="date" th:field="*{fechaNacimiento}" class="form-control" th:classappend="${#fields.hasErrors('fechaNacimiento')} ? 'is-invalid' : ''">
+                <label class="form-label fw-semibold">Fecha de nacimiento <span class="text-danger">*</span></label>
+                <input type="date" th:field="*{fechaNacimiento}" class="form-control" th:classappend="${#fields.hasErrors('fechaNacimiento')} ? 'is-invalid' : ''" required>
                 <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}"></div>
             </div>
 
             <div class="col-md-6">
-                <label class="form-label fw-semibold">Género</label>
-                <select th:field="*{genero}" class="form-select">
-                    <option value="">Seleccione</option>
+                <label class="form-label fw-semibold">Género <span class="text-danger">*</span></label>
+                <select th:field="*{genero}" class="form-select" required>
+                    <option value="" disabled selected hidden>Seleccione un género</option>
                     <option value="Macho">Macho</option>
                     <option value="Hembra">Hembra</option>
                 </select>
@@ -62,7 +60,7 @@
             <div class="col-md-6">
                 <label class="form-label fw-semibold">Propietario <span class="text-danger">*</span></label>
                 <select th:field="*{propietario.id}" class="form-select" th:classappend="${#fields.hasErrors('propietario')} ? 'is-invalid' : ''" required>
-                    <option value="">Seleccione un propietario...</option>
+                    <option value="" disabled selected hidden>Seleccione un propietario...</option>
                     <option th:each="propietario : ${propietarios}"
                             th:value="${propietario.id}"
                             th:text="${propietario.nombreCompleto + ' - DNI: ' + propietario.dni}">
