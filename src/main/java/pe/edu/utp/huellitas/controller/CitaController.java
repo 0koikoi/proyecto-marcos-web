@@ -1,7 +1,10 @@
 package pe.edu.utp.huellitas.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.utp.huellitas.model.Cita;
 import pe.edu.utp.huellitas.service.CitaService;
@@ -25,7 +28,8 @@ public class CitaController {
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("citas", citaService.listarTodas());
-        return "citas"; // Asegúrate de que Aaron haga el archivo citas.html
+        model.addAttribute("activePage", "citas");
+        return "citas";
     }
 
     @GetMapping("/nuevo")
@@ -33,12 +37,40 @@ public class CitaController {
         model.addAttribute("cita", new Cita());
         model.addAttribute("pacientes", pacienteService.listarTodos(null));
         model.addAttribute("personal", personalService.listarTodos());
-        return "formulario-cita"; // Aaron debe crear este HTML con los <select>
+        model.addAttribute("activePage", "citas");
+        return "formulario-cita";
     }
 
     @PostMapping("/guardar")
-    public String guardar(@ModelAttribute Cita cita) {
+    public String guardar(@Valid @ModelAttribute("cita") Cita cita, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("pacientes", pacienteService.listarTodos(null));
+            model.addAttribute("personal", personalService.listarTodos());
+            model.addAttribute("activePage", "citas");
+            return "formulario-cita";
+        }
         citaService.guardar(cita);
+        return "redirect:/citas";
+    }
+
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable Long id, Model model) {
+        model.addAttribute("cita", citaService.obtenerPorId(id));
+        model.addAttribute("pacientes", pacienteService.listarTodos(null));
+        model.addAttribute("personal", personalService.listarTodos());
+        model.addAttribute("activePage", "citas");
+        return "formulario-cita";
+    }
+
+    @GetMapping("/cancelar/{id}")
+    public String cancelar(@PathVariable Long id) {
+        citaService.cancelar(id);
+        return "redirect:/citas";
+    }
+
+    @GetMapping("/eliminar/{id}")
+    public String eliminar(@PathVariable Long id) {
+        citaService.eliminar(id);
         return "redirect:/citas";
     }
 }

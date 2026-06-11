@@ -22,17 +22,31 @@ public class CitaService {
     @Transactional
     public Cita guardar(Cita cita) {
         if (cita.getPaciente() == null || cita.getPersonal() == null) {
-            throw new IllegalArgumentException("La cita debe tener un paciente y un personal asignado.");
+            throw new IllegalArgumentException("La cita debe tener un paciente y un veterinario asignado.");
+        }
+        if (cita.getFechaHora() == null) {
+            throw new IllegalArgumentException("La fecha y hora de la cita son obligatorias.");
+        }
+        if (cita.getEstado() == null || cita.getEstado().isBlank()) {
+            cita.setEstado("PENDIENTE");
         }
         return citaRepository.save(cita);
     }
 
     public Cita obtenerPorId(Long id) {
-        return citaRepository.findById(id).orElse(null);
+        return citaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada con id: " + id));
     }
 
     @Transactional
     public void eliminar(Long id) {
         citaRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void cancelar(Long id) {
+        Cita cita = obtenerPorId(id);
+        cita.setEstado("CANCELADA");
+        citaRepository.save(cita);
     }
 }
