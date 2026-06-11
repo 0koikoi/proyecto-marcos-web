@@ -1,6 +1,5 @@
 package pe.edu.utp.huellitas.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,8 +11,11 @@ import pe.edu.utp.huellitas.service.ProductoService;
 @RequestMapping("/productos")
 public class ProductoController {
 
-    @Autowired
-    private ProductoService productoService;
+    private final ProductoService productoService;
+
+    public ProductoController(ProductoService productoService) {
+        this.productoService = productoService;
+    }
 
     // MOSTRAR VISTA + LISTAR
   @GetMapping
