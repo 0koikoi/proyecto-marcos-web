@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 @Data
 @Entity
 @Table(name = "producto")
-public class Producto {
+public class   Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
