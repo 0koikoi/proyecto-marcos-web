@@ -18,53 +18,55 @@
             <a th:if="${buscar != null and !buscar.isEmpty()}" th:href="@{/pacientes}" class="btn btn-secondary ms-2">Limpiar</a>
         </form>
 
-        <a th:href="@{/pacientes/nuevo}" class="btn btn-success">Nuevo paciente</a>
+        <a th:href="@{/pacientes/nuevo}" class="btn btn-primary">Nuevo paciente</a>
     </div>
 
-    <div class="card shadow-sm border-0 bg-white p-3">
-        <div class="table-responsive">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
             <table class="table table-hover mb-0 align-middle">
-                <thead>
+                <thead class="table-light">
                 <tr>
-                    <th>ID</th>
+                    <th class="border-0 rounded-start">ID</th>
                     <th>Nombre</th>
                     <th>Especie</th>
                     <th>Raza</th>
-                    <th>Fecha de Nacimiento</th>
+                    <th>Fecha nacimiento</th>
                     <th>Género</th>
                     <th>Propietario</th>
-                    <th class="text-end px-4">Acciones</th>
+                    <th class="border-0 rounded-end text-end px-4">Acciones</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="border-top-0">
                 <tr th:each="paciente : ${pacientes}">
                     <td th:text="${paciente.id}"></td>
-                    <td class="fw-bold text-capitalize" th:text="${paciente.nombre}"></td>
+                    <td th:text="${paciente.nombre}"></td>
                     <td th:text="${paciente.especie}"></td>
                     <td th:text="${paciente.raza}"></td>
                     <td th:text="${paciente.fechaNacimiento}"></td>
                     <td th:text="${paciente.genero}"></td>
-                    <td th:text="${paciente.propietario.nombreCompleto}"></td>
-
+                    <td th:text="${paciente.propietarioNombreCompleto}"></td>
                     <td class="text-end px-4">
-                        <a th:href="@{/pacientes/editar/{id}(id=${paciente.id})}" class="btn btn-sm btn-warning">
-                            Editar
+                        <a th:href="@{/pacientes/editar/{id}(id=${paciente.id})}" class="btn btn-sm btn-outline-warning rounded-pill px-3 shadow-sm">
+                            <i class="fa-solid fa-pen-to-square"></i> Editar
                         </a>
                         <a th:href="@{/pacientes/eliminar/{id}(id=${paciente.id})}"
-                           class="btn btn-sm btn-danger ms-2"
+                           class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm ms-2"
                            onclick="return confirm('¿Seguro que desea eliminar este paciente?')">
-                            Eliminar
+                            <i class="fa-solid fa-trash"></i> Eliminar
                         </a>
                     </td>
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(pacientes)}">
                     <td colspan="8" class="text-center text-muted py-5">
-                        No hay pacientes registrados con ese criterio.
+                        <i class="fa-solid fa-folder-open fs-1 mb-3 text-light"></i><br>
+                        No hay pacientes registrados.
                     </td>
                 </tr>
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 </main>

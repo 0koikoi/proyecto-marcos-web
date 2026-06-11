@@ -2,7 +2,9 @@ package pe.edu.utp.huellitas.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import pe.edu.utp.huellitas.model.Proveedor;
 import pe.edu.utp.huellitas.service.ProveedorService;
@@ -29,8 +31,12 @@ public String listar(Model model) {
 
     // GUARDAR
     @PostMapping("/guardar")
-    public String guardar(@ModelAttribute Proveedor proveedor) {
-
+    public String guardar(@Valid @ModelAttribute("nuevoProveedor") Proveedor proveedor, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("listaProveedores", proveedorService.listar());
+            model.addAttribute("activePage", "proveedores");
+            return "proveedores";
+        }
         proveedorService.guardar(proveedor);
 
         return "redirect:/proveedores";
@@ -45,4 +51,3 @@ public String listar(Model model) {
         return "redirect:/proveedores";
     }
 }
-

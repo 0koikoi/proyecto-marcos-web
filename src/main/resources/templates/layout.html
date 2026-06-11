@@ -72,6 +72,11 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a th:classappend="${activePage == 'ventas'} ? 'active'" class="nav-link" th:href="@{/ventas}">
+                    <i class="fa-solid fa-cart-shopping"></i> Ventas
+                </a>
+            </li>
+            <li class="nav-item">
                 <a th:classappend="${activePage == 'personal'} ? 'active'" class="nav-link" th:href="@{/personal}">
                     <i class="fa-solid fa-user-doctor"></i> Personal
                 </a>

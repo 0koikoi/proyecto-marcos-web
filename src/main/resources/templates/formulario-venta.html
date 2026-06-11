@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}">
+    <title>Nueva Venta - Huellitas</title>
+</head>
+<body class="bg-light">
+
+<div th:replace="~{layout :: navbar}"></div>
+<div class="container-fluid" style="padding-top: 60px;">
+    <div class="row">
+        <nav th:replace="~{layout :: sidebar('ventas')}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-5">
+            <h2 class="fw-bold mb-4 border-bottom pb-3">NUEVA VENTA</h2>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card p-4 shadow-sm border-0">
+                        <!-- El error de "Stock insuficiente" saltará si aplica -->
+                        <div th:if="${param.error}" class="alert alert-danger">
+                            Ha ocurrido un error al procesar la venta. Verifique el stock.
+                        </div>
+
+                        <form th:action="@{/ventas/guardar}" th:object="${venta}" method="post">
+                            
+                            <h5 class="mb-3 text-secondary pb-2 border-bottom"><i class="fa-solid fa-receipt"></i> Datos de la Venta</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Vendedor (Personal) *</label>
+                                    <select th:field="*{personal}" class="form-select" required>
+                                        <option value="" disabled selected>Seleccione un vendedor...</option>
+                                        <option th:each="p : ${personal}" th:value="${p.id}" th:text="${p.nombreCompleto}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Cliente (Opcional)</label>
+                                    <select th:field="*{propietario}" class="form-select">
+                                        <option value="">-- Público General --</option>
+                                        <option th:each="c : ${propietarios}" th:value="${c.id}" th:text="${c.nombreCompleto + ' (' + c.dni + ')'}"></option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <h5 class="mb-3 text-secondary pb-2 border-bottom"><i class="fa-solid fa-box"></i> Detalle del Producto</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-8 mb-3">
+                                    <label class="form-label fw-semibold">Producto a vender *</label>
+                                    <select name="productoId" class="form-select" required>
+                                        <option value="" disabled selected>Seleccione un producto...</option>
+                                        <option th:each="prod : ${productos}" 
+                                                th:value="${prod.id}" 
+                                                th:text="${prod.nombre + ' (Stock: ' + prod.stockActual + ') - S/ ' + prod.precioVenta}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-semibold">Cantidad *</label>
+                                    <input type="number" name="cantidad" class="form-control" min="1" value="1" required>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                                <a th:href="@{/ventas}" class="btn btn-outline-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-primary px-4"><i class="fa-solid fa-save"></i> Registrar Venta</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>
