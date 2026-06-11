@@ -5,4 +5,3 @@ import pe.edu.utp.huellitas.model.Cita;
 
 public interface CitaRepository extends JpaRepository<Cita, Long> {
 }
-
