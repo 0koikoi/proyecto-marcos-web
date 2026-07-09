@@ -1,22 +1,21 @@
 package pe.edu.utp.huellitas.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
 import pe.edu.utp.huellitas.validation.DniPeruano;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "propietario")
@@ -28,19 +27,20 @@ public class Propietario {
 
     @DniPeruano
     @NotBlank(message = "El DNI es obligatorio")
+    @Pattern(regexp = "\\d{8}", message = "El DNI debe contener solo números y tener exactamente 8 dígitos")
     @Column(name = "dni", length = 8, nullable = false, unique = true)
     private String dni;
 
-    @Getter
-    @Setter
     @NotBlank(message = "El nombre completo es obligatorio")
     @Size(min = 3, max = 100, message = "El nombre debe tener entre 3 y 100 caracteres")
     @Column(name = "nombre_completo", nullable = false)
     private String nombreCompleto;
 
     @NotBlank(message = "El teléfono es obligatorio")
-    @NotBlank(message = "El teléfono es obligatorio")
-    @Pattern(regexp = "^(\\+51\\s?)?9\\d{8}$", message = "El teléfono debe ser válido y empezar con 9 (ej. +51 9XXXXXXXX)")
+    @Pattern(
+            regexp = "^(\\+51\\s?)?9\\d{8}$",
+            message = "El teléfono debe tener formato 912345678 o +51 912345678"
+    )
     @Column(name = "telefono", length = 15, nullable = false)
     private String telefono;
 
@@ -48,11 +48,13 @@ public class Propietario {
     @Column(name = "correo", length = 150)
     private String correo;
 
+    @NotBlank(message = "La dirección es obligatoria")
     @Size(max = 255, message = "La dirección no puede exceder los 255 caracteres")
     @Column(name = "direccion", columnDefinition = "TEXT")
     private String direccion;
 
-
+    @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Paciente> pacientes = new ArrayList<>();
 
     public Propietario() {
     }
@@ -63,6 +65,10 @@ public class Propietario {
 
     public String getDni() {
         return dni;
+    }
+
+    public String getNombreCompleto() {
+        return nombreCompleto;
     }
 
     public String getTelefono() {
@@ -77,12 +83,20 @@ public class Propietario {
         return direccion;
     }
 
+    public List<Paciente> getPacientes() {
+        return pacientes;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
 
     public void setDni(String dni) {
         this.dni = dni;
+    }
+
+    public void setNombreCompleto(String nombreCompleto) {
+        this.nombreCompleto = nombreCompleto;
     }
 
     public void setTelefono(String telefono) {
@@ -97,6 +111,7 @@ public class Propietario {
         this.direccion = direccion;
     }
 
-    @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Paciente> pacientes = new ArrayList<>();
+    public void setPacientes(List<Paciente> pacientes) {
+        this.pacientes = pacientes;
+    }
 }

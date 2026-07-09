@@ -1,59 +1,41 @@
-package pe.edu.utp.huellitas.model;
+package pe.edu.utp.huellitas.dto;
 
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.Pattern; // <-- Nueva importación agregada
 
-@Entity
-@Table(name = "paciente")
-public class Paciente {
+public class PacienteDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "El nombre del paciente es obligatorio")
     @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
-    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$", message = "El nombre solo debe contener letras y espacios") // <-- Escudo para nombre
-    @Column(name = "nombre", length = 100, nullable = false)
     private String nombre;
 
     @NotBlank(message = "La especie es obligatoria")
-    @Column(name = "especie", length = 50, nullable = false)
     private String especie;
 
-    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]*$", message = "La raza solo debe contener letras y espacios") // <-- Escudo para raza
-    @Column(name = "raza", length = 50)
     private String raza;
 
     @PastOrPresent(message = "La fecha de nacimiento no puede ser en el futuro")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
 
-    @Column(name = "genero", length = 10)
     private String genero;
 
     @NotNull(message = "Debe seleccionar un propietario")
-    @ManyToOne
-    @JoinColumn(name = "propietario_id", nullable = false)
-    private Propietario propietario;
+    private Long propietarioId;
 
-    public Paciente() {
+    private String propietarioNombreCompleto;
+
+    private String propietarioDni;
+
+    public PacienteDTO() {
     }
 
     public Long getId() {
@@ -80,8 +62,16 @@ public class Paciente {
         return genero;
     }
 
-    public Propietario getPropietario() {
-        return propietario;
+    public Long getPropietarioId() {
+        return propietarioId;
+    }
+
+    public String getPropietarioNombreCompleto() {
+        return propietarioNombreCompleto;
+    }
+
+    public String getPropietarioDni() {
+        return propietarioDni;
     }
 
     public void setId(Long id) {
@@ -108,7 +98,15 @@ public class Paciente {
         this.genero = genero;
     }
 
-    public void setPropietario(Propietario propietario) {
-        this.propietario = propietario;
+    public void setPropietarioId(Long propietarioId) {
+        this.propietarioId = propietarioId;
+    }
+
+    public void setPropietarioNombreCompleto(String propietarioNombreCompleto) {
+        this.propietarioNombreCompleto = propietarioNombreCompleto;
+    }
+
+    public void setPropietarioDni(String propietarioDni) {
+        this.propietarioDni = propietarioDni;
     }
 }
