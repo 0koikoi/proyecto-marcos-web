@@ -1,128 +1,547 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout :: head(title='Personal - Huellitas')}">
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head th:replace="~{layout :: head}">
     <title>Personal - Huellitas</title>
 </head>
+
 <body class="bg-light">
 
-<!-- Usar navbar en lugar de header-mobile -->
 <div th:replace="~{layout :: navbar}"></div>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar con página activa 'personal' -->
         <nav th:replace="~{layout :: sidebar('personal')}"></nav>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-5">
-            <h2 class="fw-bold mb-4 border-bottom pb-3">EQUIPO MÉDICO Y STAFF</h2>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
 
-            <div th:if="${errorCodigo}" class="alert alert-danger" th:text="${errorCodigo}"></div>
-
-            <div class="card p-4 shadow-sm mb-5 border-0">
-                <form th:action="@{/personal/guardar}" th:object="${nuevoPersonal}" method="post" class="row g-3">
-                    <div class="col-md-2">
-                        <input type="text" th:field="*{codigoInstitucional}" class="form-control" placeholder="C123456" required>
-                    </div>
-                   <div class="col-md-4">
-    <input type="text"
-           th:field="*{nombreCompleto}"
-           class="form-control"
-           placeholder="Nombre Completo"
-           required>
-
-    <div class="text-danger small"
-         th:if="${#fields.hasErrors('nombreCompleto')}"
-         th:errors="*{nombreCompleto}">
-    </div>
-</div>
-                    
-         <div class="col-md-3">
-    <input type="text"
-           th:field="*{username}"
-           class="form-control"
-           placeholder="Usuario Login"
-           required>
-
-    <div class="text-danger small"
-         th:if="${#fields.hasErrors('username')}"
-         th:errors="*{username}">
-    </div>
-</div>
-                  <div class="col-md-3">
-    <input type="password"
-           th:field="*{passwordHash}"
-           class="form-control"
-           placeholder="Contraseña"
-           required>
-
-    <div class="text-danger small"
-         th:if="${#fields.hasErrors('passwordHash')}"
-         th:errors="*{passwordHash}">
-    </div>
-</div>
-                    <div class="col-md-4">
-                        <select th:field="*{cargo}" class="form-select">
-                            <option value="VETERINARIO">Veterinario</option>
-                            <option value="RECEPCION">Recepción</option>
-                            <option value="ADMINISTRADOR">Administrador</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-4">
-                        <input type="text" th:field="*{especialidad}" class="form-control" placeholder="Especialidad (Solo Médicos)">
-                    </div>
-                <div class="col-md-4">
-    <input type="text"
-           th:field="*{telefono}"
-           class="form-control"
-           placeholder="912345678"
-           maxlength="9"
-           required>
-
-    <div class="text-danger small"
-         th:if="${#fields.hasErrors('telefono')}"
-         th:errors="*{telefono}">
-    </div>
-</div>
-                    
-                    <div class="col-md-4">
-                        <button type="submit" class="btn btn-primary w-100">Registrar Personal</button>
-                    </div>
-                </form>
-            </div>
-
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                <div class="col" th:each="persona : ${listaPersonal}">
-                    <div class="card h-100 border-0 shadow-sm" style="border-top: 4px solid var(--primary) !important; border-radius: 12px;">
-                        <div class="card-body">
-
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="badge rounded-pill px-3"
-                          th:style="${persona.cargo == 'VETERINARIO'} ? 'background-color: var(--primary);' : (${persona.cargo == 'ADMINISTRADOR'} ? 'background-color: var(--danger);' : 'background-color: var(--apricot-cream); color: #000;') "
-                          th:text="${persona.cargo}">Cargo</span>
-
-                                <span class="badge bg-success" th:if="${persona.activo}"><i class="fa-solid fa-check"></i> Activo</span>
-                                <span class="badge bg-danger" th:unless="${persona.activo}"><i class="fa-solid fa-xmark"></i> Inactivo</span>
-                            </div>
-
-                            <h5 class="fw-bold mb-1" th:text="${persona.nombreCompleto}" style="color: var(--text-main);">Nombre</h5>
-                            <p class="text-muted small mb-3">
-                                <i class="fa-solid fa-id-badge me-2" style="color: var(--accent);"></i>Cód: <span class="fw-medium" th:text="${persona.codigoInstitucional}"></span>
-                            </p>
-
-                            <div class="d-flex justify-content-between align-items-center text-muted small mt-auto pt-3 border-top">
-                                <span><i class="fa-solid fa-phone me-1"></i> <span th:text="${persona.telefono}"></span></span>
-                                <span><i class="fa-solid fa-user me-1"></i> <span th:text="${persona.username}"></span></span>
-                            </div>
-
-                        </div>
-                    </div>
+            <!-- ── Encabezado de página ─────────────────────────────────── -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-0 page-title">
+                        <i class="fa-solid fa-user-doctor me-2"></i>Gestión de Personal
+                    </h2>
+                    <p class="text-muted small mt-1 mb-0">
+                        Administra los usuarios y roles del sistema
+                    </p>
+                </div>
+                <div class="d-flex gap-2">
+                    <!-- Contadores rápidos -->
+                    <span class="stat-pill stat-admin">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span th:text="${listaPersonal.?[rol.nombre == 'ADMINISTRADOR'].size()}">0</span> Admin
+                    </span>
+                    <span class="stat-pill stat-recep">
+                        <i class="fa-solid fa-headset"></i>
+                        <span th:text="${listaPersonal.?[rol.nombre == 'RECEPCION'].size()}">0</span> Recepción
+                    </span>
+                    <span class="stat-pill stat-vet">
+                        <i class="fa-solid fa-stethoscope"></i>
+                        <span th:text="${listaPersonal.?[rol.nombre == 'VETERINARIO'].size()}">0</span> Veterinarios
+                    </span>
                 </div>
             </div>
+
+            <!-- ── Alertas flash ─────────────────────────────────────────── -->
+            <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert">
+                <i class="fa-solid fa-circle-check me-2"></i>
+                <span th:text="${successMsg}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show shadow-sm border-0" role="alert">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                <span th:text="${errorMsg}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="row g-4">
+
+                <!-- ── Panel izquierdo: Formulario ───────────────────────── -->
+                <div class="col-xl-4 col-lg-5">
+                    <div class="card shadow-sm border-0 form-panel">
+
+                        <div class="card-header-custom"
+                             th:classappend="${editando} ? 'editing' : ''">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="header-icon"
+                                     th:classappend="${editando} ? 'editing' : ''">
+                                    <i class="fa-solid"
+                                       th:classappend="${editando} ? 'fa-user-pen' : 'fa-user-plus'"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0 fw-semibold"
+                                        th:text="${editando} ? 'Editar Miembro' : 'Nuevo Miembro'">
+                                        Nuevo Miembro
+                                    </h5>
+                                    <small class="opacity-75"
+                                           th:text="${editando} ? 'Modifica los datos del registro' : 'Completa todos los campos requeridos'">
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-4">
+
+                            <div th:if="${errorCodigo}" class="alert alert-warning py-2 small mb-3">
+                                <i class="fa-solid fa-circle-exclamation me-1"></i>
+                                <span th:text="${errorCodigo}"></span>
+                            </div>
+
+                            <form th:action="@{/personal/guardar}"
+                                  th:object="${nuevoPersonal}"
+                                  method="post">
+
+                                <!-- ID oculto para edición -->
+                                <input type="hidden" th:field="*{id}">
+
+                                <!-- Código Institucional -->
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fa-solid fa-id-card me-1 text-primary"></i>
+                                        Código Institucional <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text"
+                                           id="codigoInstitucional"
+                                           th:field="*{codigoInstitucional}"
+                                           class="form-control"
+                                           th:classappend="${#fields.hasErrors('codigoInstitucional')} ? 'is-invalid'"
+                                           placeholder="C000001"
+                                           maxlength="7">
+                                    <div class="invalid-feedback" th:errors="*{codigoInstitucional}"></div>
+                                    <div class="form-text">Formato: C seguido de 6 dígitos</div>
+                                </div>
+
+                                <!-- Nombre Completo -->
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fa-solid fa-user me-1 text-primary"></i>
+                                        Nombre Completo <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text"
+                                           id="nombreCompleto"
+                                           th:field="*{nombreCompleto}"
+                                           class="form-control"
+                                           th:classappend="${#fields.hasErrors('nombreCompleto')} ? 'is-invalid'"
+                                           placeholder="Ej: Dr. Juan Pérez García">
+                                    <div class="invalid-feedback" th:errors="*{nombreCompleto}"></div>
+                                </div>
+
+                                <!-- Rol -->
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fa-solid fa-shield-halved me-1 text-primary"></i>
+                                        Rol del Sistema <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="rolId"
+                                            name="rol.id"
+                                            class="form-select">
+                                        <option value="" disabled>Seleccionar rol...</option>
+                                        <option th:each="r : ${roles}"
+                                                th:value="${r.id}"
+                                                th:text="${r.nombre}"
+                                                th:selected="${nuevoPersonal.rol != null and nuevoPersonal.rol.id == r.id}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Cargo (display) -->
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fa-solid fa-briefcase me-1 text-primary"></i>
+                                        Cargo (etiqueta visible)
+                                    </label>
+                                    <input type="text"
+                                           id="cargo"
+                                           th:field="*{cargo}"
+                                           class="form-control"
+                                           placeholder="Ej: Veterinario, Recepcionista">
+                                </div>
+
+                                <!-- Especialidad -->
+                                <div class="mb-3" id="especialidadGroup">
+                                    <label class="form-label">
+                                        <i class="fa-solid fa-graduation-cap me-1 text-primary"></i>
+                                        Especialidad
+                                    </label>
+                                    <input type="text"
+                                           id="especialidad"
+                                           th:field="*{especialidad}"
+                                           class="form-control"
+                                           placeholder="Solo para veterinarios">
+                                </div>
+
+                                <!-- Teléfono -->
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fa-solid fa-phone me-1 text-primary"></i>
+                                        Teléfono
+                                    </label>
+                                    <input type="text"
+                                           id="telefono"
+                                           th:field="*{telefono}"
+                                           class="form-control"
+                                           th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid'"
+                                           placeholder="912345678"
+                                           maxlength="9">
+                                    <div class="invalid-feedback" th:errors="*{telefono}"></div>
+                                </div>
+
+                                <!-- Username -->
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fa-solid fa-at me-1 text-primary"></i>
+                                        Usuario de Acceso <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text"
+                                           id="username"
+                                           th:field="*{username}"
+                                           class="form-control"
+                                           th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'"
+                                           placeholder="Ej: jperez"
+                                           autocomplete="off">
+                                    <div class="invalid-feedback" th:errors="*{username}"></div>
+                                </div>
+
+                                <!-- Contraseña -->
+                                <div class="mb-4">
+                                    <label class="form-label">
+                                        <i class="fa-solid fa-lock me-1 text-primary"></i>
+                                        Contraseña
+                                        <span th:if="${!editando}" class="text-danger">*</span>
+                                        <span th:if="${editando}" class="text-muted small fw-normal">(dejar vacío para conservar la actual)</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="password"
+                                               id="rawPassword"
+                                               name="rawPassword"
+                                               class="form-control"
+                                               placeholder="Mín. 8 caracteres"
+                                               autocomplete="new-password">
+                                        <button class="btn btn-outline-secondary" type="button"
+                                                onclick="togglePassword('rawPassword', this)">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Botones de acción -->
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary fw-semibold">
+                                        <i class="fa-solid me-2"
+                                           th:classappend="${editando} ? 'fa-floppy-disk' : 'fa-user-plus'"></i>
+                                        <span th:text="${editando} ? 'Guardar Cambios' : 'Registrar Personal'">Guardar</span>
+                                    </button>
+                                    <a th:if="${editando}" href="/personal"
+                                       class="btn btn-outline-secondary">
+                                        <i class="fa-solid fa-xmark me-1"></i> Cancelar edición
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div><!-- /col formulario -->
+
+                <!-- ── Panel derecho: Tarjetas de personal ───────────────── -->
+                <div class="col-xl-8 col-lg-7">
+
+                    <!-- Filtros rápidos por rol -->
+                    <div class="role-filter-tabs mb-3">
+                        <button class="role-tab active" data-filter="all"
+                                onclick="filtrarPersonal(this, 'all')">
+                            <i class="fa-solid fa-users"></i> Todos
+                        </button>
+                        <button class="role-tab" data-filter="ADMINISTRADOR"
+                                onclick="filtrarPersonal(this, 'ADMINISTRADOR')">
+                            <i class="fa-solid fa-shield-halved"></i> Administradores
+                        </button>
+                        <button class="role-tab" data-filter="RECEPCION"
+                                onclick="filtrarPersonal(this, 'RECEPCION')">
+                            <i class="fa-solid fa-headset"></i> Recepción
+                        </button>
+                        <button class="role-tab" data-filter="VETERINARIO"
+                                onclick="filtrarPersonal(this, 'VETERINARIO')">
+                            <i class="fa-solid fa-stethoscope"></i> Veterinarios
+                        </button>
+                    </div>
+
+                    <!-- Grid de tarjetas -->
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-3" id="personalGrid">
+
+                        <div class="col staff-card"
+                             th:each="persona : ${listaPersonal}"
+                             th:data-rol="${persona.rol.nombre}">
+
+                            <div class="card h-100 border-0 shadow-sm staff-card-inner"
+                                 th:classappend="'role-' + ${persona.rol.nombre.toLowerCase()}"
+                                 th:style="${!persona.activo} ? 'opacity: 0.65;' : ''">
+
+                                <!-- Borde de color superior por rol -->
+                                <div class="role-accent-bar"
+                                     th:classappend="'bar-' + ${persona.rol.nombre.toLowerCase()}"></div>
+
+                                <div class="card-body p-3">
+
+                                    <!-- Cabecera: avatar + nombre + badges -->
+                                    <div class="d-flex align-items-start gap-3 mb-3">
+                                        <!-- Avatar con inicial y color por rol -->
+                                        <div class="staff-avatar"
+                                             th:classappend="'avatar-' + ${persona.rol.nombre.toLowerCase()}">
+                                            <span th:text="${persona.nombreCompleto.substring(0,1).toUpperCase()}">A</span>
+                                        </div>
+
+                                        <div class="flex-grow-1 min-w-0">
+                                            <h6 class="fw-bold mb-1 text-truncate"
+                                                th:text="${persona.nombreCompleto}">Nombre</h6>
+
+                                            <div class="d-flex flex-wrap gap-1 align-items-center">
+                                                <!-- Badge de rol -->
+                                                <span class="badge-rol"
+                                                      th:classappend="'badge-rol-' + ${persona.rol.nombre.toLowerCase()}"
+                                                      th:text="${persona.rol.nombre}">ROL</span>
+
+                                                <!-- Estado activo/inactivo -->
+                                                <span class="badge rounded-pill bg-success-subtle text-success small"
+                                                      th:if="${persona.activo}">
+                                                    <i class="fa-solid fa-circle" style="font-size:0.45rem"></i> Activo
+                                                </span>
+                                                <span class="badge rounded-pill bg-danger-subtle text-danger small"
+                                                      th:unless="${persona.activo}">
+                                                    <i class="fa-solid fa-circle" style="font-size:0.45rem"></i> Inactivo
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Info adicional -->
+                                    <div class="staff-info-grid mb-3">
+                                        <div class="info-row">
+                                            <i class="fa-solid fa-id-badge text-muted"></i>
+                                            <span class="text-muted small">Código</span>
+                                            <span class="fw-medium small font-monospace"
+                                                  th:text="${persona.codigoInstitucional}">C000001</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <i class="fa-solid fa-at text-muted"></i>
+                                            <span class="text-muted small">Usuario</span>
+                                            <span class="fw-medium small" th:text="${persona.username}">user</span>
+                                        </div>
+                                        <div class="info-row" th:if="${persona.telefono != null and !persona.telefono.isBlank()}">
+                                            <i class="fa-solid fa-phone text-muted"></i>
+                                            <span class="text-muted small">Teléfono</span>
+                                            <span class="fw-medium small" th:text="${persona.telefono}">999</span>
+                                        </div>
+                                        <div class="info-row" th:if="${persona.especialidad != null and !persona.especialidad.isBlank()}">
+                                            <i class="fa-solid fa-graduation-cap text-muted"></i>
+                                            <span class="text-muted small">Especialidad</span>
+                                            <span class="fw-medium small" th:text="${persona.especialidad}">-</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Acciones CRUD -->
+                                    <div class="d-flex gap-2 pt-2 border-top">
+
+                                        <!-- Editar -->
+                                        <a th:href="@{/personal/editar/{id}(id=${persona.id})}"
+                                           class="btn btn-sm btn-outline-primary flex-fill"
+                                           title="Editar datos">
+                                            <i class="fa-solid fa-pen-to-square me-1"></i> Editar
+                                        </a>
+
+                                        <!-- Activar / Desactivar -->
+                                        <form th:if="${persona.activo}"
+                                              th:action="@{/personal/desactivar/{id}(id=${persona.id})}"
+                                              method="post" class="flex-fill">
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-warning w-100"
+                                                    title="Desactivar acceso"
+                                                    onclick="return confirm('¿Desactivar el acceso de este usuario?')">
+                                                <i class="fa-solid fa-user-slash me-1"></i> Desactivar
+                                            </button>
+                                        </form>
+                                        <form th:unless="${persona.activo}"
+                                              th:action="@{/personal/activar/{id}(id=${persona.id})}"
+                                              method="post" class="flex-fill">
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-success w-100"
+                                                    title="Activar acceso">
+                                                <i class="fa-solid fa-user-check me-1"></i> Activar
+                                            </button>
+                                        </form>
+
+                                        <!-- Eliminar -->
+                                        <form th:action="@{/personal/eliminar/{id}(id=${persona.id})}"
+                                              method="post">
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    title="Eliminar permanentemente"
+                                                    th:onclick="'return confirmDelete(\'' + ${persona.nombreCompleto} + '\')'">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                </div><!-- /card-body -->
+                            </div>
+                        </div><!-- /col -->
+
+                    </div><!-- /personalGrid -->
+
+                    <!-- Estado vacío -->
+                    <div class="empty-state text-center py-5 d-none" id="emptyState">
+                        <i class="fa-solid fa-users-slash fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No hay personal en esta categoría</p>
+                    </div>
+
+                </div><!-- /col derecho -->
+            </div><!-- /row -->
         </main>
     </div>
 </div>
 
 <div th:replace="~{layout :: scripts}"></div>
+
+<!-- ── Estilos específicos de esta página ─────────────────────────────── -->
+<style>
+    /* ── Encabezado y pills de estadística ─────────────────────── */
+    .page-title { color: var(--primary); font-size: 1.5rem; letter-spacing: -0.5px; }
+
+    .stat-pill {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 600;
+    }
+    .stat-admin { background: #fef3c7; color: #92400e; }
+    .stat-recep { background: #e0f2fe; color: #0369a1; }
+    .stat-vet   { background: #d1fae5; color: #065f46; }
+
+    /* ── Panel formulario ───────────────────────────────────────── */
+    .form-panel { position: sticky; top: 80px; }
+
+    .card-header-custom {
+        padding: 1.25rem 1.5rem;
+        background: linear-gradient(135deg, var(--primary) 0%, #1e6c8a 100%);
+        color: white; border-radius: 12px 12px 0 0;
+        transition: background 0.3s ease;
+    }
+    .card-header-custom.editing {
+        background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+    }
+
+    .header-icon {
+        width: 42px; height: 42px; border-radius: 10px;
+        background: rgba(255,255,255,0.2);
+        display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .header-icon.editing { background: rgba(255,255,255,0.2); }
+
+    /* ── Filtros de rol ─────────────────────────────────────────── */
+    .role-filter-tabs {
+        display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .role-tab {
+        padding: 7px 16px; border-radius: 20px; border: 2px solid var(--border-color);
+        background: white; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+        transition: all 0.2s ease; color: var(--text-muted);
+    }
+    .role-tab:hover { border-color: var(--primary); color: var(--primary); }
+    .role-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    /* ── Tarjetas de personal ───────────────────────────────────── */
+    .staff-card-inner { border-radius: 12px; overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .staff-card-inner:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important; }
+
+    .role-accent-bar { height: 4px; width: 100%; }
+    .bar-administrador { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .bar-recepcion     { background: linear-gradient(90deg, var(--primary), var(--accent)); }
+    .bar-veterinario   { background: linear-gradient(90deg, #10b981, #34d399); }
+
+    /* Avatares con inicial -->
+    .staff-avatar {
+        width: 46px; height: 46px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; font-weight: 700; flex-shrink: 0; color: white;
+    }
+    .avatar-administrador { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .avatar-recepcion     { background: linear-gradient(135deg, var(--primary), #1e6c8a); }
+    .avatar-veterinario   { background: linear-gradient(135deg, #10b981, #059669); }
+
+    /* Badges de rol -->
+    .badge-rol {
+        font-size: 0.7rem; font-weight: 700; padding: 3px 8px;
+        border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .badge-rol-administrador { background: #fef3c7; color: #92400e; }
+    .badge-rol-recepcion     { background: #e0f2fe; color: #0369a1; }
+    .badge-rol-veterinario   { background: #d1fae5; color: #065f46; }
+
+    /* Grid de información interna -->
+    .staff-info-grid { display: flex; flex-direction: column; gap: 6px; }
+    .info-row {
+        display: grid; grid-template-columns: 16px 80px 1fr; gap: 6px;
+        align-items: center;
+    }
+    .info-row i { font-size: 0.75rem; text-align: center; }
+
+    /* Botones pequeños -->
+    .btn-outline-primary { border-color: var(--primary) !important; color: var(--primary) !important; }
+    .btn-outline-primary:hover { background-color: var(--primary) !important; color: white !important; }
+</style>
+
+<!-- ── JavaScript ──────────────────────────────────────────────────────── -->
+<script>
+    /* Mostrar/ocultar contraseña */
+    function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon  = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+
+    /* Confirmación de eliminación */
+    function confirmDelete(nombre) {
+        return confirm(
+            '⚠️ ¿Eliminar permanentemente a "' + nombre + '"?\n\n' +
+            'Esta acción no se puede deshacer.\n' +
+            'Si el usuario tiene registros asociados, considera desactivarlo en su lugar.'
+        );
+    }
+
+    /* Filtrado de tarjetas por rol */
+    function filtrarPersonal(btn, filtro) {
+        /* Actualizar tab activo */
+        document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+
+        const cards     = document.querySelectorAll('.staff-card');
+        let   visibles  = 0;
+
+        cards.forEach(card => {
+            const rol = card.dataset.rol;
+            if (filtro === 'all' || rol === filtro) {
+                card.style.display = '';
+                visibles++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        document.getElementById('emptyState').classList.toggle('d-none', visibles > 0);
+    }
+
+    /* Auto-dismiss de alertas tras 5s */
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(a => {
+            const bsAlert = bootstrap.Alert.getOrCreateInstance(a);
+            bsAlert.close();
+        });
+    }, 5000);
+</script>
+
 </body>
 </html>
