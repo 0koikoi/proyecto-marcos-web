@@ -6,447 +6,93 @@
     <title>Acceso — Huellitas Clínica Veterinaria</title>
     <meta name="description" content="Sistema de gestión de clínica veterinaria Huellitas. Inicia sesión para acceder.">
 
-    <!-- Fuentes -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Hoja de estilos global -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
+<body class="bg-light d-flex align-items-center justify-content-center vh-100">
 
-<!-- ── Fondo animado ──────────────────────────────────────────────────────── -->
-<div class="bg-gradient-layer"></div>
-<div class="floating-shapes" aria-hidden="true">
-    <div class="shape shape-1">🐾</div>
-    <div class="shape shape-2">🐕</div>
-    <div class="shape shape-3">🐈</div>
-    <div class="shape shape-4">❤️</div>
-    <div class="shape shape-5">🩺</div>
-    <div class="shape shape-6">🐾</div>
-    <div class="shape shape-7">💊</div>
-</div>
-
-<!-- ── Layout principal ───────────────────────────────────────────────────── -->
-<div class="login-wrapper">
-
-    <!-- Panel izquierdo — branding -->
-    <div class="brand-panel">
-        <div class="brand-content">
-            <div class="brand-logo">
-                <div class="logo-icon">
-                    <i class="fa-solid fa-paw"></i>
-                </div>
-                <div>
-                    <h1 class="brand-name">Huellitas</h1>
-                    <p class="brand-tagline">Clínica Veterinaria</p>
-                </div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
+            
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-paw text-primary mb-2" style="font-size: 3rem;"></i>
+                <h1 class="fw-bold mb-0 fs-3">Huellitas</h1>
+                <p class="text-muted small text-uppercase tracking-wide">Clínica Veterinaria</p>
             </div>
 
-            <div class="brand-description">
-                <h2>Cuida a tus pacientes<br>con el mejor sistema</h2>
-                <p>Gestiona citas, historia clínica, inventario y más desde un solo lugar.</p>
-            </div>
+            <div class="card rounded-0 shadow-sm border-0">
+                <div class="card-body p-4 p-sm-5">
+                    
+                    <h2 class="fs-5 fw-bold text-center mb-4 text-dark">Acceso al Sistema</h2>
 
-            <div class="features-list">
-                <div class="feature-item">
-                    <div class="feature-icon"><i class="fa-solid fa-calendar-check"></i></div>
-                    <span>Gestión de citas y agenda</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon"><i class="fa-solid fa-notes-medical"></i></div>
-                    <span>Historia clínica digital</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon"><i class="fa-solid fa-box-archive"></i></div>
-                    <span>Inventario y ventas</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                    <span>Acceso por roles seguros</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Decoración -->
-        <div class="brand-decoration">
-            <div class="deco-circle deco-1"></div>
-            <div class="deco-circle deco-2"></div>
-            <div class="deco-circle deco-3"></div>
-        </div>
-    </div>
-
-    <!-- Panel derecho — formulario -->
-    <div class="form-panel">
-        <div class="login-card">
-
-            <!-- Cabecera -->
-            <div class="login-header">
-                <div class="mobile-logo">
-                    <i class="fa-solid fa-paw"></i>
-                    <span>Huellitas</span>
-                </div>
-                <h2>Bienvenido de vuelta</h2>
-                <p>Ingresa tus credenciales para acceder al sistema</p>
-            </div>
-
-            <!-- Alertas -->
-            <div class="alert-box error" th:if="${errorMsg}">
-                <div class="alert-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
-                <div>
-                    <strong>Error de acceso</strong>
-                    <p th:text="${errorMsg}"></p>
-                </div>
-            </div>
-
-            <div class="alert-box success" th:if="${logoutMsg}">
-                <div class="alert-icon"><i class="fa-solid fa-circle-check"></i></div>
-                <div>
-                    <strong>Sesión cerrada</strong>
-                    <p th:text="${logoutMsg}"></p>
-                </div>
-            </div>
-
-            <!--
-                Spring Security intercepta POST /login.
-                Thymeleaf agrega el token CSRF automáticamente.
-            -->
-            <form th:action="@{/login}" method="post" class="login-form" id="loginForm">
-
-                <div class="input-group-custom">
-                    <label for="username">
-                        <i class="fa-solid fa-user"></i> Usuario
-                    </label>
-                    <div class="input-wrapper">
-                        <span class="input-prefix-icon">
-                            <i class="fa-solid fa-at"></i>
-                        </span>
-                        <input id="username"
-                               type="text"
-                               name="username"
-                               placeholder="Ej: admin1, vet1, recep1"
-                               autocomplete="username"
-                               required>
+                    <!-- Alertas -->
+                    <div th:if="${errorMsg}" class="alert alert-danger rounded-0 small py-2 d-flex align-items-center">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i> 
+                        <span th:text="${errorMsg}"></span>
                     </div>
-                </div>
+                    
+                    <div th:if="${logoutMsg}" class="alert alert-success rounded-0 small py-2 d-flex align-items-center">
+                        <i class="fa-solid fa-circle-check me-2"></i> 
+                        <span th:text="${logoutMsg}"></span>
+                    </div>
 
-                <div class="input-group-custom">
-                    <label for="password">
-                        <i class="fa-solid fa-lock"></i> Contraseña
-                    </label>
-                    <div class="input-wrapper">
-                        <span class="input-prefix-icon">
-                            <i class="fa-solid fa-key"></i>
-                        </span>
-                        <input id="password"
-                               type="password"
-                               name="password"
-                               placeholder="••••••••••"
-                               autocomplete="current-password"
-                               required>
-                        <button type="button" class="toggle-password"
-                                onclick="togglePassword()" aria-label="Mostrar contraseña">
-                            <i class="fa-solid fa-eye" id="toggleIcon"></i>
+                    <!-- Formulario -->
+                    <form th:action="@{/login}" method="post" id="loginForm">
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label small fw-bold text-muted">USUARIO</label>
+                            <div class="input-group">
+                                <span class="input-group-text rounded-0 bg-white text-muted">
+                                    <i class="fa-solid fa-user"></i>
+                                </span>
+                                <input type="text" id="username" name="username" 
+                                       class="form-control rounded-0 border-start-0 ps-0" 
+                                       placeholder="Ej: admin1" required autofocus autocomplete="username">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label small fw-bold text-muted">CONTRASEÑA</label>
+                            <div class="input-group">
+                                <span class="input-group-text rounded-0 bg-white text-muted">
+                                    <i class="fa-solid fa-lock"></i>
+                                </span>
+                                <input type="password" id="password" name="password" 
+                                       class="form-control rounded-0 border-start-0 border-end-0 ps-0" 
+                                       placeholder="••••••••••" required autocomplete="current-password">
+                                <button type="button" class="input-group-text rounded-0 bg-white text-muted" 
+                                        onclick="togglePassword()" title="Mostrar/Ocultar contraseña">
+                                    <i class="fa-solid fa-eye" id="toggleIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 rounded-0 py-2 fw-bold text-uppercase" id="submitBtn">
+                            <span class="btn-text">
+                                <i class="fa-solid fa-right-to-bracket me-2"></i> Ingresar
+                            </span>
+                            <span class="btn-loading d-none">
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Verificando...
+                            </span>
                         </button>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-login" id="submitBtn">
-                    <span class="btn-text">
-                        <i class="fa-solid fa-right-to-bracket me-2"></i>
-                        Ingresar al Sistema
-                    </span>
-                    <span class="btn-loading d-none">
-                        <span class="spinner"></span> Verificando...
-                    </span>
-                </button>
-
-            </form>
-
-            <!-- Footer -->
-            <div class="login-footer">
-                <p>Sistema protegido · Acceso solo para personal autorizado</p>
-                <div class="role-hints">
-                    <span class="role-hint hint-admin"><i class="fa-solid fa-shield-halved"></i> ADMINISTRADOR</span>
-                    <span class="role-hint hint-recep"><i class="fa-solid fa-headset"></i> RECEPCIÓN</span>
-                    <span class="role-hint hint-vet"><i class="fa-solid fa-stethoscope"></i> VETERINARIO</span>
+                    </form>
+                    
                 </div>
             </div>
+            
+            <div class="text-center mt-4 text-muted small">
+                <p class="mb-1">&copy; 2026 Huellitas. Todos los derechos reservados.</p>
+                <p class="mb-0"><i class="fa-solid fa-shield-halved me-1"></i> Acceso exclusivo para personal autorizado.</p>
+            </div>
+
         </div>
     </div>
-
-</div><!-- /login-wrapper -->
-
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-    --primary:    #2584A7;
-    --primary-dk: #1a6b8a;
-    --accent:     #24E5D2;
-    --danger:     #ef4444;
-    --success:    #10b981;
-    --text-main:  #0f172a;
-    --text-muted: #64748b;
-    --border:     #e2e8f0;
-    --white:      #ffffff;
-}
-
-html, body {
-    height: 100%; width: 100%;
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    overflow: hidden;
-}
-
-/* ── Fondo animado ──────────────────────────────────────── */
-.bg-gradient-layer {
-    position: fixed; inset: 0; z-index: -2;
-    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #0e4d6b 100%);
-}
-
-.floating-shapes {
-    position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    overflow: hidden;
-}
-
-.shape {
-    position: absolute;
-    font-size: 2rem;
-    opacity: 0.06;
-    animation: floatAround linear infinite;
-    user-select: none;
-}
-
-.shape-1 { left: 5%;  top: 10%; animation-duration: 18s; font-size: 2.5rem; }
-.shape-2 { left: 15%; top: 60%; animation-duration: 22s; font-size: 3rem; }
-.shape-3 { left: 70%; top: 15%; animation-duration: 16s; font-size: 2rem; }
-.shape-4 { left: 80%; top: 55%; animation-duration: 25s; font-size: 1.8rem; }
-.shape-5 { left: 50%; top: 80%; animation-duration: 20s; font-size: 2.2rem; }
-.shape-6 { left: 88%; top: 35%; animation-duration: 19s; font-size: 3.5rem; }
-.shape-7 { left: 35%; top: 90%; animation-duration: 24s; font-size: 1.5rem; }
-
-@keyframes floatAround {
-    0%   { transform: translate(0, 0) rotate(0deg); }
-    25%  { transform: translate(30px, -20px) rotate(90deg); }
-    50%  { transform: translate(10px, 30px) rotate(180deg); }
-    75%  { transform: translate(-20px, 10px) rotate(270deg); }
-    100% { transform: translate(0, 0) rotate(360deg); }
-}
-
-/* ── Layout principal ───────────────────────────────────── */
-.login-wrapper {
-    display: flex;
-    height: 100vh;
-    width: 100vw;
-}
-
-/* ── Panel izquierdo (branding) ─────────────────────────── */
-.brand-panel {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.brand-content { position: relative; z-index: 2; color: white; max-width: 420px; }
-
-.brand-logo {
-    display: flex; align-items: center; gap: 16px; margin-bottom: 3rem;
-}
-
-.logo-icon {
-    width: 60px; height: 60px;
-    background: linear-gradient(135deg, var(--accent), var(--primary));
-    border-radius: 16px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.8rem; color: white;
-    box-shadow: 0 8px 32px rgba(36, 229, 210, 0.3);
-}
-
-.brand-name {
-    font-size: 2.2rem; font-weight: 800; letter-spacing: -1px;
-    line-height: 1;
-}
-.brand-tagline {
-    font-size: 0.85rem; color: var(--accent); font-weight: 500; letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.brand-description { margin-bottom: 2.5rem; }
-.brand-description h2 {
-    font-size: 1.8rem; font-weight: 700; line-height: 1.2;
-    margin-bottom: 0.75rem;
-}
-.brand-description p { opacity: 0.7; line-height: 1.6; }
-
-.features-list { display: flex; flex-direction: column; gap: 14px; }
-.feature-item {
-    display: flex; align-items: center; gap: 14px;
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 12px 16px; border-radius: 12px;
-    backdrop-filter: blur(4px);
-    transition: background 0.2s;
-}
-.feature-item:hover { background: rgba(255,255,255,0.12); }
-.feature-icon {
-    width: 36px; height: 36px;
-    background: rgba(36,229,210,0.2);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--accent); font-size: 0.9rem;
-    flex-shrink: 0;
-}
-.feature-item span { font-size: 0.9rem; opacity: 0.9; }
-
-/* Decoración -->
-.brand-decoration { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-.deco-circle {
-    position: absolute; border-radius: 50%;
-    background: radial-gradient(circle, rgba(36,229,210,0.12), transparent);
-}
-.deco-1 { width: 500px; height: 500px; top: -200px; right: -200px; }
-.deco-2 { width: 300px; height: 300px; bottom: -100px; left: -80px; opacity: 0.6; }
-.deco-3 { width: 200px; height: 200px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
-
-/* ── Panel derecho (formulario) ─────────────────────────── */
-.form-panel {
-    width: 480px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--white);
-    padding: 2rem;
-}
-
-.login-card { width: 100%; max-width: 400px; }
-
-/* Logo móvil (solo visible en sm) -->
-.mobile-logo {
-    display: none; align-items: center; gap: 10px;
-    font-size: 1.4rem; font-weight: 800; color: var(--primary);
-    margin-bottom: 1.5rem;
-}
-.mobile-logo i { color: var(--accent); }
-
-.login-header { margin-bottom: 2rem; }
-.login-header h2 {
-    font-size: 1.7rem; font-weight: 800; color: var(--text-main);
-    margin-bottom: 0.4rem; letter-spacing: -0.5px;
-}
-.login-header p { color: var(--text-muted); font-size: 0.9rem; }
-
-/* Alertas -->
-.alert-box {
-    display: flex; align-items: flex-start; gap: 12px;
-    padding: 12px 16px; border-radius: 10px; margin-bottom: 1.5rem;
-    font-size: 0.88rem;
-}
-.alert-box p { margin: 0; opacity: 0.85; }
-.alert-box strong { display: block; font-weight: 600; margin-bottom: 2px; }
-.alert-box.error { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
-.alert-box.success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
-.alert-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
-
-/* Formulario -->
-.login-form { display: flex; flex-direction: column; gap: 1.25rem; }
-
-.input-group-custom label {
-    display: block; font-size: 0.82rem; font-weight: 700;
-    color: var(--text-muted); margin-bottom: 8px;
-    text-transform: uppercase; letter-spacing: 0.5px;
-}
-.input-group-custom label i { margin-right: 4px; }
-
-.input-wrapper {
-    position: relative; display: flex; align-items: center;
-}
-
-.input-prefix-icon {
-    position: absolute; left: 14px; color: #94a3b8; font-size: 0.9rem;
-    pointer-events: none; z-index: 2;
-}
-
-.input-wrapper input {
-    width: 100%; padding: 14px 44px 14px 42px;
-    border: 2px solid var(--border); border-radius: 10px;
-    font-family: inherit; font-size: 0.95rem; color: var(--text-main);
-    background: #f8fafc; transition: all 0.2s ease;
-    outline: none;
-}
-.input-wrapper input:focus {
-    border-color: var(--primary);
-    background: white;
-    box-shadow: 0 0 0 4px rgba(37, 132, 167, 0.1);
-}
-.input-wrapper input::placeholder { color: #cbd5e1; }
-
-.toggle-password {
-    position: absolute; right: 12px;
-    background: none; border: none; color: #94a3b8;
-    cursor: pointer; padding: 6px; transition: color 0.2s;
-    font-size: 0.9rem;
-}
-.toggle-password:hover { color: var(--primary); }
-
-/* Botón de login -->
-.btn-login {
-    width: 100%; padding: 15px;
-    background: linear-gradient(135deg, var(--primary), #1d6e90);
-    color: white; border: none; border-radius: 10px;
-    font-family: inherit; font-size: 1rem; font-weight: 700;
-    cursor: pointer; transition: all 0.25s ease;
-    margin-top: 0.5rem;
-    box-shadow: 0 4px 15px rgba(37, 132, 167, 0.3);
-    letter-spacing: 0.3px;
-}
-.btn-login:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(37, 132, 167, 0.4);
-}
-.btn-login:active { transform: translateY(0); }
-
-/* Spinner -->
-.spinner {
-    display: inline-block; width: 14px; height: 14px;
-    border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
-    border-radius: 50%; animation: spin 0.7s linear infinite;
-    vertical-align: middle; margin-right: 6px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Footer -->
-.login-footer {
-    margin-top: 2rem; text-align: center;
-    border-top: 1px solid var(--border); padding-top: 1.5rem;
-}
-.login-footer p {
-    font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;
-}
-
-.role-hints { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
-.role-hint {
-    font-size: 0.72rem; font-weight: 700; padding: 4px 10px;
-    border-radius: 20px; letter-spacing: 0.4px;
-    display: flex; align-items: center; gap: 5px;
-}
-.hint-admin { background: #fef3c7; color: #92400e; }
-.hint-recep { background: #e0f2fe; color: #0369a1; }
-.hint-vet   { background: #d1fae5; color: #065f46; }
-
-/* ── Responsive ─────────────────────────────────────────── */
-@media (max-width: 900px) {
-    html, body { overflow: auto; }
-    .login-wrapper { flex-direction: column; height: auto; min-height: 100vh; }
-    .brand-panel { display: none; }
-    .form-panel { width: 100%; min-height: 100vh; }
-    .mobile-logo { display: flex; }
-    .bg-gradient-layer {
-        background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 100%);
-    }
-    .form-panel { background: var(--white); }
-}
-</style>
+</div>
 
 <script>
     /* Mostrar/ocultar contraseña */
@@ -464,11 +110,12 @@ html, body {
 
     /* Indicador de carga al enviar */
     document.getElementById('loginForm').addEventListener('submit', function () {
-        const btn  = document.getElementById('submitBtn');
-        btn.disabled = true;
+        const btn = document.getElementById('submitBtn');
+        btn.classList.add('disabled');
         btn.querySelector('.btn-text').classList.add('d-none');
         btn.querySelector('.btn-loading').classList.remove('d-none');
     });
 </script>
+
 </body>
 </html>

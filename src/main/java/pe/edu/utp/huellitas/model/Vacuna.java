@@ -37,6 +37,11 @@ public class Vacuna {
     @JoinColumn(name = "personal_id", nullable = false)
     private Personal personal;
 
+    /** Relación opcional para trazabilidad clínica completa. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "historia_clinica_id")
+    private HistoriaClinica historiaClinica;
+
     @NotBlank(message = "El nombre de la vacuna es obligatorio")
     @Column(nullable = false, length = 100)
     private String nombreVacuna;

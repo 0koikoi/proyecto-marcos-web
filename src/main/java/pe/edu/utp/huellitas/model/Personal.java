@@ -17,9 +17,12 @@ import java.util.List;
  * actúa como principal de Spring Security (implementa UserDetails).
  *
  * Roles disponibles (tabla 'rol'):
- *   ADMINISTRADOR — acceso total
+ *   ADMINISTRADOR — acceso total al sistema
  *   RECEPCION     — ventas, citas, propietarios y pacientes
  *   VETERINARIO   — historia clínica, recetas, vacunas, solicitudes de material
+ *
+ * TODO (mejora futura): separar UserDetails en PersonalUserPrincipal
+ * para cumplir SRP y desacoplar dominio de Spring Security.
  */
 @Data
 @Entity
@@ -61,6 +64,11 @@ public class Personal implements UserDetails {
     @Column(length = 15)
     private String telefono;
 
+    @NotBlank(message = "El correo es obligatorio")
+    @jakarta.validation.constraints.Email(message = "Formato de correo inválido")
+    @Column(length = 150)
+    private String email;
+
     @Column(unique = true, nullable = false, length = 50)
     private String username;
 
@@ -101,15 +109,18 @@ public class Personal implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired()    { return true; }
+    public boolean isAccountNonExpired()     { return true; }
 
     @Override
-    public boolean isAccountNonLocked()     { return true; }
+    public boolean isAccountNonLocked()      { return true; }
 
     @Override
-    public boolean isCredentialsNonExpired(){ return true; }
+    public boolean isCredentialsNonExpired() { return true; }
 
-    /** Un miembro inactivo no puede iniciar sesión. */
+    /**
+     * Un miembro del personal con activo=false no puede iniciar sesión.
+     * El administrador puede desactivar usuarios desde el módulo de Personal.
+     */
     @Override
     public boolean isEnabled() {
         return Boolean.TRUE.equals(this.activo);

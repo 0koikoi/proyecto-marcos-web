@@ -31,4 +31,10 @@ public class Proveedor {
     @Pattern(regexp = "^(9\\d{8}|[0-9]{6,15})?$", message = "El teléfono no es válido")
     @Column(length = 15)
     private String telefono;
+
+    @Column(nullable = false)
+    private Boolean activo = true;
+
+    @Column(nullable = false, updatable = false)
+    private java.time.OffsetDateTime createdAt = java.time.OffsetDateTime.now();
 }

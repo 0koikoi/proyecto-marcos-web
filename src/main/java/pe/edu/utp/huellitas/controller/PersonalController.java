@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pe.edu.utp.huellitas.model.Personal;
-import pe.edu.utp.huellitas.repository.RolRepository;
 import pe.edu.utp.huellitas.service.PersonalService;
 
 /**
  * CRUD completo de gestión de personal.
  * Accesible únicamente para el rol ADMINISTRADOR.
+ *
+ * Nota: Este controller NO inyecta RolRepository directamente.
+ * Usa PersonalService.listarRoles() para obtener el catálogo de roles.
  */
 @Controller
 @RequestMapping("/personal")
@@ -22,30 +24,31 @@ import pe.edu.utp.huellitas.service.PersonalService;
 public class PersonalController {
 
     private final PersonalService service;
-    private final RolRepository   rolRepository;
 
-    public PersonalController(PersonalService service, RolRepository rolRepository) {
-        this.service       = service;
-        this.rolRepository = rolRepository;
+    public PersonalController(PersonalService service) {
+        this.service = service;
     }
 
     // ── Listar ────────────────────────────────────────────────────────────────
+
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("listaPersonal", service.listarTodos());
         model.addAttribute("nuevoPersonal", new Personal());
-        model.addAttribute("roles",         rolRepository.findAll());
-        model.addAttribute("activePage",    "personal");
+        model.addAttribute("roles", service.listarRoles());
+        model.addAttribute("editando", false);
+        model.addAttribute("activePage", "personal");
         return "personal";
     }
 
     // ── Formulario de edición ─────────────────────────────────────────────────
+
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
         return service.obtenerPorId(id).map(persona -> {
             model.addAttribute("nuevoPersonal", persona);
             model.addAttribute("listaPersonal", service.listarTodos());
-            model.addAttribute("roles",         rolRepository.findAll());
+            model.addAttribute("roles",         service.listarRoles());
             model.addAttribute("editando",      true);
             model.addAttribute("activePage",    "personal");
             return "personal";
@@ -56,6 +59,7 @@ public class PersonalController {
     }
 
     // ── Guardar (crear o actualizar) ──────────────────────────────────────────
+
     @PostMapping("/guardar")
     public String guardar(
             @Valid @ModelAttribute("nuevoPersonal") Personal personal,
@@ -66,23 +70,23 @@ public class PersonalController {
 
         if (result.hasErrors()) {
             model.addAttribute("listaPersonal", service.listarTodos());
-            model.addAttribute("roles",         rolRepository.findAll());
-            model.addAttribute("editando",      personal.getId() != null);
-            model.addAttribute("activePage",    "personal");
-            return "personal";
-        }
-
-        String error = service.guardar(personal, rawPassword);
-        if (error != null) {
-            model.addAttribute("errorMsg",      error);
-            model.addAttribute("listaPersonal", service.listarTodos());
-            model.addAttribute("roles",         rolRepository.findAll());
+            model.addAttribute("roles",         service.listarRoles());
             model.addAttribute("editando",      personal.getId() != null);
             model.addAttribute("activePage",    "personal");
             return "personal";
         }
 
         boolean esEdicion = personal.getId() != null;
+        String error = service.guardar(personal, rawPassword);
+        if (error != null) {
+            model.addAttribute("errorMsg",      error);
+            model.addAttribute("listaPersonal", service.listarTodos());
+            model.addAttribute("roles",         service.listarRoles());
+            model.addAttribute("editando",      esEdicion);
+            model.addAttribute("activePage",    "personal");
+            return "personal";
+        }
+
         redirectAttrs.addFlashAttribute("successMsg",
                 esEdicion ? "Datos del personal actualizados correctamente."
                           : "Nuevo miembro registrado correctamente.");
@@ -90,6 +94,7 @@ public class PersonalController {
     }
 
     // ── Eliminar ──────────────────────────────────────────────────────────────
+
     @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
         try {
@@ -104,6 +109,7 @@ public class PersonalController {
     }
 
     // ── Activar / Desactivar ──────────────────────────────────────────────────
+
     @PostMapping("/desactivar/{id}")
     public String desactivar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
         service.cambiarEstado(id, false);

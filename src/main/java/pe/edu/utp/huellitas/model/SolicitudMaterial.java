@@ -9,19 +9,23 @@ import lombok.Data;
 import java.time.OffsetDateTime;
 
 /**
- * Solicitud de material/insumos realizada por un veterinario.
+ * Solicitud de material o insumos realizada por un veterinario.
  * El administrador la aprueba, rechaza o marca como entregada.
  *
  * Flujo de estados:
  *   PENDIENTE → APROBADA → ENTREGADA
  *   PENDIENTE → RECHAZADA
  *
- * TODO para el equipo:
- *   - Implementar SolicitudMaterialController
- *   - Implementar SolicitudMaterialService
- *   - Implementar SolicitudMaterialRepository
- *   - Crear templates: solicitudes/lista.html, solicitudes/nueva.html
- *   - Al aprobar, descontar stock del producto (o aumentarlo si es reposición)
+ * Permisos:
+ *   - Crear:                    VETERINARIO
+ *   - Ver todas:                ADMINISTRADOR
+ *   - Ver las propias:          VETERINARIO
+ *   - Aprobar/Rechazar/Entregar: solo ADMINISTRADOR
+ *
+ * Lógica pendiente de implementar:
+ *   Al marcar como ENTREGADA, el servicio debe descontar del stock del producto
+ *   la cantidad indicada en {@code cantidadEntregada} (o {@code cantidadSolicitada}
+ *   si se entrega el total).
  */
 @Data
 @Entity
@@ -33,7 +37,7 @@ public class SolicitudMaterial {
     private Long id;
 
     /** Veterinario que realiza la solicitud. */
-    @NotNull
+    @NotNull(message = "El solicitante es obligatorio")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "solicitante_id", nullable = false)
     private Personal solicitante;
@@ -48,6 +52,14 @@ public class SolicitudMaterial {
     @Column(nullable = false)
     private Integer cantidadSolicitada;
 
+    /**
+     * Cantidad realmente entregada por el administrador.
+     * Puede ser menor a {@code cantidadSolicitada} en aprobaciones parciales.
+     * Se establece al marcar la solicitud como ENTREGADA.
+     */
+    @Column
+    private Integer cantidadEntregada;
+
     @NotBlank(message = "El motivo es obligatorio")
     @Column(nullable = false, columnDefinition = "TEXT")
     private String motivo;
@@ -56,19 +68,22 @@ public class SolicitudMaterial {
      * Estado actual de la solicitud.
      * Solo el ADMINISTRADOR puede cambiar el estado.
      */
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String estado = "PENDIENTE";  // PENDIENTE | APROBADA | RECHAZADA | ENTREGADA
+    private EstadoSolicitud estado = EstadoSolicitud.PENDIENTE;
 
     /** Administrador que responde la solicitud. */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "aprobado_por")
     private Personal aprobadoPor;
 
+    /** Observación o motivo de rechazo del administrador. */
     @Column(columnDefinition = "TEXT")
     private String observacionRespuesta;
 
     @Column(nullable = false, updatable = false)
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
+    /** Fecha en que el administrador respondió (aprobó, rechazó o entregó). */
     private OffsetDateTime fechaRespuesta;
 }

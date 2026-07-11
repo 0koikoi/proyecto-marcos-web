@@ -1,0 +1,57 @@
+<html th:replace="~{layout :: page('Nueva Consulta', 'historia', ~{::main}, ~{})}"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<main>
+    <div class="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
+        <a th:href="@{/historia}" class="btn btn-sm btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <h2 class="fw-bold m-0">
+            <i class="fa-solid fa-file-medical me-2"></i> Nueva Consulta Veterinaria
+        </h2>
+    </div>
+
+    <!--
+    TODO: Implementar el formulario completo de historia clínica.
+
+    CAMPOS REQUERIDOS:
+        - paciente_id      → select de pacientes (puede venir pre-cargado por URL ?pacienteId=X)
+        - personal_id      → select de veterinarios (o auto-asignar desde SecurityContext)
+        - cita_id          → select de citas PENDIENTE (opcional — walk-in deja en blanco)
+        - motivo_consulta  → textarea, obligatorio
+        - diagnostico      → textarea, opcional
+        - tratamiento      → textarea, opcional
+        - observaciones    → textarea, opcional
+        - peso_kg          → input number (ej: 12.50 kg)
+        - temperatura_c    → input number (ej: 38.5 °C)
+
+    ESTRUCTURA DEL FORMULARIO:
+        <form th:action="@{/historia/guardar}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            ...campos...
+            <button type="submit" class="btn btn-success">Guardar Consulta</button>
+        </form>
+
+    VALIDACIONES EN EL CONTROLLER:
+        - El paciente y veterinario son obligatorios.
+        - Si viene de una cita (cita_id != null), cambiar estado de la cita a COMPLETADA.
+        - Mostrar errores de validación con th:errors.
+
+    DESPUÉS DE GUARDAR:
+        - Redirigir a /historia/{id} para ver el detalle.
+        - Desde el detalle, el veterinario puede agregar recetas y vacunas.
+    -->
+
+    <div class="alert alert-warning">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+        <strong>Módulo en construcción.</strong>
+        Implementar el formulario en <code>HistoriaClinicaController.java</code> y
+        <code>HistoriaClinicaService.java</code>.
+    </div>
+
+    <a th:href="@{/historia}" class="btn btn-outline-secondary">
+        <i class="fa-solid fa-arrow-left me-1"></i> Volver
+    </a>
+</main>
+
+</html>

@@ -11,7 +11,7 @@ import java.util.List;
 public interface VacunaRepository extends JpaRepository<Vacuna, Long> {
 
     List<Vacuna> findByPacienteIdOrderByFechaAplicacionDesc(Long pacienteId);
-    
+
     // Útil para alertas en el dashboard
     List<Vacuna> findByFechaProximaDosisBetween(LocalDate inicio, LocalDate fin);
 }

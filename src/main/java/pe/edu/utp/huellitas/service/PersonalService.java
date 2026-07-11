@@ -13,6 +13,11 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Servicio de gestión del personal de la clínica.
+ * Centraliza la lógica de negocio y manejo de contraseñas.
+ * Los controladores NO deben acceder a PersonalRepository ni RolRepository directamente.
+ */
 @Service
 public class PersonalService {
 
@@ -134,5 +139,16 @@ public class PersonalService {
             p.setUpdatedAt(OffsetDateTime.now());
             repository.save(p);
         });
+    }
+
+    // ── Catálogos auxiliares ──────────────────────────────────────────────────
+
+    /**
+     * Lista todos los roles disponibles.
+     * Usado en formularios de creación/edición de personal.
+     * El controller NO debe inyectar RolRepository directamente.
+     */
+    public List<Rol> listarRoles() {
+        return rolRepository.findAll();
     }
 }

@@ -8,6 +8,7 @@
 --    2. Pega TODO este script y ejecútalo
 --    3. Verifica que aparezcan 15 tablas en el explorador
 --    4. Los usuarios iniciales tienen contraseña: Huellitas2025!
+--    5. no supe cambiar la contraseña wawawa pues ya ni modo p
 -- ============================================================
 
 -- Habilitar extensión para hasheo BCrypt (compatible con Spring Security)

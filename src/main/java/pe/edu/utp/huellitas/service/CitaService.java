@@ -3,6 +3,7 @@ package pe.edu.utp.huellitas.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.utp.huellitas.model.Cita;
+import pe.edu.utp.huellitas.model.EstadoCita;
 import pe.edu.utp.huellitas.repository.CitaRepository;
 import java.util.List;
 
@@ -27,8 +28,8 @@ public class CitaService {
         if (cita.getFechaHora() == null) {
             throw new IllegalArgumentException("La fecha y hora de la cita son obligatorias.");
         }
-        if (cita.getEstado() == null || cita.getEstado().isBlank()) {
-            cita.setEstado("PENDIENTE");
+        if (cita.getEstado() == null) {
+            cita.setEstado(EstadoCita.PENDIENTE);
         }
         return citaRepository.save(cita);
     }
@@ -46,7 +47,7 @@ public class CitaService {
     @Transactional
     public void cancelar(Long id) {
         Cita cita = obtenerPorId(id);
-        cita.setEstado("CANCELADA");
+        cita.setEstado(EstadoCita.CANCELADA);
         citaRepository.save(cita);
     }
 }
