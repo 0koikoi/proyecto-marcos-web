@@ -259,4 +259,4 @@ public class ModuloController {
 
 ---
 
-*Sistema Huellitas — Equipo de Desarrollo | UTP*
+*Si la vida te da limones, métele toda tu plata a Argenfifa y haz cheesecake*
