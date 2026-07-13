@@ -2,7 +2,6 @@ package pe.edu.utp.huellitas.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.edu.utp.huellitas.model.Proveedor;
@@ -11,8 +10,11 @@ import pe.edu.utp.huellitas.repository.ProveedorRepository;
 @Service
 public class ProveedorService {
 
-    @Autowired
-    private ProveedorRepository proveedorRepository;
+    private final ProveedorRepository proveedorRepository;
+
+    public ProveedorService(ProveedorRepository proveedorRepository) {
+        this.proveedorRepository = proveedorRepository;
+    }
 
     // LISTAR
     public List<Proveedor> listar() {

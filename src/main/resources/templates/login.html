@@ -3,38 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso - Huellitas</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link th:href="@{/css/style.css}" rel="stylesheet" />
-    <style>
-        body { height: 100vh; display: flex; align-items: center; justify-content: center; background-color: #f8fafc; }
-        .login-card { width: 100%; max-width: 400px; padding: 2.5rem; }
-        .brand-logo { color: #4f46e5; font-weight: 700; font-size: 2rem; letter-spacing: -1px; text-align: center; margin-bottom: 2rem; }
-    </style>
+    <title>Acceso — Huellitas Clínica Veterinaria</title>
+    <meta name="description" content="Sistema de gestión de clínica veterinaria Huellitas. Inicia sesión para acceder.">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Hoja de estilos global -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
+<body class="bg-light d-flex align-items-center justify-content-center vh-100">
 
-<div class="card login-card shadow-lg border-0">
-    <div class="brand-logo">Huellitas.</div>
-    <h5 class="text-center text-muted mb-4 fw-normal">Inicia sesión en tu cuenta</h5>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
+            
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-paw text-primary mb-2" style="font-size: 3rem;"></i>
+                <h1 class="fw-bold mb-0 fs-3">Huellitas</h1>
+                <p class="text-muted small text-uppercase tracking-wide">Clínica Veterinaria</p>
+            </div>
 
-    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+            <div class="card rounded-0 shadow-sm border-0">
+                <div class="card-body p-4 p-sm-5">
+                    
+                    <h2 class="fs-5 fw-bold text-center mb-4 text-dark">Acceso al Sistema</h2>
 
-    <form th:action="@{/login}" method="post">
-        <div class="mb-3">
-            <label class="form-label text-muted small">Usuario</label>
-            <input type="text" name="username" class="form-control" required>
+                    <!-- Alertas -->
+                    <div th:if="${errorMsg}" class="alert alert-danger rounded-0 small py-2 d-flex align-items-center">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i> 
+                        <span th:text="${errorMsg}"></span>
+                    </div>
+                    
+                    <div th:if="${logoutMsg}" class="alert alert-success rounded-0 small py-2 d-flex align-items-center">
+                        <i class="fa-solid fa-circle-check me-2"></i> 
+                        <span th:text="${logoutMsg}"></span>
+                    </div>
+
+                    <!-- Formulario -->
+                    <form th:action="@{/login}" method="post" id="loginForm">
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label small fw-bold text-muted">USUARIO</label>
+                            <div class="input-group">
+                                <span class="input-group-text rounded-0 bg-white text-muted">
+                                    <i class="fa-solid fa-user"></i>
+                                </span>
+                                <input type="text" id="username" name="username" 
+                                       class="form-control rounded-0 border-start-0 ps-0" 
+                                       placeholder="Ej: admin1" required autofocus autocomplete="username">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label small fw-bold text-muted">CONTRASEÑA</label>
+                            <div class="input-group">
+                                <span class="input-group-text rounded-0 bg-white text-muted">
+                                    <i class="fa-solid fa-lock"></i>
+                                </span>
+                                <input type="password" id="password" name="password" 
+                                       class="form-control rounded-0 border-start-0 border-end-0 ps-0" 
+                                       placeholder="••••••••••" required autocomplete="current-password">
+                                <button type="button" class="input-group-text rounded-0 bg-white text-muted" 
+                                        onclick="togglePassword()" title="Mostrar/Ocultar contraseña">
+                                    <i class="fa-solid fa-eye" id="toggleIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 rounded-0 py-2 fw-bold text-uppercase" id="submitBtn">
+                            <span class="btn-text">
+                                <i class="fa-solid fa-right-to-bracket me-2"></i> Ingresar
+                            </span>
+                            <span class="btn-loading d-none">
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Verificando...
+                            </span>
+                        </button>
+                    </form>
+                    
+                </div>
+            </div>
+            
+            <div class="text-center mt-4 text-muted small">
+                <p class="mb-1">&copy; 2026 Huellitas. Todos los derechos reservados.</p>
+                <p class="mb-0"><i class="fa-solid fa-shield-halved me-1"></i> Acceso exclusivo para personal autorizado.</p>
+            </div>
+
         </div>
-        <div class="mb-4">
-            <label class="form-label text-muted small">Contraseña</label>
-            <input type="password" name="password" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100 py-2">Ingresar al Sistema</button>
-    </form>
+    </div>
 </div>
+
+<script>
+    /* Mostrar/ocultar contraseña */
+    function togglePassword() {
+        const input = document.getElementById('password');
+        const icon  = document.getElementById('toggleIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+
+    /* Indicador de carga al enviar */
+    document.getElementById('loginForm').addEventListener('submit', function () {
+        const btn = document.getElementById('submitBtn');
+        btn.classList.add('disabled');
+        btn.querySelector('.btn-text').classList.add('d-none');
+        btn.querySelector('.btn-loading').classList.remove('d-none');
+    });
+</script>
 
 </body>
 </html>

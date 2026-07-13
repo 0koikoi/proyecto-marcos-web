@@ -1,40 +1,58 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout :: head}"></head>
-<body>
-<div th:replace="~{layout :: navbar}"></div>
-<div class="container-fluid">
-    <div class="row">
-        <nav th:replace="~{layout :: sidebar('ayuda')}"></nav>
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-4">
-            <h2>Centro de Soporte</h2>
-            <hr>
-            <div class="row">
-                <div class="col-md-6">
-                    <h5>Preguntas Frecuentes</h5>
-                    <div class="accordion" id="faq">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#q1">
-                                    ¿Cómo registro un nuevo servicio?
-                                </button>
-                            </h2>
-                            <div id="q1" class="accordion-collapse collapse show" data-bs-parent="#faq">
-                                <div class="accordion-body">
-                                    Dirígete a la sección de "Servicios" y pulsa el botón azul de "Nuevo Servicio".
-                                </div>
+<html th:replace="~{layout :: page('Ayuda', 'dashboard', ~{::main}, ~{})}">
+
+<main>
+    <div class="border-bottom pb-3 mb-4">
+        <h2 class="fw-bold">Centro de Soporte</h2>
+        <p class="text-muted small">Preguntas frecuentes y contacto técnico</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-4">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-circle-question text-primary me-2"></i>Preguntas Frecuentes</h5>
+                <div class="accordion" id="faq">
+                    <div class="accordion-item border-0">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button px-0 bg-transparent shadow-none fw-medium"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#q1">
+                                ¿Cómo registro un nuevo servicio?
+                            </button>
+                        </h2>
+                        <div id="q1" class="accordion-collapse collapse show" data-bs-parent="#faq">
+                            <div class="accordion-body px-0 text-muted">
+                                Dirígete a la sección de "Servicios" en el menú lateral y pulsa el botón
+                                <strong>+ Nuevo Servicio</strong>.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border-0">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed px-0 bg-transparent shadow-none fw-medium"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#q2">
+                                ¿Cómo agendo una cita?
+                            </button>
+                        </h2>
+                        <div id="q2" class="accordion-collapse collapse" data-bs-parent="#faq">
+                            <div class="accordion-body px-0 text-muted">
+                                Ve a <strong>Citas</strong> y luego haz clic en <strong>+ Nueva Cita</strong>.
+                                Selecciona el paciente, veterinario y la fecha y hora deseada.
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <h5>Contacto Técnico</h5>
-                    <p>Correo: soporte@sistema.com</p>
-                </div>
             </div>
-        </main>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-4">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-headset text-primary me-2"></i>Contacto Técnico</h5>
+                <p class="text-muted mb-2">Para reportar errores del sistema o solicitar soporte:</p>
+                <ul class="list-unstyled text-muted">
+                    <li><i class="fa-solid fa-envelope me-2 text-primary"></i>soporte@huellitas.com</li>
+                    <li class="mt-2"><i class="fa-solid fa-clock me-2 text-primary"></i>Lun–Vie, 9am–6pm</li>
+                </ul>
+            </div>
+        </div>
     </div>
-</div>
-<div th:replace="~{layout :: scripts}"></div>
-</body>
+</main>
+
 </html>
