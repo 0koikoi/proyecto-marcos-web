@@ -2,11 +2,19 @@ package pe.edu.utp.huellitas.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.beans.PropertyEditorSupport;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 import pe.edu.utp.huellitas.model.Cita;
 import pe.edu.utp.huellitas.service.CitaService;
@@ -38,6 +46,23 @@ public class CitaController {
         this.personalService = personalService;
     }
 
+    // ── Formateador de Fecha ──────────────────────────────────────────────────
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(OffsetDateTime.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                if (text != null && !text.isBlank()) {
+                    LocalDateTime ldt = LocalDateTime.parse(text, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                    setValue(ldt.atZone(ZoneId.systemDefault()).toOffsetDateTime());
+                } else {
+                    setValue(null);
+                }
+            }
+        });
+    }
+
     // ── Ver lista ─────────────────────────────────────────────────────────────
 
     @GetMapping
@@ -54,7 +79,7 @@ public class CitaController {
     public String nuevo(Model model) {
         model.addAttribute("cita", new Cita());
         model.addAttribute("pacientes", pacienteService.listarTodos(null));
-        model.addAttribute("personal", personalService.listarTodos());
+        model.addAttribute("personal", personalService.listarVeterinarios());
         model.addAttribute("activePage", "citas");
         return "formulario-cita";
     }
@@ -65,17 +90,31 @@ public class CitaController {
     @PostMapping("/guardar")
     public String guardar(@Valid @ModelAttribute("cita") Cita cita,
                           BindingResult result,
+                          Authentication authentication,
                           Model model,
                           RedirectAttributes redirectAttrs) {
         if (result.hasErrors()) {
             model.addAttribute("pacientes", pacienteService.listarTodos(null));
-            model.addAttribute("personal", personalService.listarTodos());
+            model.addAttribute("personal", personalService.listarVeterinarios());
             model.addAttribute("activePage", "citas");
             return "formulario-cita";
         }
-        citaService.guardar(cita);
-        redirectAttrs.addFlashAttribute("successMsg", "Cita registrada correctamente.");
-        return "redirect:/citas";
+        
+        try {
+            if (authentication != null && authentication.getName() != null) {
+                personalService.obtenerPorUsername(authentication.getName())
+                        .ifPresent(cita::setCreatedBy);
+            }
+            citaService.guardar(cita);
+            redirectAttrs.addFlashAttribute("successMsg", "Cita registrada correctamente.");
+            return "redirect:/citas";
+        } catch (Exception e) {
+            model.addAttribute("pacientes", pacienteService.listarTodos(null));
+            model.addAttribute("personal", personalService.listarVeterinarios());
+            model.addAttribute("activePage", "citas");
+            model.addAttribute("error", "No se pudo registrar la cita: " + e.getMessage());
+            return "formulario-cita";
+        }
     }
 
     // ── Formulario editar cita ────────────────────────────────────────────────
@@ -86,7 +125,7 @@ public class CitaController {
         try {
             model.addAttribute("cita", citaService.obtenerPorId(id));
             model.addAttribute("pacientes", pacienteService.listarTodos(null));
-            model.addAttribute("personal", personalService.listarTodos());
+            model.addAttribute("personal", personalService.listarVeterinarios());
             model.addAttribute("activePage", "citas");
             return "formulario-cita";
         } catch (Exception e) {
