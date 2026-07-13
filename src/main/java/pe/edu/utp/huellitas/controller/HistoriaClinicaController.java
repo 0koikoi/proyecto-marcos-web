@@ -143,7 +143,11 @@ public class HistoriaClinicaController {
         }
         try {
             if (citaId != null) {
-                historia.setCita(citaService.obtenerPorId(citaId));
+                Cita cita = citaService.obtenerPorId(citaId);
+                if (!cita.getPaciente().getId().equals(historia.getPaciente().getId())) {
+                    throw new IllegalArgumentException("El paciente de la historia clínica no coincide con el paciente de la cita seleccionada.");
+                }
+                historia.setCita(cita);
             } else {
                 historia.setCita(null);
             }
@@ -164,7 +168,7 @@ public class HistoriaClinicaController {
 
     private void cargarFormulario(Model model) {
         model.addAttribute("pacientes", pacienteService.listarTodos(null));
-        model.addAttribute("personal", personalService.listarTodos());
+        model.addAttribute("personal", personalService.listarVeterinarios());
         model.addAttribute("citas", citaService.listarTodas().stream()
                 .filter(c -> c.getEstado() == EstadoCita.PENDIENTE || c.getEstado() == EstadoCita.EN_PROCESO)
                 .toList());
