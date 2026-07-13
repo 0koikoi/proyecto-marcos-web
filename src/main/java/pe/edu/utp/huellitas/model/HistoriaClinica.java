@@ -14,13 +14,6 @@ import java.time.OffsetDateTime;
  *
  * Una historia clínica puede estar ligada a una cita previa (cita_id)
  * o ser una consulta directa sin cita previa (cita == null).
- *
- * TODO para el equipo:
- *   - Implementar HistoriaClinicaController
- *   - Implementar HistoriaClinicaService
- *   - Implementar HistoriaClinicaRepository
- *   - Crear template: historia/lista.html, historia/formulario.html
- *   - Agregar @PreAuthorize en los endpoints (VETERINARIO crea, RECEPCION solo ve)
  */
 @Data
 @Entity

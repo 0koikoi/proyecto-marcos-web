@@ -1,45 +1,28 @@
 package pe.edu.utp.huellitas.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import pe.edu.utp.huellitas.model.HistoriaClinica;
+import pe.edu.utp.huellitas.model.Receta;
 import pe.edu.utp.huellitas.service.HistoriaClinicaService;
 import pe.edu.utp.huellitas.service.PersonalService;
 import pe.edu.utp.huellitas.service.RecetaService;
 
+import java.time.LocalDate;
+
 /**
  * Controller de Recetas Médicas.
- *
- * ════════════════════════════════════════════════════════════
- * TODO — MÓDULO A IMPLEMENTAR POR EL EQUIPO
- * ════════════════════════════════════════════════════════════
- *
- * La estructura base está lista. El desarrollador asignado debe:
- *
- *   1. Implementar el cuerpo de cada método.
- *
- *   2. Crear los templates en src/main/resources/templates/recetas/:
- *      - lista.html      → recetas de una historia clínica
- *      - formulario.html → crear receta con múltiples medicamentos
- *                          (requiere JavaScript para agregar/quitar filas)
- *      - detalle.html    → vista de impresión de la receta
- *
- *   3. El formulario debe manejar una lista dinámica de DetalleReceta:
- *      - Cada línea: medicamento, presentación, dosis, frecuencia,
- *        duración (días), cantidad, observaciones
- *      - Botón "Agregar medicamento" (JS) y "Quitar" por fila
- *
- *   4. La vista de detalle (/recetas/{id}) debe estar diseñada para
- *      imprimirse como documento médico (usar @media print en CSS).
  *
  * Referencia de permisos:
  *   ADMINISTRADOR → acceso completo
  *   VETERINARIO   → crear y ver recetas
  *   RECEPCION     → SIN acceso a este módulo
- * ════════════════════════════════════════════════════════════
  */
 @Controller
 @RequestMapping("/recetas")
@@ -56,6 +39,16 @@ public class RecetaController {
         this.recetaService = recetaService;
         this.historiaClinicaService = historiaClinicaService;
         this.personalService = personalService;
+    }
+
+    // ── Lista general ─────────────────────────────────────────────────────────
+
+    /** Lista todas las recetas registradas (acceso directo desde el menú lateral). */
+    @GetMapping
+    public String listar(Model model) {
+        model.addAttribute("recetas", recetaService.listarTodas());
+        model.addAttribute("activePage", "recetas");
+        return "recetas/lista";
     }
 
     // ── Recetas por historia clínica ──────────────────────────────────────────
@@ -77,37 +70,60 @@ public class RecetaController {
     // ── Formulario nueva receta ───────────────────────────────────────────────
 
     /**
-     * TODO: Recibir historiaId como parámetro para pre-vincular la receta.
-     * TODO: Crear RecetaDTO que soporte lista de DetalleRecetaDTO.
+     * Muestra el formulario de nueva receta.
+     * Acepta historiaId opcional para pre-vincular la receta a una consulta.
      */
     @GetMapping("/nueva")
     public String nueva(@RequestParam(required = false) Long historiaId, Model model) {
-        model.addAttribute("historias", historiaClinicaService.listarTodas());
-        model.addAttribute("personal", personalService.listarTodos());
-        model.addAttribute("activePage", "recetas");
+        Receta receta = new Receta();
+        receta.setFechaEmision(LocalDate.now());
+        if (historiaId != null) {
+            HistoriaClinica historia = new HistoriaClinica();
+            historia.setId(historiaId);
+            receta.setHistoriaClinica(historia);
+        }
+        model.addAttribute("receta", receta);
+        cargarFormulario(model);
         return "recetas/formulario";
     }
 
     // ── Guardar receta ────────────────────────────────────────────────────────
 
     /**
-     * TODO: Implementar binding del formulario con lista de detalles.
-     * La entidad Receta ya tiene @OneToMany(cascade=ALL) para DetalleReceta.
+     * Guarda una receta junto con sus líneas de medicamento (DetalleReceta),
+     * manejadas en cascada gracias a CascadeType.ALL en la entidad Receta.
      */
     @PostMapping("/guardar")
-    public String guardar(RedirectAttributes redirectAttrs) {
-        // TODO: Implementar este método
-        redirectAttrs.addFlashAttribute("infoMsg",
-                "Módulo en construcción. Implementar el formulario de recetas.");
-        return "redirect:/recetas/nueva";
+    public String guardar(@Valid @ModelAttribute("receta") Receta receta,
+                          BindingResult result,
+                          Model model,
+                          RedirectAttributes redirectAttrs) {
+        if (result.hasErrors()) {
+            cargarFormulario(model);
+            return "recetas/formulario";
+        }
+        try {
+            Receta guardada = recetaService.guardar(receta);
+            redirectAttrs.addFlashAttribute("successMsg", "Receta registrada correctamente.");
+            return "redirect:/recetas/" + guardada.getId();
+        } catch (IllegalArgumentException e) {
+            cargarFormulario(model);
+            model.addAttribute("error", e.getMessage());
+            return "recetas/formulario";
+        }
+    }
+
+    // ── Métodos privados ──────────────────────────────────────────────────────
+
+    private void cargarFormulario(Model model) {
+        model.addAttribute("historias", historiaClinicaService.listarTodas());
+        model.addAttribute("personal", personalService.listarTodos());
+        model.addAttribute("activePage", "recetas");
     }
 
     // ── Detalle / impresión ───────────────────────────────────────────────────
 
-    /**
-     * Vista de detalle de la receta, diseñada para impresión.
-     * TODO: Agregar un botón "Imprimir" que llame a window.print() en JS.
-     */
+    /** Vista de detalle de la receta, diseñada para impresión. */
     @GetMapping("/{id}")
     public String detalle(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
         try {

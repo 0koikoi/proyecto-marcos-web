@@ -10,33 +10,6 @@ import java.util.List;
 
 /**
  * Servicio de gestión de vacunación.
- *
- * ════════════════════════════════════════════════════════════
- * TODO — MÓDULO A IMPLEMENTAR POR EL EQUIPO
- * ════════════════════════════════════════════════════════════
- *
- * La estructura base está lista. El desarrollador asignado debe:
- *
- *   1. Crear VacunaController en package controller/
- *
- *   2. Crear las vistas Thymeleaf en templates/vacunas/:
- *      - lista.html     → listado de vacunas (filtrable por paciente)
- *      - formulario.html → registrar nueva vacuna
- *
- *   3. Integrar alerta en el dashboard:
- *      - Mostrar un badge o card con listarProximasDosis()
- *      - Las vacunas próximas (< 7 días) deben destacarse visualmente
- *
- *   4. Agregar @PreAuthorize("hasAnyRole('ADMINISTRADOR','VETERINARIO')")
- *
- * Rutas esperadas del controller:
- *   GET  /vacunas                    → lista todas
- *   GET  /vacunas/paciente/{id}      → vacunas de un paciente
- *   GET  /vacunas/nueva              → formulario nueva vacuna
- *   POST /vacunas/guardar            → guardar
- *   POST /vacunas/eliminar/{id}      → eliminar (solo ADMIN)
- *   GET  /vacunas/proximas           → vacunas con próxima dosis en 7 días
- * ════════════════════════════════════════════════════════════
  */
 @Service
 public class VacunaService {
@@ -82,13 +55,7 @@ public class VacunaService {
 
     // ── Guardar ───────────────────────────────────────────────────────────────
 
-    /**
-     * Registra una nueva vacuna aplicada al paciente.
-     *
-     * TODO: Validar que:
-     *   - fecha_proxima_dosis > fecha_aplicacion (si se proporciona)
-     *   - El veterinario tenga rol VETERINARIO
-     */
+    /** Registra una nueva vacuna aplicada al paciente. */
     @Transactional
     public Vacuna guardar(Vacuna vacuna) {
         if (vacuna.getPaciente() == null) {

@@ -9,52 +9,147 @@
         <h2 class="fw-bold m-0">Detalle de Consulta</h2>
     </div>
 
-    <!--
-    TODO: Implementar la vista de detalle de la consulta.
-
-    DEBE MOSTRAR:
-        - Datos del paciente (nombre, especie, edad calculada desde fecha_nacimiento)
-        - Datos del propietario (nombre, teléfono)
-        - Datos de la consulta (fecha, veterinario, peso, temperatura)
-        - Motivo de consulta
-        - Diagnóstico
-        - Tratamiento
-        - Observaciones
-
-    SECCIÓN DE RECETAS:
-        - Listar las recetas de esta historia (recetaService.listarPorHistoria(historia.id))
-        - Botón "Nueva Receta" → /recetas/nueva?historiaId={id}
-        - Para cada receta, mostrar sus detalles (medicamentos)
-
-    SECCIÓN DE VACUNAS:
-        - Listar las vacunas del paciente (vacunaService.listarPorPaciente(historia.paciente.id))
-        - Botón "Registrar Vacuna" → /vacunas/nueva?pacienteId={id}
-
-    BOTONES DE ACCIÓN:
-        - "Imprimir" → llama window.print() (solo JS, no necesita POST)
-        - "Eliminar" → solo ADMINISTRADOR, form POST con token CSRF y confirmación:
-            <form th:action="@{/historia/eliminar/{id}(id=${historia.id})}" method="post"
-                  sec:authorize="hasRole('ADMINISTRADOR')"
-                  onsubmit="return confirm('¿Eliminar esta historia clínica?')">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
-            </form>
-
-    MODELO ESPERADO EN EL CONTROLLER:
-        model.addAttribute("historia", historia);
-        model.addAttribute("recetas", recetaService.listarPorHistoria(historia.getId()));
-        model.addAttribute("vacunas", vacunaService.listarPorPaciente(historia.getPaciente().getId()));
-    -->
-
-    <div class="alert alert-warning">
-        <i class="fa-solid fa-triangle-exclamation me-2"></i>
-        <strong>Módulo en construcción.</strong>
-        Implementar la vista de detalle con secciones de recetas y vacunas.
+    <!-- Datos de la consulta -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="text-muted small">Paciente</div>
+                    <div class="fw-semibold" th:text="${historia.paciente.nombre}"></div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-muted small">Propietario</div>
+                    <div class="fw-semibold" th:text="${historia.paciente.propietario.nombreCompleto}"></div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-muted small">Fecha de consulta</div>
+                    <div class="fw-semibold"
+                         th:text="${#temporals.format(historia.fechaConsulta, 'dd/MM/yyyy HH:mm')}"></div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-muted small">Veterinario</div>
+                    <div class="fw-semibold" th:text="${historia.personal.nombreCompleto}"></div>
+                </div>
+                <div class="col-md-3" th:if="${historia.pesoKg != null}">
+                    <div class="text-muted small">Peso</div>
+                    <div class="fw-semibold" th:text="${historia.pesoKg} + ' kg'"></div>
+                </div>
+                <div class="col-md-3" th:if="${historia.temperaturaC != null}">
+                    <div class="text-muted small">Temperatura</div>
+                    <div class="fw-semibold" th:text="${historia.temperaturaC} + ' °C'"></div>
+                </div>
+            </div>
+            <hr>
+            <div class="mb-3">
+                <div class="text-muted small">Motivo de consulta</div>
+                <div th:text="${historia.motivoConsulta}"></div>
+            </div>
+            <div class="mb-3" th:if="${historia.diagnostico}">
+                <div class="text-muted small">Diagnóstico</div>
+                <div th:text="${historia.diagnostico}"></div>
+            </div>
+            <div class="mb-3" th:if="${historia.tratamiento}">
+                <div class="text-muted small">Tratamiento</div>
+                <div th:text="${historia.tratamiento}"></div>
+            </div>
+            <div th:if="${historia.observaciones}">
+                <div class="text-muted small">Observaciones</div>
+                <div th:text="${historia.observaciones}"></div>
+            </div>
+        </div>
     </div>
 
-    <a th:href="@{/historia}" class="btn btn-outline-secondary">
-        <i class="fa-solid fa-arrow-left me-1"></i> Volver
-    </a>
+    <!-- Recetas asociadas -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <span class="fw-semibold"><i class="fa-solid fa-prescription me-2"></i>Recetas</span>
+            <a th:href="@{/recetas/nueva(historiaId=${historia.id})}"
+               sec:authorize="hasAnyRole('ADMINISTRADOR','VETERINARIO')"
+               class="btn btn-sm btn-outline-primary">
+                <i class="fa-solid fa-plus me-1"></i> Nueva Receta
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <div th:if="${#lists.isEmpty(recetas)}" class="text-center text-muted py-4">
+                No hay recetas registradas para esta consulta.
+            </div>
+            <div class="table-responsive" th:unless="${#lists.isEmpty(recetas)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Fecha emisión</th>
+                            <th>Veterinario</th>
+                            <th class="text-center pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${recetas}">
+                            <td class="ps-4" th:text="${#temporals.format(r.fechaEmision, 'dd/MM/yyyy')}"></td>
+                            <td th:text="${r.personal.nombreCompleto}"></td>
+                            <td class="text-center pe-4">
+                                <a th:href="@{/recetas/{id}(id=${r.id})}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-solid fa-eye"></i> Ver
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vacunas del paciente -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <span class="fw-semibold"><i class="fa-solid fa-syringe me-2"></i>Vacunas del paciente</span>
+            <a th:href="@{/vacunas/nueva(pacienteId=${historia.paciente.id})}"
+               sec:authorize="hasAnyRole('ADMINISTRADOR','VETERINARIO')"
+               class="btn btn-sm btn-outline-primary">
+                <i class="fa-solid fa-plus me-1"></i> Registrar Vacuna
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <div th:if="${#lists.isEmpty(vacunas)}" class="text-center text-muted py-4">
+                Este paciente no tiene vacunas registradas.
+            </div>
+            <div class="table-responsive" th:unless="${#lists.isEmpty(vacunas)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Vacuna</th>
+                            <th>Fecha aplicación</th>
+                            <th class="pe-4">Próxima dosis</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="v : ${vacunas}">
+                            <td class="ps-4" th:text="${v.nombreVacuna}"></td>
+                            <td th:text="${#temporals.format(v.fechaAplicacion, 'dd/MM/yyyy')}"></td>
+                            <td class="pe-4"
+                                th:text="${v.fechaProximaDosis != null ? #temporals.format(v.fechaProximaDosis, 'dd/MM/yyyy') : '—'}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a th:href="@{/historia}" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left me-1"></i> Volver
+        </a>
+        <button type="button" class="btn btn-outline-primary" onclick="window.print()">
+            <i class="fa-solid fa-print me-1"></i> Imprimir
+        </button>
+        <form th:action="@{/historia/eliminar/{id}(id=${historia.id})}" method="post"
+              sec:authorize="hasRole('ADMINISTRADOR')"
+              onsubmit="return confirm('¿Eliminar esta historia clínica?')">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit" class="btn btn-outline-danger">
+                <i class="fa-solid fa-trash me-1"></i> Eliminar
+            </button>
+        </form>
+    </div>
 </main>
 
 </html>
