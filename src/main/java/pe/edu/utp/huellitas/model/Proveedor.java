@@ -45,4 +45,10 @@ public class Proveedor {
     message = "El teléfono debe tener 9 dígitos"
     )
     private String telefono;
+
+    @Column(nullable = false)
+    private Boolean activo = true;
+
+    @Column(nullable = false, updatable = false)
+    private java.time.OffsetDateTime createdAt = java.time.OffsetDateTime.now();
 }

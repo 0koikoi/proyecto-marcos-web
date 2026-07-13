@@ -1,143 +1,125 @@
-<!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout :: head}">
-    <title>Nueva Cita - Huellitas</title>
-</head>
-<body class="bg-light">
+<html th:replace="~{layout :: page('Nueva Cita', 'citas', ~{::main}, ~{::#custom-scripts})}">
 
-<div th:replace="~{layout :: navbar}"></div>
-<div class="container-fluid">
-    <div class="row">
-        <nav th:replace="~{layout :: sidebar('citas')}"></nav>
-
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-5">
-            <div class="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
-                <a th:href="@{/citas}" class="btn btn-sm btn-outline-secondary">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </a>
-                <h2 class="fw-bold m-0" th:text="${cita.id != null} ? 'EDITAR CITA' : 'NUEVA CITA'">NUEVA CITA</h2>
-            </div>
-
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="card shadow-sm border-0 p-4">
-
-                        <form th:action="@{/citas/guardar}" th:object="${cita}" method="post">
-                            <!-- ID oculto para edición -->
-                            <input type="hidden" th:field="*{id}">
-
-                            <!-- Paciente -->
-                            <div class="mb-4">
-                                <label for="pacienteSelect" class="form-label fw-semibold">
-                                    <i class="fa-solid fa-dog text-primary me-1"></i> Paciente
-                                </label>
-                                <select id="pacienteSelect" name="paciente" class="form-select" required
-                                        onchange="mostrarPropietario(this)">
-                                    <option value="">-- Seleccione un paciente --</option>
-                                    <option th:each="p : ${pacientes}"
-                                            th:value="${p.id}"
-                                            th:text="${p.nombre} + ' (' + ${p.especie} + ')'"
-                                            th:attr="data-propietario=${p.propietario.nombreCompleto}"
-                                            th:selected="${cita.paciente != null && cita.paciente.id == p.id}">
-                                    </option>
-                                </select>
-                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('paciente')}" th:errors="*{paciente}"></div>
-                            </div>
-
-                            <!-- Dueño (solo lectura, se llena con JS) -->
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold text-muted">
-                                    <i class="fa-solid fa-user me-1"></i> Dueño del Paciente
-                                </label>
-                                <input type="text" id="propietarioDisplay" class="form-control bg-light" readonly
-                                       th:value="${cita.paciente != null ? cita.paciente.propietario.nombreCompleto : ''}"
-                                       placeholder="Se llenará al seleccionar un paciente">
-                            </div>
-
-                            <!-- Veterinario -->
-                            <div class="mb-4">
-                                <label for="personalSelect" class="form-label fw-semibold">
-                                    <i class="fa-solid fa-user-doctor text-success me-1"></i> Veterinario Encargado
-                                </label>
-                                <select id="personalSelect" name="personal" class="form-select" required>
-                                    <option value="">-- Seleccione un veterinario --</option>
-                                    <option th:each="v : ${personal}"
-                                            th:value="${v.id}"
-                                            th:text="${v.nombreCompleto} + ' — ' + ${v.cargo}"
-                                            th:selected="${cita.personal != null && cita.personal.id == v.id}">
-                                    </option>
-                                </select>
-                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('personal')}" th:errors="*{personal}"></div>
-                            </div>
-
-                            <!-- Fecha y hora -->
-                            <div class="mb-4">
-                                <label for="fechaHora" class="form-label fw-semibold">
-                                    <i class="fa-solid fa-clock text-warning me-1"></i> Fecha y Hora Programada
-                                </label>
-                                <input type="datetime-local" id="fechaHora" class="form-control"
-                                       th:name="fechaHora"
-                                       th:value="${cita.fechaHora != null ? #temporals.format(cita.fechaHora, 'yyyy-MM-dd''T''HH:mm') : ''}"
-                                       required>
-                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fechaHora')}" th:errors="*{fechaHora}"></div>
-                            </div>
-
-                            <!-- Motivo -->
-                            <div class="mb-4">
-                                <label for="motivo" class="form-label fw-semibold">
-                                    <i class="fa-solid fa-stethoscope me-1"></i> Motivo de la Consulta
-                                </label>
-                                <textarea id="motivo" th:field="*{motivo}" class="form-control" rows="3"
-                                          placeholder="Describe brevemente el motivo de la visita..." required></textarea>
-                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}"></div>
-                            </div>
-
-                            <!-- Estado -->
-                            <div class="mb-4">
-                                <label for="estado" class="form-label fw-semibold">
-                                    <i class="fa-solid fa-circle-info me-1"></i> Estado de la Cita
-                                </label>
-                                <select id="estado" th:field="*{estado}" class="form-select">
-                                    <option value="PENDIENTE">🟡 Pendiente</option>
-                                    <option value="EN_PROCESO">🔵 En Proceso</option>
-                                    <option value="COMPLETADA">🟢 Completada</option>
-                                    <option value="CANCELADA">🔴 Cancelada</option>
-                                </select>
-                            </div>
-
-                            <!-- Botones -->
-                            <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-primary px-4">
-                                    <i class="fa-solid fa-floppy-disk me-1"></i>
-                                    <span th:text="${cita.id != null} ? 'Actualizar Cita' : 'Registrar Cita'">Registrar Cita</span>
-                                </button>
-                                <a th:href="@{/citas}" class="btn btn-outline-secondary px-4">Cancelar</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </main>
+<main>
+    <div class="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
+        <a th:href="@{/citas}" class="btn btn-sm btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <h2 class="fw-bold m-0" th:text="${cita.id != null} ? 'Editar Cita' : 'Nueva Cita'">Nueva Cita</h2>
     </div>
-</div>
 
-<div th:replace="~{layout :: scripts}"></div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 p-4">
+                <form th:action="@{/citas/guardar}" th:object="${cita}" method="post">
+                    <input type="hidden" th:field="*{id}">
 
+                    <!-- Paciente -->
+                    <div class="mb-4">
+                        <label for="pacienteSelect" class="form-label">
+                            <i class="fa-solid fa-dog text-primary me-1"></i> Paciente
+                        </label>
+                        <select id="pacienteSelect" name="paciente" class="form-select" required
+                                onchange="mostrarPropietario(this)">
+                            <option value="">-- Seleccione un paciente --</option>
+                            <option th:each="p : ${pacientes}"
+                                    th:value="${p.id}"
+                                    th:text="${p.nombre} + ' (' + ${p.especie} + ')'"
+                                    th:attr="data-propietario=${p.propietario.nombreCompleto}"
+                                    th:selected="${cita.paciente != null and cita.paciente.id == p.id}">
+                            </option>
+                        </select>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('paciente')}" th:errors="*{paciente}"></div>
+                    </div>
+
+                    <!-- Dueño (solo lectura, se llena con JS) -->
+                    <div class="mb-4">
+                        <label class="form-label text-muted">
+                            <i class="fa-solid fa-user me-1"></i> Dueño del Paciente
+                        </label>
+                        <input type="text" id="propietarioDisplay" class="form-control bg-light" readonly
+                               th:value="${cita.paciente != null ? cita.paciente.propietario.nombreCompleto : ''}"
+                               placeholder="Se llenará al seleccionar un paciente">
+                    </div>
+
+                    <!-- Veterinario -->
+                    <div class="mb-4">
+                        <label for="personalSelect" class="form-label">
+                            <i class="fa-solid fa-user-doctor text-success me-1"></i> Veterinario Encargado
+                        </label>
+                        <select id="personalSelect" name="personal" class="form-select" required>
+                            <option value="">-- Seleccione un veterinario --</option>
+                            <option th:each="v : ${personal}"
+                                    th:value="${v.id}"
+                                    th:text="${v.nombreCompleto} + ' — ' + ${v.cargo}"
+                                    th:selected="${cita.personal != null and cita.personal.id == v.id}">
+                            </option>
+                        </select>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('personal')}" th:errors="*{personal}"></div>
+                    </div>
+
+                    <!-- Fecha y hora -->
+                    <div class="mb-4">
+                        <label for="fechaHora" class="form-label">
+                            <i class="fa-solid fa-clock text-warning me-1"></i> Fecha y Hora Programada
+                        </label>
+                        <input type="datetime-local" id="fechaHora" class="form-control"
+                               th:name="fechaHora"
+                               th:value="${cita.fechaHora != null ? #temporals.format(cita.fechaHora, 'yyyy-MM-dd''T''HH:mm') : ''}"
+                               required>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fechaHora')}" th:errors="*{fechaHora}"></div>
+                    </div>
+
+                    <!-- Motivo -->
+                    <div class="mb-4">
+                        <label for="motivo" class="form-label">
+                            <i class="fa-solid fa-stethoscope me-1"></i> Motivo de la Consulta
+                        </label>
+                        <textarea id="motivo" th:field="*{motivo}" class="form-control" rows="3"
+                                  placeholder="Describe brevemente el motivo de la visita..." required></textarea>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}"></div>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="mb-4">
+                        <label for="estado" class="form-label">
+                            <i class="fa-solid fa-circle-info me-1"></i> Estado de la Cita
+                        </label>
+                        <select id="estado" th:field="*{estado}" class="form-select">
+                            <option value="PENDIENTE">🟡 Pendiente</option>
+                            <option value="EN_PROCESO">🔵 En Proceso</option>
+                            <option value="COMPLETADA">🟢 Completada</option>
+                            <option value="CANCELADA">🔴 Cancelada</option>
+                        </select>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="fa-solid fa-floppy-disk me-1"></i>
+                            <span th:text="${cita.id != null} ? 'Actualizar Cita' : 'Registrar Cita'">Registrar Cita</span>
+                        </button>
+                        <a th:href="@{/citas}" class="btn btn-outline-secondary px-4">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block id="custom-scripts">
 <script>
-    // Muestra el dueño del paciente al seleccionarlo
     function mostrarPropietario(selectEl) {
         const option = selectEl.options[selectEl.selectedIndex];
         const propietario = option.getAttribute('data-propietario') || '';
         document.getElementById('propietarioDisplay').value = propietario;
     }
 
-    // Inicializar al cargar (para el modo edición)
     window.addEventListener('DOMContentLoaded', function () {
         const selectEl = document.getElementById('pacienteSelect');
         if (selectEl && selectEl.value) {
             mostrarPropietario(selectEl);
         }
-        // Bloquear fechas en el pasado en el input datetime-local
         const now = new Date();
         const tzOffset = now.getTimezoneOffset() * 60000;
         const localNow = new Date(Date.now() - tzOffset).toISOString().slice(0, 16);
@@ -147,6 +129,6 @@
         }
     });
 </script>
+</th:block>
 
-</body>
 </html>

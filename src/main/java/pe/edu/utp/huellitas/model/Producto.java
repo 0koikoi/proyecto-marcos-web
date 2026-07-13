@@ -44,6 +44,9 @@ public class Producto {
     @Column(nullable = false)
     private Integer stockMinimo = 5;
 
+    @Column(nullable = false)
+    private Boolean activo = true;
+
     // Relación opcional
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "proveedor_id")

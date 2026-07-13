@@ -1,97 +1,190 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="head">
+<!--
+    layout.html — Fragmentos reutilizables de la interfaz.
+    Usa xmlns:sec para los atributos de Spring Security en Thymeleaf.
+    sec:authorize="hasRole('ADMINISTRADOR')"  → solo admins
+    sec:authorize="isAuthenticated()"         → cualquier usuario logueado
+-->
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+    th:fragment="page(titulo, activePage, content, scripts)">
+
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión - Huellitas</title>
-
+    <title th:text="${titulo} + ' - Huellitas'">Sistema de Gestión - Huellitas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
-    <!-- estilos css aparte-->
     <link th:href="@{/css/style.css}" rel="stylesheet" />
-
+    <link th:href="@{/css/personal.css}" rel="stylesheet" />
 </head>
-<body>
 
-<nav th:fragment="navbar" class="navbar navbar-expand-lg fixed-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/dashboard}">
-            <i class="fa-solid fa-paw"></i> Huellitas
-        </a>
-        <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fa-solid fa-user-circle"></i> Administrador
+<body>
+    <!-- pobre del que mueva algo acá -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+
+            <a class="navbar-brand" th:href="@{/dashboard}">
+                <i class="fa-solid fa-paw"></i> Huellitas
+            </a>
+
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+
+                    <!-- Nombre y rol del usuario autenticado -->
+                    <li class="nav-item me-2" sec:authorize="isAuthenticated()">
+                        <span class="text-white small">
+                            <i class="fa-solid fa-user-circle"></i>
+                            <span sec:authentication="name"></span>
+                            <!-- Muestra el rol actual entre paréntesis -->
+                            <span class="badge bg-light text-dark ms-1 small"
+                                sec:authorize="hasRole('ADMINISTRADOR')">Admin</span>
+                            <span class="badge bg-info text-dark ms-1 small"
+                                sec:authorize="hasRole('RECEPCION')">Recepción</span>
+                            <span class="badge bg-success ms-1 small"
+                                sec:authorize="hasRole('VETERINARIO')">Veterinario</span>
+                        </span>
+                    </li>
+
+                    <!-- Botón de cerrar sesión -->
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <!--
+                        Spring Security en modo CSRF requiere POST para /logout.
+                        Este mini-form lo maneja correctamente.
+                    -->
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-light ms-1">
+                                <i class="fa-solid fa-sign-out-alt"></i> Cerrar Sesión
+                            </button>
+                        </form>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!--pobre del que mueva algo acá x2 -->
+    <nav class="sidebar">
+        <div class="position-sticky pt-3">
+            <ul class="nav flex-column gap-1">
+
+                <!-- Dashboard — todos los roles -->
+                <li class="nav-item">
+                    <a th:classappend="${activePage == 'dashboard'} ? 'active'" class="nav-link"
+                        th:href="@{/dashboard}">
+                        <i class="fa-solid fa-chart-line"></i> Dashboard
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
-                        <li><a class="dropdown-item text-danger" th:href="@{/logout}"><i class="fa-solid fa-sign-out-alt"></i> Cerrar Sesión</a></li>
-                    </ul>
                 </li>
+
+                <!-- Clientes (propietarios) — todos los roles -->
+                <li class="nav-item">
+                    <a th:classappend="${activePage == 'propietarios'} ? 'active'" class="nav-link"
+                        th:href="@{/propietarios}">
+                        <i class="fa-solid fa-users"></i> Clientes
+                    </a>
+                </li>
+
+                <!-- Pacientes — todos los roles -->
+                <li class="nav-item">
+                    <a th:classappend="${activePage == 'pacientes'} ? 'active'" class="nav-link"
+                        th:href="@{/pacientes}">
+                        <i class="fa-solid fa-dog"></i> Pacientes
+                    </a>
+                </li>
+
+                <!-- Citas — todos los roles -->
+                <li class="nav-item">
+                    <a th:classappend="${activePage == 'citas'} ? 'active'" class="nav-link" th:href="@{/citas}">
+                        <i class="fa-solid fa-calendar-check"></i> Citas
+                    </a>
+                </li>
+
+                <!-- Historia Clínica — Admin + Veterinario -->
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMINISTRADOR','VETERINARIO')">
+                    <a th:classappend="${activePage == 'historia'} ? 'active'" class="nav-link" th:href="@{/historia}">
+                        <i class="fa-solid fa-notes-medical"></i> Historia Clínica
+                    </a>
+                </li>
+
+                <!-- Vacunas — Admin + Veterinario -->
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMINISTRADOR','VETERINARIO')">
+                    <a th:classappend="${activePage == 'vacunas'} ? 'active'" class="nav-link" th:href="@{/vacunas}">
+                        <i class="fa-solid fa-syringe"></i> Vacunas
+                    </a>
+                </li>
+
+                <!-- Recetas — Admin + Veterinario -->
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMINISTRADOR','VETERINARIO')">
+                    <a th:classappend="${activePage == 'recetas'} ? 'active'" class="nav-link" th:href="@{/recetas}">
+                        <i class="fa-solid fa-prescription"></i> Recetas
+                    </a>
+                </li>
+
+                <!-- Solicitud de Material — Admin + Veterinario -->
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMINISTRADOR','VETERINARIO')">
+                    <a th:classappend="${activePage == 'solicitudes'} ? 'active'" class="nav-link"
+                        th:href="@{/solicitudes}">
+                        <i class="fa-solid fa-boxes-stacked"></i> Solicitar Material
+                    </a>
+                </li>
+
+                <!-- Ventas — Admin + Recepción -->
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMINISTRADOR','RECEPCION')">
+                    <a th:classappend="${activePage == 'ventas'} ? 'active'" class="nav-link" th:href="@{/ventas}">
+                        <i class="fa-solid fa-cart-shopping"></i> Ventas
+                    </a>
+                </li>
+
+                <!-- Inventario — todos los roles (solo lectura para RECEPCION/VETERINARIO) -->
+                <li class="nav-item">
+                    <a th:classappend="${activePage == 'productos'} ? 'active'" class="nav-link"
+                        th:href="@{/productos}">
+                        <i class="fa-solid fa-box"></i> Inventario
+                    </a>
+                </li>
+
+                <!-- Servicios — todos los roles -->
+                <li class="nav-item">
+                    <a th:classappend="${activePage == 'servicios'} ? 'active'" class="nav-link"
+                        th:href="@{/servicios}">
+                        <i class="fa-solid fa-briefcase-medical"></i> Servicios
+                    </a>
+                </li>
+
+                <!-- Personal — solo ADMINISTRADOR -->
+                <li class="nav-item" sec:authorize="hasRole('ADMINISTRADOR')">
+                    <a th:classappend="${activePage == 'personal'} ? 'active'" class="nav-link" th:href="@{/personal}">
+                        <i class="fa-solid fa-user-doctor"></i> Personal
+                    </a>
+                </li>
+
+                <!-- Proveedores — solo ADMINISTRADOR -->
+                <li class="nav-item" sec:authorize="hasRole('ADMINISTRADOR')">
+                    <a th:classappend="${activePage == 'proveedores'} ? 'active'" class="nav-link"
+                        th:href="@{/proveedores}">
+                        <i class="fa-solid fa-truck"></i> Proveedores
+                    </a>
+                </li>
+
             </ul>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<nav th:fragment="sidebar(activePage)" class="sidebar">
-    <div class="position-sticky pt-3">
-        <ul class="nav flex-column gap-1">
-            <li class="nav-item">
-                <a th:classappend="${activePage == 'dashboard'} ? 'active'" class="nav-link" th:href="@{/dashboard}">
-                    <i class="fa-solid fa-chart-line"></i> Dashboard
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:classappend="${activePage == 'propietarios'} ? 'active'" class="nav-link" th:href="@{/propietarios}">
-                    <i class="fa-solid fa-users"></i> Clientes
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:classappend="${activePage == 'pacientes'} ? 'active'" class="nav-link" th:href="@{/pacientes}">
-                    <i class="fa-solid fa-dog"></i> Pacientes
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:classappend="${activePage == 'citas'} ? 'active'" class="nav-link" th:href="@{/citas}">
-                    <i class="fa-solid fa-calendar-check"></i> Citas
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:classappend="${activePage == 'productos'} ? 'active'" class="nav-link" th:href="@{/productos}">
-                    <i class="fa-solid fa-box"></i> Inventario
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:classappend="${activePage == 'servicios'} ? 'active'" class="nav-link" th:href="@{/servicios}">
-                    <i class="fa-solid fa-briefcase-medical"></i> Servicios
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:classappend="${activePage == 'ventas'} ? 'active'" class="nav-link" th:href="@{/ventas}">
-                    <i class="fa-solid fa-cart-shopping"></i> Ventas
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:classappend="${activePage == 'personal'} ? 'active'" class="nav-link" th:href="@{/personal}">
-                    <i class="fa-solid fa-user-doctor"></i> Personal
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:classappend="${activePage == 'proveedores'} ? 'active'" class="nav-link" th:href="@{/proveedores}">
-                    <i class="fa-solid fa-truck"></i> Proveedores
-                </a>
-            </li>
-        </ul>
-    </div>
-</nav>
+    <!-- pobre del que mueva algo acá x3 -->
+    <main th:replace="${content}">
 
-<div th:fragment="scripts">
+    </main>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</div>
+
+    <th:block th:replace="${scripts} ?: ~{}"></th:block>
 </body>
+
 </html>

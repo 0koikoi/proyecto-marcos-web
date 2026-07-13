@@ -1,11 +1,12 @@
-/* SISTEMA VET HUELLITAS - DISEÑO MINIMALISTA Y SEMÁNTICO (help) */
+/* SISTEMA VET HUELLITAS - DISEÑO MINIMALISTA Y SEMÁNTICO */
+
 :root {
-    /* 1. Paleta Semántica (Fácil de recordar y usar) */
-    --bg-app: #FFF8E9;       /* Antiguo Old Lace (Fondo) */
-    --primary: #2584A7;      /* Antiguo Cerulean (Principal) */
-    --accent: #24E5D2;       /* Antiguo Turquoise (Acentos/Hover) */
-    --danger: #FE6D73;       /* Antiguo Grapefruit Pink (Errores/Eliminar) */
-    --warning: #FFCB77;      /* Antiguo Apricot Cream (Alertas/Edición) */
+    /* 1. Paleta Semántica */
+    --bg-app: #FFF8E9;
+    --primary: #2584A7;
+    --accent: #24E5D2;
+    --danger: #FE6D73;
+    --warning: #FFCB77;
 
     /* 2. Colores Estructurales */
     --text-main: #1f2937;
@@ -14,15 +15,17 @@
     --sidebar-bg: #ffffff;
 }
 
-/* tipografía */
-html, body {
+/* ── Tipografía y Base ────────────────────────────────────────── */
+html,
+body {
     overflow-x: hidden;
     width: 100%;
     background-color: var(--bg-app) !important;
     font-family: 'Inter', 'Poppins', sans-serif;
     color: var(--text-main);
     min-height: 100vh;
-    padding-top: 60px; /* Espacio para el navbar fijo */
+    padding-top: 60px;
+    /* Espacio para el navbar fijo */
 }
 
 ::placeholder {
@@ -31,43 +34,74 @@ html, body {
     font-weight: 300;
 }
 
-/* LAYOUT componentes */
+/* ── Layout Global ────────────────────────────────────────────── */
 /* Navbar */
 .navbar {
     background-color: var(--primary) !important;
     border-bottom: none;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
-.navbar-brand { font-weight: 600; color: #fff !important; letter-spacing: -0.5px; }
-.navbar-brand i { margin-right: 8px; color: var(--warning); }
+
+.navbar-brand {
+    font-weight: 600;
+    color: #fff !important;
+    letter-spacing: -0.5px;
+}
+
+.navbar-brand i {
+    margin-right: 8px;
+    color: var(--warning);
+}
 
 /* Sidebar */
 .sidebar {
     position: fixed;
-    top: 0; bottom: 0; left: 0; z-index: 100;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
     padding: 70px 0 0;
     background-color: var(--sidebar-bg) !important;
     border-right: 1px solid var(--border-color);
     width: 260px;
 }
+
 .sidebar .nav-link {
-    font-weight: 500; padding: 0.75rem 1.5rem; color: var(--text-muted);
-    border-left: 4px solid transparent; margin-bottom: 2px;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    color: var(--text-muted);
+    border-left: 4px solid transparent;
+    margin-bottom: 2px;
 }
-.sidebar .nav-link:hover { background-color: rgba(37, 132, 167, 0.05); color: var(--primary); }
+
+.sidebar .nav-link:hover {
+    background-color: rgba(37, 132, 167, 0.05);
+    color: var(--primary);
+}
+
 .sidebar .nav-link.active {
-    background-color: rgba(36, 229, 210, 0.1); /* Tono Accent transparente */
+    background-color: rgba(36, 229, 210, 0.1);
     color: var(--primary);
     border-left-color: var(--accent);
     font-weight: 600;
 }
-.sidebar .nav-link i { width: 24px; margin-right: 12px; color: #9ca3af; }
-.sidebar .nav-link.active i { color: var(--primary); }
 
-main { margin-left: 260px; padding: 30px; }
+.sidebar .nav-link i {
+    width: 24px;
+    margin-right: 12px;
+    color: #9ca3af;
+}
 
-/* la UI */
-/* Tarjetas */
+.sidebar .nav-link.active i {
+    color: var(--primary);
+}
+
+main {
+    margin-left: 260px;
+    padding: 30px;
+}
+
+/* ── UI Core (Tarjetas, Botones, Tablas) ──────────────────────── */
 .card {
     background-color: #ffffff;
     border: 1px solid var(--border-color) !important;
@@ -75,13 +109,14 @@ main { margin-left: 260px; padding: 30px; }
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
     transition: none;
 }
-.card-header {
-    background-color: transparent !important;
-    border-bottom: 1px solid var(--border-color);
-    padding: 1.5rem 1.5rem 0.5rem;
+
+.card-header{
+    padding:1rem 1.25rem;
+    font-weight:700;
+    font-size:1rem;
+    border-bottom:1px solid #e9ecef;
 }
 
-/* Botones */
 .btn {
     border-radius: 6px;
     font-weight: 500;
@@ -89,14 +124,35 @@ main { margin-left: 260px; padding: 30px; }
     letter-spacing: 0.3px;
     border: none;
 }
-.btn-primary { background-color: var(--primary) !important; color: white !important; }
-.btn-primary:hover { background-color: #1e6c8a !important; transform: translateY(-1px); }
-.btn-success { background-color: #10b981 !important; color: white !important;}
-.btn-danger { background-color: var(--danger) !important; color: white !important; }
-.btn-warning { background-color: var(--warning) !important; color: #000 !important; }
+
+.btn-primary {
+    background-color: var(--primary) !important;
+    color: white !important;
+}
+
+.btn-primary:hover {
+    background-color: #1e6c8a !important;
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background-color: #10b981 !important;
+    color: white !important;
+}
+
+.btn-danger {
+    background-color: var(--danger) !important;
+    color: white !important;
+}
+
+.btn-warning {
+    background-color: var(--warning) !important;
+    color: #000 !important;
+}
 
 /* Formularios */
-.form-control, .form-select {
+.form-control,
+.form-select {
     border-radius: 6px;
     border: 1px solid var(--border-color);
     padding: 0.6rem 1rem;
@@ -104,11 +160,15 @@ main { margin-left: 260px; padding: 30px; }
     font-size: 0.95rem;
     box-shadow: none;
 }
-.form-control:focus, .form-select:focus {
+
+.form-control:focus,
+.form-select:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(37, 132, 167, 0.1);
 }
-label.form-label, .text-muted.small.d-block {
+
+label.form-label,
+.text-muted.small.d-block {
     font-weight: 500;
     color: var(--text-muted);
     margin-bottom: 0.4rem;
@@ -116,11 +176,23 @@ label.form-label, .text-muted.small.d-block {
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
-.error-message { color: var(--danger); font-size: 0.875rem; margin-top: 0.25rem; }
-h2.fw-bold { color: var(--primary); letter-spacing: -0.5px; }
+
+.error-message {
+    color: var(--danger);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+h2.fw-bold {
+    color: var(--primary);
+    letter-spacing: -0.5px;
+}
 
 /* Tablas */
-.table { vertical-align: middle; }
+.table {
+    vertical-align: middle;
+}
+
 .table thead th {
     border-bottom: 2px solid var(--border-color);
     color: var(--text-muted);
@@ -130,18 +202,246 @@ h2.fw-bold { color: var(--primary); letter-spacing: -0.5px; }
     padding: 1rem;
     background-color: transparent !important;
 }
+
 .table tbody td {
     padding: 1rem;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-main);
 }
 
-/*responsive */
+
+/* ── ESTILOS ESPECÍFICOS DE MÓDULOS (Extraídos de Vistas) ─────── */
+
+/* Encabezado y pills de estadística */
+.page-title {
+    color: var(--primary);
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+.stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.stat-admin {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.stat-recep {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.stat-vet {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+/* Panel formulario Custom */
+.form-panel {
+    position: sticky;
+    top: 80px;
+}
+
+.card-header-custom {
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary) 0%, #1e6c8a 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    transition: background 0.3s ease;
+}
+
+.card-header-custom.editing {
+    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+}
+
+.header-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.header-icon.editing {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Filtros de rol */
+.role-filter-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.role-tab {
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 2px solid var(--border-color);
+    background: white;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-muted);
+}
+
+.role-tab:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.role-tab.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Tarjetas de personal (Staff Cards) */
+.staff-card-inner {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.staff-card-inner:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.role-accent-bar {
+    height: 4px;
+    width: 100%;
+}
+
+.bar-administrador {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.bar-recepcion {
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+.bar-veterinario {
+    background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+/* Avatares con inicial */
+.staff-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: white;
+}
+
+.avatar-administrador {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.avatar-recepcion {
+    background: linear-gradient(135deg, var(--primary), #1e6c8a);
+}
+
+.avatar-veterinario {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+/* Badges de rol */
+.badge-rol {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.badge-rol-administrador {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-rol-recepcion {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.badge-rol-veterinario {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+/* Grid de información interna */
+.staff-info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.info-row {
+    display: grid;
+    grid-template-columns: 16px 80px 1fr;
+    gap: 6px;
+    align-items: center;
+}
+
+.info-row i {
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+/* Botones Outlines (Ajuste global) */
+.btn-outline-primary {
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary) !important;
+    color: white !important;
+}
+
+
+/* responsive simple */
 @media (max-width: 767.98px) {
     .sidebar {
-        position: static; width: 100%; height: auto;
-        padding-top: 0; border-right: none; border-bottom: 1px solid var(--border-color);
+        position: static;
+        width: 100%;
+        height: auto;
+        padding-top: 0;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
     }
-    main { margin-left: 0 !important; padding: 15px; }
-    body { padding-top: 56px; }
+
+    main {
+        margin-left: 0 !important;
+        padding: 15px;
+    }
+
+    body {
+        padding-top: 56px;
+    }
+}
+
+/* impresión — ocultar chrome del sistema al imprimir una receta */
+@media print {
+    nav, .sidebar, .btn, .no-print { display: none !important; }
+    main { margin: 0 !important; padding: 0 !important; }
+    body { font-size: 12pt; padding-top: 0; }
 }

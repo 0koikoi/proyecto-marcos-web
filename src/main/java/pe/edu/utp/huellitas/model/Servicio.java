@@ -20,4 +20,10 @@ public class Servicio {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal precio;
+
+    @Column(nullable = false)
+    private Boolean activo = true;
+
+    @Column(nullable = false, updatable = false)
+    private java.time.OffsetDateTime createdAt = java.time.OffsetDateTime.now();
 }
