@@ -50,4 +50,12 @@ public class CitaService {
         cita.setEstado(EstadoCita.CANCELADA);
         citaRepository.save(cita);
     }
+
+    /** Marca la cita como COMPLETADA. Usado al registrar la historia clínica derivada de ella. */
+    @Transactional
+    public void completar(Long id) {
+        Cita cita = obtenerPorId(id);
+        cita.setEstado(EstadoCita.COMPLETADA);
+        citaRepository.save(cita);
+    }
 }

@@ -1,4 +1,4 @@
-<html th:replace="~{layout :: page('Nueva Receta Médica', 'recetas', ~{::main}, ~{})}"
+<html th:replace="~{layout :: page('Nueva Receta Médica', 'recetas', ~{::main}, ~{::#custom-scripts})}"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 
 <main>
@@ -11,67 +11,122 @@
         </h2>
     </div>
 
-    <!--
-    TODO: Implementar formulario de receta con múltiples medicamentos.
-
-    CAMPOS DE CABECERA:
-        - historia_clinica_id       → select de historias clínicas
-        - personal_id               → select de veterinarios (o auto-asignar desde SecurityContext)
-        - fecha_emision             → date picker (pre-cargar con fecha actual)
-        - observaciones_generales   → textarea
-
-    TABLA DE MEDICAMENTOS (DetalleReceta — dinámica con JS):
-        Cada fila debe tener:
-        - medicamento    → input text, obligatorio
-        - presentacion   → input text (comprimido, jarabe, inyectable, tópico)
-        - dosis          → input text (ej: "5 mg/kg")
-        - frecuencia     → input text (ej: "cada 8 horas")
-        - duracion_dias  → input number
-        - cantidad       → input number
-        - observaciones  → input text
-
-    BOTÓN "Agregar medicamento" → JS que clona una fila vacía de la tabla.
-    BOTÓN "✕" por fila → JS que elimina esa fila.
-
-    ESTRUCTURA DEL FORMULARIO:
-        <form th:action="@{/recetas/guardar}" method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-            ...cabecera...
-            <table id="tabla-medicamentos">
-                <thead>...</thead>
-                <tbody>
-                    <tr class="fila-medicamento">
-                        <td><input name="detalles[0].medicamento" /></td>
-                        ...
-                    </tr>
-                </tbody>
-            </table>
-            <button type="button" id="agregar-medicamento">+ Agregar medicamento</button>
-            <button type="submit" class="btn btn-success">Emitir Receta</button>
-        </form>
-
-    SCRIPT JS (para el botón agregar) — colocar en <th:block id="custom-scripts">:
-        let contador = 1;
-        document.getElementById('agregar-medicamento').addEventListener('click', function() {
-            const template = document.querySelector('.fila-medicamento').cloneNode(true);
-            template.querySelectorAll('input').forEach(input => {
-                input.name = input.name.replace('[0]', '[' + contador + ']');
-                input.value = '';
-            });
-            document.querySelector('#tabla-medicamentos tbody').appendChild(template);
-            contador++;
-        });
-    -->
-
-    <div class="alert alert-warning">
-        <i class="fa-solid fa-triangle-exclamation me-2"></i>
-        <strong>Módulo en construcción.</strong>
-        Implementar el formulario de receta con tabla dinámica de medicamentos en
-        <code>RecetaController.java</code>.
+    <div th:if="${error}" class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation me-2"></i><span th:text="${error}"></span>
     </div>
-    <a th:href="@{/recetas}" class="btn btn-outline-secondary">
-        <i class="fa-solid fa-arrow-left me-1"></i> Volver
-    </a>
+
+    <form th:action="@{/recetas/guardar}" th:object="${receta}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="card shadow-sm border-0 p-4 mb-4">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Historia clínica</label>
+                    <select name="historiaClinica" class="form-select" required>
+                        <option value="">-- Seleccione una consulta --</option>
+                        <option th:each="h : ${historias}" th:value="${h.id}"
+                                th:text="${h.paciente.nombre} + ' — ' + ${#temporals.format(h.fechaConsulta, 'dd/MM/yyyy')}"
+                                th:selected="${receta.historiaClinica != null and receta.historiaClinica.id == h.id}">
+                        </option>
+                    </select>
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('historiaClinica')}" th:errors="*{historiaClinica}"></div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Veterinario firmante</label>
+                    <select name="personal" class="form-select" required>
+                        <option value="">-- Seleccione un veterinario --</option>
+                        <option th:each="v : ${personal}" th:value="${v.id}"
+                                th:text="${v.nombreCompleto} + ' — ' + ${v.cargo}"
+                                th:selected="${receta.personal != null and receta.personal.id == v.id}">
+                        </option>
+                    </select>
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('personal')}" th:errors="*{personal}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Fecha de emisión</label>
+                    <input type="date" th:field="*{fechaEmision}"
+                           th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                           class="form-control" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Observaciones generales</label>
+                <textarea th:field="*{observacionesGenerales}" class="form-control" rows="2"></textarea>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 p-4 mb-4">
+            <h5 class="fw-semibold mb-3">Medicamentos</h5>
+            <div class="table-responsive">
+                <table id="tabla-medicamentos" class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Medicamento</th>
+                            <th>Presentación</th>
+                            <th>Dosis</th>
+                            <th>Frecuencia</th>
+                            <th>Duración (días)</th>
+                            <th>Cantidad</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="fila-medicamento">
+                            <td><input type="text" name="detalles[0].medicamento" class="form-control" required></td>
+                            <td><input type="text" name="detalles[0].presentacion" class="form-control"></td>
+                            <td><input type="text" name="detalles[0].dosis" class="form-control" required></td>
+                            <td><input type="text" name="detalles[0].frecuencia" class="form-control" required></td>
+                            <td><input type="number" min="1" name="detalles[0].duracionDias" class="form-control"></td>
+                            <td><input type="number" min="1" name="detalles[0].cantidad" class="form-control"></td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm btn-outline-danger btn-quitar-fila">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button type="button" id="agregar-medicamento" class="btn btn-outline-primary btn-sm">
+                <i class="fa-solid fa-plus me-1"></i> Agregar medicamento
+            </button>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">
+                <i class="fa-solid fa-floppy-disk me-1"></i> Emitir Receta
+            </button>
+            <a th:href="@{/recetas}" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+    </form>
 </main>
+
+<th:block id="custom-scripts">
+<script>
+    let contador = 1;
+    document.getElementById('agregar-medicamento').addEventListener('click', function () {
+        const filas = document.querySelectorAll('.fila-medicamento');
+        const template = filas[0].cloneNode(true);
+        template.querySelectorAll('input').forEach(function (input) {
+            input.name = input.name.replace('[0]', '[' + contador + ']');
+            input.value = '';
+        });
+        document.querySelector('#tabla-medicamentos tbody').appendChild(template);
+        contador++;
+    });
+
+    document.querySelector('#tabla-medicamentos tbody').addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-quitar-fila');
+        if (!btn) return;
+        const filas = document.querySelectorAll('.fila-medicamento');
+        if (filas.length > 1) {
+            btn.closest('tr').remove();
+        }
+    });
+</script>
+</th:block>
 
 </html>

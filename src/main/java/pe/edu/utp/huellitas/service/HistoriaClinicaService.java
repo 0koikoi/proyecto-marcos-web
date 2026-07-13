@@ -5,41 +5,14 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.edu.utp.huellitas.model.HistoriaClinica;
 import pe.edu.utp.huellitas.repository.HistoriaClinicaRepository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
  * Servicio de gestión de historia clínica.
- *
- * ════════════════════════════════════════════════════════════
- * TODO — MÓDULO A IMPLEMENTAR POR EL EQUIPO
- * ════════════════════════════════════════════════════════════
- *
- * La estructura base está lista. El desarrollador asignado debe:
- *
- *   1. Crear HistoriaClinicaController en package controller/
- *      (ver comentario de rutas al final de esta clase).
- *
- *   2. Crear las vistas Thymeleaf en templates/historia/:
- *      - lista.html   → tabla de consultas del paciente
- *      - formulario.html → crear nueva entrada
- *      - detalle.html → ver diagnóstico, tratamiento, recetas y vacunas
- *
- *   3. Implementar el método completarCita(Long citaId) que:
- *      - Cambia el estado de la cita a COMPLETADA
- *      - Crea automáticamente una HistoriaClinica vinculada
- *
- *   4. Agregar @PreAuthorize("hasAnyRole('ADMINISTRADOR','VETERINARIO')")
- *      en cada endpoint del controller.
- *
- * Rutas esperadas del controller:
- *   GET  /historia                   → lista todas (paginado)
- *   GET  /historia/paciente/{id}     → historial de un paciente
- *   GET  /historia/nueva             → formulario nueva consulta
- *   POST /historia/guardar           → guardar consulta
- *   GET  /historia/{id}              → detalle de una consulta
- *   POST /historia/eliminar/{id}     → eliminar (solo ADMIN)
- * ════════════════════════════════════════════════════════════
  */
 @Service
 public class HistoriaClinicaService {
@@ -68,6 +41,26 @@ public class HistoriaClinicaService {
     }
 
     /**
+     * Busca historias clínicas por nombre de paciente o propietario y/o por
+     * rango de fecha de consulta (desde/hasta). Todos los parámetros son opcionales.
+     *
+     * @param buscar texto a buscar en el nombre del paciente o del propietario
+     * @param desde  fecha inicial (inclusive), o null para no filtrar
+     * @param hasta  fecha final (inclusive), o null para no filtrar
+     */
+    public List<HistoriaClinica> buscar(String buscar, LocalDate desde, LocalDate hasta) {
+        String textoBusqueda = (buscar != null && !buscar.trim().isEmpty()) ? buscar.trim() : null;
+        ZoneId zona = ZoneId.systemDefault();
+        OffsetDateTime desdeDateTime = (desde != null)
+                ? desde.atStartOfDay(zona).toOffsetDateTime()
+                : null;
+        OffsetDateTime hastaDateTime = (hasta != null)
+                ? hasta.atTime(LocalTime.MAX).atZone(zona).toOffsetDateTime()
+                : null;
+        return historiaClinicaRepository.buscar(textoBusqueda, desdeDateTime, hastaDateTime);
+    }
+
+    /**
      * Obtiene una entrada de historia clínica por ID.
      *
      * @throws IllegalArgumentException si no existe
@@ -82,10 +75,6 @@ public class HistoriaClinicaService {
 
     /**
      * Guarda una nueva entrada de historia clínica.
-     *
-     * TODO: Implementar validaciones adicionales:
-     *   - El veterinario asignado debe tener rol VETERINARIO.
-     *   - Si viene de una cita (cita_id != null), cambiar estado de la cita a COMPLETADA.
      *
      * @param historiaClinica Entidad con los datos de la consulta
      * @return La historia clínica guardada

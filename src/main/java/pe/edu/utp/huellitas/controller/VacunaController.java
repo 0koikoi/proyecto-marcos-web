@@ -1,47 +1,29 @@
 package pe.edu.utp.huellitas.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import pe.edu.utp.huellitas.model.Paciente;
+import pe.edu.utp.huellitas.model.Vacuna;
 import pe.edu.utp.huellitas.service.PacienteService;
 import pe.edu.utp.huellitas.service.PersonalService;
 import pe.edu.utp.huellitas.service.VacunaService;
 
+import java.time.LocalDate;
+import java.util.List;
+
 /**
  * Controller de Vacunas.
- *
- * ════════════════════════════════════════════════════════════
- * TODO — MÓDULO A IMPLEMENTAR POR EL EQUIPO
- * ════════════════════════════════════════════════════════════
- *
- * La estructura base está lista. El desarrollador asignado debe:
- *
- *   1. Implementar el cuerpo de cada método.
- *
- *   2. Crear los templates en src/main/resources/templates/vacunas/:
- *      - lista.html      → tabla de vacunas con columna de próxima dosis
- *                          (resaltar en AMARILLO si la próxima dosis es en < 7 días)
- *      - formulario.html → formulario de registro de vacuna
- *
- *   3. En el formulario de nueva vacuna, incluir:
- *      - Select de paciente
- *      - Nombre de vacuna, laboratorio, lote
- *      - Fecha de aplicación (date picker)
- *      - Fecha de próxima dosis (opcional, date picker)
- *      - Observaciones
- *
- *   4. Integrar en el dashboard el conteo de vacunas próximas:
- *      Agregar al WebController un atributo "vacunasProximas"
- *      usando vacunaService.listarProximasDosis(7).
  *
  * Referencia de permisos:
  *   ADMINISTRADOR → acceso completo
  *   VETERINARIO   → crear y ver vacunas
  *   RECEPCION     → SIN acceso a este módulo
- * ════════════════════════════════════════════════════════════
  */
 @Controller
 @RequestMapping("/vacunas")
@@ -62,14 +44,23 @@ public class VacunaController {
 
     // ── Lista general ─────────────────────────────────────────────────────────
 
+    /** Días de anticipación para resaltar la próxima dosis en la lista. */
+    private static final int DIAS_ALERTA_PROXIMA_DOSIS = 7;
+
     /**
-     * Lista todas las vacunas.
-     * TODO: Incluir filtro por paciente usando @RequestParam opcional.
-     * TODO: Pasar al modelo también listarProximasDosis(7) para mostrar alertas.
+     * Lista todas las vacunas, o las de un paciente si se indica pacienteId.
+     * Incluye fechaLimite para resaltar en la vista las próximas dosis (< 7 días).
      */
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("vacunas", vacunaService.listarTodas());
+    public String listar(@RequestParam(required = false) Long pacienteId, Model model) {
+        List<Vacuna> vacunas = (pacienteId != null)
+                ? vacunaService.listarPorPaciente(pacienteId)
+                : vacunaService.listarTodas();
+        model.addAttribute("vacunas", vacunas);
+        model.addAttribute("pacientes", pacienteService.listarTodos(null));
+        model.addAttribute("pacienteIdSeleccionado", pacienteId);
+        model.addAttribute("fechaLimite", LocalDate.now().plusDays(DIAS_ALERTA_PROXIMA_DOSIS));
+        model.addAttribute("hayProximas", !vacunaService.listarProximasDosis(DIAS_ALERTA_PROXIMA_DOSIS).isEmpty());
         model.addAttribute("activePage", "vacunas");
         return "vacunas/lista";
     }
@@ -93,28 +84,51 @@ public class VacunaController {
     // ── Formulario nueva vacuna ───────────────────────────────────────────────
 
     /**
-     * TODO: Recibir pacienteId como parámetro opcional para pre-seleccionar el paciente.
+     * Muestra el formulario de nueva vacuna.
+     * Acepta pacienteId opcional para pre-seleccionar el paciente.
      */
     @GetMapping("/nueva")
     public String nueva(@RequestParam(required = false) Long pacienteId, Model model) {
-        model.addAttribute("pacientes", pacienteService.listarTodos(null));
-        model.addAttribute("personal", personalService.listarTodos());
-        model.addAttribute("activePage", "vacunas");
+        Vacuna vacuna = new Vacuna();
+        if (pacienteId != null) {
+            Paciente paciente = new Paciente();
+            paciente.setId(pacienteId);
+            vacuna.setPaciente(paciente);
+        }
+        model.addAttribute("vacuna", vacuna);
+        cargarFormulario(model);
         return "vacunas/formulario";
     }
 
     // ── Guardar vacuna ────────────────────────────────────────────────────────
 
-    /**
-     * TODO: Recibir una Vacuna (o VacunaDTO) validada con @Valid.
-     * TODO: Obtener el veterinario desde el SecurityContext.
-     */
+    /** Registra una nueva vacuna aplicada a un paciente. */
     @PostMapping("/guardar")
-    public String guardar(RedirectAttributes redirectAttrs) {
-        // TODO: Implementar este método
-        redirectAttrs.addFlashAttribute("infoMsg",
-                "Módulo en construcción. Implementar el formulario de vacunación.");
-        return "redirect:/vacunas";
+    public String guardar(@Valid @ModelAttribute("vacuna") Vacuna vacuna,
+                          BindingResult result,
+                          Model model,
+                          RedirectAttributes redirectAttrs) {
+        if (result.hasErrors()) {
+            cargarFormulario(model);
+            return "vacunas/formulario";
+        }
+        try {
+            vacunaService.guardar(vacuna);
+            redirectAttrs.addFlashAttribute("successMsg", "Vacuna registrada correctamente.");
+            return "redirect:/vacunas";
+        } catch (IllegalArgumentException e) {
+            cargarFormulario(model);
+            model.addAttribute("error", e.getMessage());
+            return "vacunas/formulario";
+        }
+    }
+
+    // ── Métodos privados ──────────────────────────────────────────────────────
+
+    private void cargarFormulario(Model model) {
+        model.addAttribute("pacientes", pacienteService.listarTodos(null));
+        model.addAttribute("personal", personalService.listarTodos());
+        model.addAttribute("activePage", "vacunas");
     }
 
     // ── Eliminar (solo ADMIN) ─────────────────────────────────────────────────

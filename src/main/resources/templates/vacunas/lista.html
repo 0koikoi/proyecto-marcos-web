@@ -31,19 +31,72 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <!-- TODO: Implementar tabla con vacunas
-    COLUMNAS ESPERADAS:
-        Paciente | Vacuna | Laboratorio | Lote | Fecha Aplicación | Próxima Dosis | Vet | Acciones
+    <!-- Filtro por paciente -->
+    <form method="GET" th:action="@{/vacunas}" class="row g-2 align-items-end mb-3">
+        <div class="col-sm-4">
+            <label class="form-label small mb-1">Filtrar por paciente</label>
+            <select name="pacienteId" class="form-select" onchange="this.form.submit()">
+                <option value="">Todos los pacientes</option>
+                <option th:each="p : ${pacientes}" th:value="${p.id}" th:text="${p.nombre}"
+                        th:selected="${pacienteIdSeleccionado != null and pacienteIdSeleccionado == p.id}"></option>
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <a th:if="${pacienteIdSeleccionado != null}" th:href="@{/vacunas}" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-xmark me-1"></i> Quitar filtro
+            </a>
+        </div>
+    </form>
 
-    RESALTAR próxima dosis próxima (< 7 días):
-        th:class="${vacuna.fechaProximaDosis != null and vacuna.fechaProximaDosis.isBefore(fechaLimite)} ? 'text-warning fw-bold' : ''"
-    -->
+    <div class="alert alert-warning d-flex align-items-center gap-2" th:if="${hayProximas}">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>Hay vacunas con próxima dosis programada dentro de los próximos 7 días (resaltadas abajo).</span>
+    </div>
+
+    <!-- Tabla de vacunas -->
     <div class="card shadow-sm border-0">
-        <div class="card-body p-4">
-            <div class="alert alert-warning mb-0">
-                <i class="fa-solid fa-triangle-exclamation me-2"></i>
-                <strong>Módulo en construcción.</strong>
-                Implementar la tabla en <code>VacunaController.java</code>.
+        <div class="card-body p-0">
+            <div th:if="${#lists.isEmpty(vacunas)}" class="text-center py-5 text-muted p-4">
+                <i class="fa-solid fa-syringe fa-3x mb-3"></i>
+                <p>No hay registros de vacunación.</p>
+            </div>
+            <div class="table-responsive" th:unless="${#lists.isEmpty(vacunas)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Paciente</th>
+                            <th>Vacuna</th>
+                            <th>Laboratorio</th>
+                            <th>Lote</th>
+                            <th>Fecha aplicación</th>
+                            <th>Próxima dosis</th>
+                            <th>Veterinario</th>
+                            <th class="text-center pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="v : ${vacunas}"
+                            th:classappend="${v.fechaProximaDosis != null and !v.fechaProximaDosis.isBefore(T(java.time.LocalDate).now()) and !v.fechaProximaDosis.isAfter(fechaLimite)} ? 'table-warning' : ''">
+                            <td class="ps-4" th:text="${v.paciente.nombre}"></td>
+                            <td th:text="${v.nombreVacuna}"></td>
+                            <td th:text="${v.laboratorio ?: '—'}"></td>
+                            <td th:text="${v.lote ?: '—'}"></td>
+                            <td th:text="${#temporals.format(v.fechaAplicacion, 'dd/MM/yyyy')}"></td>
+                            <td th:text="${v.fechaProximaDosis != null ? #temporals.format(v.fechaProximaDosis, 'dd/MM/yyyy') : '—'}"></td>
+                            <td th:text="${v.personal.nombreCompleto}"></td>
+                            <td class="text-center pe-4">
+                                <form th:action="@{/vacunas/eliminar/{id}(id=${v.id})}" method="post" class="d-inline"
+                                      sec:authorize="hasRole('ADMINISTRADOR')"
+                                      onsubmit="return confirm('¿Eliminar este registro de vacuna?')">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
