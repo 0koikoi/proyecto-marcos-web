@@ -12,9 +12,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.beans.PropertyEditorSupport;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import pe.edu.utp.huellitas.model.Cita;
 import pe.edu.utp.huellitas.service.CitaService;
@@ -66,15 +69,32 @@ public class CitaController {
     // ── Ver lista ─────────────────────────────────────────────────────────────
 
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("citas", citaService.listarTodas());
+    public String listar(@RequestParam(required = false) String dni,
+                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+                         Model model) {
+                         
+        OffsetDateTime start = null;
+        OffsetDateTime end = null;
+        
+        if (fechaInicio != null) {
+            start = fechaInicio.atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime();
+        }
+        if (fechaFin != null) {
+            end = fechaFin.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toOffsetDateTime();
+        }
+        
+        model.addAttribute("citas", citaService.buscarPorFiltros(dni, start, end));
+        model.addAttribute("paramDni", dni);
+        model.addAttribute("paramFechaInicio", fechaInicio);
+        model.addAttribute("paramFechaFin", fechaFin);
         model.addAttribute("activePage", "citas");
         return "citas";
     }
 
     // ── Formulario nueva cita ─────────────────────────────────────────────────
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','RECEPCION')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','RECEPCION','VETERINARIO')")
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         model.addAttribute("cita", new Cita());
@@ -86,7 +106,7 @@ public class CitaController {
 
     // ── Guardar cita ──────────────────────────────────────────────────────────
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','RECEPCION')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','RECEPCION','VETERINARIO')")
     @PostMapping("/guardar")
     public String guardar(@Valid @ModelAttribute("cita") Cita cita,
                           BindingResult result,
@@ -119,7 +139,7 @@ public class CitaController {
 
     // ── Formulario editar cita ────────────────────────────────────────────────
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','RECEPCION')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','RECEPCION','VETERINARIO')")
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
         try {
@@ -134,10 +154,10 @@ public class CitaController {
         }
     }
 
-    // ── Cancelar cita (ADMIN + RECEPCION) ────────────────────────────────────
+    // ── Cancelar cita (ADMIN + RECEPCION + VETERINARIO) ──────────────────────
     // IMPORTANTE: debe ser POST — nunca usar GET para operaciones de escritura.
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','RECEPCION')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','RECEPCION','VETERINARIO')")
     @PostMapping("/cancelar/{id}")
     public String cancelar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
         try {
@@ -145,6 +165,21 @@ public class CitaController {
             redirectAttrs.addFlashAttribute("successMsg", "Cita cancelada correctamente.");
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("errorMsg", "No se pudo cancelar la cita: " + e.getMessage());
+        }
+        return "redirect:/citas";
+    }
+
+    // ── Completar cita (ADMIN + RECEPCION + VETERINARIO) ─────────────────────
+    // IMPORTANTE: debe ser POST — nunca usar GET para operaciones de escritura.
+
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','RECEPCION','VETERINARIO')")
+    @PostMapping("/completar/{id}")
+    public String completar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
+        try {
+            citaService.completar(id);
+            redirectAttrs.addFlashAttribute("successMsg", "Cita marcada como completada.");
+        } catch (Exception e) {
+            redirectAttrs.addFlashAttribute("errorMsg", "No se pudo completar la cita: " + e.getMessage());
         }
         return "redirect:/citas";
     }
