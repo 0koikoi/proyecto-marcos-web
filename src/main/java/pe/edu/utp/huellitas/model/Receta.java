@@ -12,13 +12,6 @@ import java.util.List;
 /**
  * Receta médica emitida por un veterinario.
  * Siempre está ligada a una entrada de historia clínica.
- *
- * TODO para el equipo:
- *   - Implementar RecetaController
- *   - Implementar RecetaService (incluir lógica de detalle_receta)
- *   - Implementar RecetaRepository + DetalleRecetaRepository
- *   - Crear template: recetas/lista.html, recetas/formulario.html
- *   - Agregar opción de "Imprimir receta" (th:href a /recetas/{id}/imprimir)
  */
 @Data
 @Entity

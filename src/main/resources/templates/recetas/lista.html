@@ -26,15 +26,47 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <!-- TODO: Implementar tabla de recetas
-    COLUMNAS: # Receta | Fecha | Paciente | Veterinario | N° Medicamentos | Acciones (Ver | Eliminar)
-    -->
     <div class="card shadow-sm border-0">
-        <div class="card-body p-4">
-            <div class="alert alert-warning mb-0">
-                <i class="fa-solid fa-triangle-exclamation me-2"></i>
-                <strong>Módulo en construcción.</strong>
-                Implementar la tabla en <code>RecetaController.java</code>.
+        <div class="card-body p-0">
+            <div th:if="${#lists.isEmpty(recetas)}" class="text-center py-5 text-muted p-4">
+                <i class="fa-solid fa-prescription fa-3x mb-3"></i>
+                <p>No hay recetas registradas.</p>
+            </div>
+            <div class="table-responsive" th:unless="${#lists.isEmpty(recetas)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">#</th>
+                            <th>Fecha</th>
+                            <th>Paciente</th>
+                            <th>Veterinario</th>
+                            <th>N° Medicamentos</th>
+                            <th class="text-center pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${recetas}">
+                            <td class="ps-4" th:text="${r.id}"></td>
+                            <td th:text="${#temporals.format(r.fechaEmision, 'dd/MM/yyyy')}"></td>
+                            <td th:text="${r.historiaClinica.paciente.nombre}"></td>
+                            <td th:text="${r.personal.nombreCompleto}"></td>
+                            <td th:text="${#lists.size(r.detalles)}"></td>
+                            <td class="text-center pe-4">
+                                <a th:href="@{/recetas/{id}(id=${r.id})}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-solid fa-eye"></i> Ver
+                                </a>
+                                <form th:action="@{/recetas/eliminar/{id}(id=${r.id})}" method="post" class="d-inline"
+                                      sec:authorize="hasRole('ADMINISTRADOR')"
+                                      onsubmit="return confirm('¿Eliminar esta receta?')">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

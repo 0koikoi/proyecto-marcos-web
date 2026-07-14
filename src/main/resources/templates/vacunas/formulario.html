@@ -1,4 +1,4 @@
-<html th:replace="~{layout :: page('Registrar Vacuna', 'vacunas', ~{::main}, ~{})}"
+<html th:replace="~{layout :: page('Registrar Vacuna', 'vacunas', ~{::main}, ~{::#custom-scripts})}"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 
 <main>
@@ -11,36 +11,109 @@
         </h2>
     </div>
 
-    <!--
-    TODO: Implementar formulario de vacunación.
-
-    CAMPOS:
-        - paciente_id        → select de pacientes (pre-cargar si viene ?pacienteId=X)
-        - personal_id        → select de veterinarios (o auto-asignar desde SecurityContext)
-        - historia_clinica_id → select opcional (vincula a una consulta)
-        - nombre_vacuna      → input text, obligatorio
-        - laboratorio        → input text, opcional
-        - lote               → input text, opcional
-        - fecha_aplicacion   → date picker, obligatorio
-        - fecha_proxima_dosis → date picker, opcional
-        - observaciones      → textarea, opcional
-
-    ESTRUCTURA:
-        <form th:action="@{/vacunas/guardar}" method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-            ...campos...
-            <button type="submit" class="btn btn-success">Guardar</button>
-            <a th:href="@{/vacunas}" class="btn btn-outline-secondary ms-2">Cancelar</a>
-        </form>
-    -->
-    <div class="alert alert-warning">
-        <i class="fa-solid fa-triangle-exclamation me-2"></i>
-        <strong>Módulo en construcción.</strong>
-        Implementar el formulario en <code>VacunaController.java</code>.
+    <div th:if="${error}" class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation me-2"></i><span th:text="${error}"></span>
     </div>
-    <a th:href="@{/vacunas}" class="btn btn-outline-secondary">
-        <i class="fa-solid fa-arrow-left me-1"></i> Volver
-    </a>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 p-4">
+                <form th:action="@{/vacunas/guardar}" th:object="${vacuna}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <input type="hidden" th:field="*{id}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Paciente</label>
+                        <select name="paciente" class="form-select" required>
+                            <option value="">-- Seleccione un paciente --</option>
+                            <option th:each="p : ${pacientes}" th:value="${p.id}"
+                                    th:text="${p.nombre} + ' (' + ${p.especie} + ')'"
+                                    th:selected="${vacuna.paciente != null and vacuna.paciente.id == p.id}">
+                            </option>
+                        </select>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('paciente')}" th:errors="*{paciente}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Veterinario</label>
+                        <select name="personal" class="form-select" required>
+                            <option value="">-- Seleccione un veterinario --</option>
+                            <option th:each="v : ${personal}" th:value="${v.id}"
+                                    th:text="${v.nombreCompleto} + ' — ' + ${v.cargo}"
+                                    th:selected="${vacuna.personal != null and vacuna.personal.id == v.id}">
+                            </option>
+                        </select>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('personal')}" th:errors="*{personal}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de la vacuna</label>
+                        <input type="text" th:field="*{nombreVacuna}" class="form-control" required>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('nombreVacuna')}" th:errors="*{nombreVacuna}"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Laboratorio</label>
+                            <input type="text" th:field="*{laboratorio}" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Lote</label>
+                            <input type="text" th:field="*{lote}" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Fecha de aplicación</label>
+                            <input type="date" id="fechaAplicacion" th:field="*{fechaAplicacion}"
+                                   class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Próxima dosis (opcional)</label>
+                            <input type="date" id="fechaProximaDosis" th:field="*{fechaProximaDosis}" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Observaciones</label>
+                        <textarea th:field="*{observaciones}" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa-solid fa-floppy-disk me-1"></i> Guardar
+                        </button>
+                        <a th:href="@{/vacunas}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </main>
+
+<th:block id="custom-scripts">
+<script>
+    // La próxima dosis nunca puede ser anterior a la fecha de aplicación.
+    (function () {
+        const fechaAplicacion = document.getElementById('fechaAplicacion');
+        const fechaProximaDosis = document.getElementById('fechaProximaDosis');
+
+        function actualizarMinimo() {
+            if (fechaAplicacion.value) {
+                fechaProximaDosis.setAttribute('min', fechaAplicacion.value);
+                if (fechaProximaDosis.value && fechaProximaDosis.value < fechaAplicacion.value) {
+                    fechaProximaDosis.value = '';
+                }
+            } else {
+                fechaProximaDosis.removeAttribute('min');
+            }
+        }
+
+        fechaAplicacion.addEventListener('change', actualizarMinimo);
+        actualizarMinimo();
+    })();
+</script>
+</th:block>
 
 </html>

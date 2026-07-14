@@ -39,8 +39,16 @@ public class PersonalService {
         return repository.findAll();
     }
 
+    public List<Personal> listarVeterinarios() {
+        return repository.findByRolNombre("VETERINARIO");
+    }
+
     public Optional<Personal> obtenerPorId(Long id) {
         return repository.findById(id);
+    }
+
+    public Optional<Personal> obtenerPorUsername(String username) {
+        return repository.findByUsername(username);
     }
 
     // ── Guardar (crear o editar) ───────────────────────────────────────────────

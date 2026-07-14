@@ -1,17 +1,17 @@
 package pe.edu.utp.huellitas.controller;
 
+import java.time.OffsetDateTime;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import pe.edu.utp.huellitas.repository.PacienteRepository;
+
+import pe.edu.utp.huellitas.model.EstadoCita;
 import pe.edu.utp.huellitas.repository.CitaRepository;
+import pe.edu.utp.huellitas.repository.DetalleVentaRepository;
+import pe.edu.utp.huellitas.repository.PacienteRepository;
 import pe.edu.utp.huellitas.repository.ProductoRepository;
 import pe.edu.utp.huellitas.repository.VentaRepository;
-import pe.edu.utp.huellitas.repository.DetalleVentaRepository;
-import java.time.OffsetDateTime;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
 
 
 @Controller
@@ -23,7 +23,7 @@ public class WebController {
     private final VentaRepository ventaRepo;
     private final DetalleVentaRepository detalleVentaRepo;
 
-public WebController(PacienteRepository pacienteRepo,
+    public WebController(PacienteRepository pacienteRepo,
                      CitaRepository citaRepo,
                      ProductoRepository productoRepo,
                      VentaRepository ventaRepo,
@@ -50,15 +50,13 @@ model.addAttribute("ultimasVentas", ventaRepo.findTop10ByOrderByFechaEmisionDesc
 model.addAttribute("solicitudesPendientes", 0);
 model.addAttribute("productosMasVendidos", detalleVentaRepo.productosMasVendidos());
 
-OffsetDateTime inicioDia = LocalDate.now()
-        .atStartOfDay()
-        .atOffset(ZoneOffset.UTC);
-
-OffsetDateTime finDia = LocalDate.now()
-        .atTime(LocalTime.MAX)
-        .atOffset(ZoneOffset.UTC);
-
-model.addAttribute("proximasCitas", citaRepo.findByFechaHoraBetweenOrderByFechaHoraAsc(inicioDia, finDia));
+model.addAttribute(
+    "proximasCitas",
+    citaRepo.findTop5ByEstadoAndFechaHoraAfterOrderByFechaHoraAsc(
+            EstadoCita.PENDIENTE,
+            OffsetDateTime.now()
+    )
+);
 
 return "dashboard";
 }

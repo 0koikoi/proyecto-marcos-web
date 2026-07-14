@@ -9,32 +9,6 @@ import java.util.List;
 
 /**
  * Servicio de gestión de recetas médicas.
- *
- * ════════════════════════════════════════════════════════════
- * TODO — MÓDULO A IMPLEMENTAR POR EL EQUIPO
- * ════════════════════════════════════════════════════════════
- *
- * La estructura base está lista. El desarrollador asignado debe:
- *
- *   1. Crear RecetaController en package controller/
- *
- *   2. Crear las vistas Thymeleaf en templates/recetas/:
- *      - lista.html     → listado de recetas (filtrable por historia clínica)
- *      - formulario.html → crear/editar receta con sus líneas (DetalleReceta)
- *      - detalle.html   → vista imprimible de la receta con todos sus detalles
- *
- *   3. El formulario de receta debe manejar múltiples líneas (DetalleReceta)
- *      usando JavaScript para agregar/quitar medicamentos dinámicamente.
- *
- *   4. Agregar @PreAuthorize("hasAnyRole('ADMINISTRADOR','VETERINARIO')")
- *
- * Rutas esperadas del controller:
- *   GET  /recetas/historia/{id}      → recetas de una historia clínica
- *   GET  /recetas/nueva              → formulario nueva receta
- *   POST /recetas/guardar            → guardar con sus detalles
- *   GET  /recetas/{id}               → detalle / vista de impresión
- *   POST /recetas/eliminar/{id}      → eliminar (solo ADMIN)
- * ════════════════════════════════════════════════════════════
  */
 @Service
 public class RecetaService {
@@ -46,6 +20,11 @@ public class RecetaService {
     }
 
     // ── Consultas ─────────────────────────────────────────────────────────────
+
+    /** Lista todas las recetas registradas. */
+    public List<Receta> listarTodas() {
+        return recetaRepository.findAll();
+    }
 
     /**
      * Lista todas las recetas asociadas a una historia clínica.
@@ -72,8 +51,6 @@ public class RecetaService {
      *
      * Las líneas (DetalleReceta) son manejadas en cascada gracias a
      * CascadeType.ALL + orphanRemoval en la entidad Receta.
-     *
-     * TODO: Validar que cada DetalleReceta tenga medicamento, dosis y frecuencia.
      *
      * @param receta Entidad con la lista de detalles ya asignada
      * @return La receta guardada con su ID asignado

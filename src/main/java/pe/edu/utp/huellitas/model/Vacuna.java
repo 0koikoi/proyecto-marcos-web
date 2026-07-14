@@ -10,13 +10,6 @@ import java.time.OffsetDateTime;
 
 /**
  * Registro de vacunación de un paciente.
- *
- * TODO para el equipo:
- *   - Implementar VacunaController
- *   - Implementar VacunaService
- *   - Implementar VacunaRepository
- *   - Crear template: vacunas/lista.html, vacunas/formulario.html
- *   - Mostrar alerta en dashboard cuando fecha_proxima_dosis esté próxima (< 7 días)
  */
 @Data
 @Entity

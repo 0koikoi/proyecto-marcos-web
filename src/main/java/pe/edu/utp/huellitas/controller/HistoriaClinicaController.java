@@ -1,50 +1,34 @@
 package pe.edu.utp.huellitas.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import pe.edu.utp.huellitas.model.Cita;
+import pe.edu.utp.huellitas.model.EstadoCita;
+import pe.edu.utp.huellitas.model.HistoriaClinica;
+import pe.edu.utp.huellitas.model.Paciente;
+import pe.edu.utp.huellitas.service.CitaService;
 import pe.edu.utp.huellitas.service.HistoriaClinicaService;
 import pe.edu.utp.huellitas.service.PacienteService;
 import pe.edu.utp.huellitas.service.PersonalService;
+import pe.edu.utp.huellitas.service.RecetaService;
+import pe.edu.utp.huellitas.service.VacunaService;
+
+import java.time.LocalDate;
 
 /**
  * Controller de Historia Clínica.
- *
- * ════════════════════════════════════════════════════════════
- * TODO — MÓDULO A IMPLEMENTAR POR EL EQUIPO
- * ════════════════════════════════════════════════════════════
- *
- * Este scaffold tiene las rutas base definidas y los servicios
- * inyectados. El desarrollador asignado debe:
- *
- *   1. Implementar el cuerpo de cada método (actualmente todos
- *      redirigen a /historia con un mensaje de "en construcción").
- *
- *   2. Crear los templates en src/main/resources/templates/historia/:
- *      - lista.html      → tabla de historias (filtrable por paciente)
- *      - formulario.html → formulario de nueva consulta
- *      - detalle.html    → vista completa de la consulta con recetas y vacunas
- *
- *   3. En el formulario de nueva historia, incluir:
- *      - Select de paciente (o recibir pacienteId por parámetro desde /pacientes)
- *      - Campos: motivoConsulta, diagnostico, tratamiento, observaciones
- *      - Campos opcionales: pesoKg, temperaturaC
- *      - Select de cita asociada (opcional — walk-in no tiene cita)
- *
- *   4. Al guardar una historia desde una cita, actualizar el estado
- *      de la cita a COMPLETADA.
- *
- *   5. Usar sec:authorize en los templates para ocultar botones
- *      de acción según el rol.
  *
  * Referencia de permisos:
  *   ADMINISTRADOR → acceso completo
  *   VETERINARIO   → crear y ver historias (solo de sus pacientes en producción)
  *   RECEPCION     → SIN acceso a este módulo
- * ════════════════════════════════════════════════════════════
  */
 @Controller
 @RequestMapping("/historia")
@@ -54,24 +38,42 @@ public class HistoriaClinicaController {
     private final HistoriaClinicaService historiaClinicaService;
     private final PacienteService pacienteService;
     private final PersonalService personalService;
+    private final RecetaService recetaService;
+    private final VacunaService vacunaService;
+    private final CitaService citaService;
 
     public HistoriaClinicaController(HistoriaClinicaService historiaClinicaService,
                                      PacienteService pacienteService,
-                                     PersonalService personalService) {
+                                     PersonalService personalService,
+                                     RecetaService recetaService,
+                                     VacunaService vacunaService,
+                                     CitaService citaService) {
         this.historiaClinicaService = historiaClinicaService;
         this.pacienteService = pacienteService;
         this.personalService = personalService;
+        this.recetaService = recetaService;
+        this.vacunaService = vacunaService;
+        this.citaService = citaService;
     }
 
     // ── Lista general ─────────────────────────────────────────────────────────
 
     /**
      * Muestra la lista de historias clínicas.
-     * TODO: Implementar paginación y filtro por paciente.
+     * Soporta búsqueda por nombre de paciente/propietario y filtro por rango de fecha.
      */
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("historias", historiaClinicaService.listarTodas());
+    public String listar(@RequestParam(required = false) String buscar,
+                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate desde,
+                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate hasta,
+                         Model model) {
+        boolean hayFiltros = (buscar != null && !buscar.isBlank()) || desde != null || hasta != null;
+        model.addAttribute("historias", hayFiltros
+                ? historiaClinicaService.buscar(buscar, desde, hasta)
+                : historiaClinicaService.listarTodas());
+        model.addAttribute("buscar", buscar);
+        model.addAttribute("desde", desde);
+        model.addAttribute("hasta", hasta);
         model.addAttribute("activePage", "historia");
         return "historia/lista";
     }
@@ -81,7 +83,6 @@ public class HistoriaClinicaController {
     /**
      * Muestra el historial clínico de un paciente específico.
      * Útil para la ficha del paciente.
-     * TODO: Pasar también los datos del paciente al modelo para mostrar cabecera.
      */
     @GetMapping("/paciente/{pacienteId}")
     public String listarPorPaciente(@PathVariable Long pacienteId, Model model,
@@ -102,17 +103,25 @@ public class HistoriaClinicaController {
 
     /**
      * Muestra el formulario para registrar una nueva consulta.
-     * TODO: Recibir pacienteId como parámetro opcional para pre-seleccionar el paciente.
-     * TODO: Recibir citaId como parámetro opcional para vincular la consulta a una cita.
+     * Acepta pacienteId y citaId opcionales para pre-seleccionar esos campos.
      */
     @GetMapping("/nueva")
     public String nueva(@RequestParam(required = false) Long pacienteId,
                         @RequestParam(required = false) Long citaId,
                         Model model) {
-        // TODO: Crear un HistoriaClinicaDTO y pre-cargar pacienteId y citaId si vienen
-        model.addAttribute("pacientes", pacienteService.listarTodos(null));
-        model.addAttribute("personal", personalService.listarTodos());
-        model.addAttribute("activePage", "historia");
+        HistoriaClinica historia = new HistoriaClinica();
+        if (pacienteId != null) {
+            Paciente paciente = new Paciente();
+            paciente.setId(pacienteId);
+            historia.setPaciente(paciente);
+        }
+        if (citaId != null) {
+            Cita cita = new Cita();
+            cita.setId(citaId);
+            historia.setCita(cita);
+        }
+        model.addAttribute("historia", historia);
+        cargarFormulario(model);
         return "historia/formulario";
     }
 
@@ -120,28 +129,65 @@ public class HistoriaClinicaController {
 
     /**
      * Guarda una nueva entrada de historia clínica.
-     * TODO: Recibir un HistoriaClinicaDTO validado con @Valid.
-     * TODO: Obtener el veterinario desde el SecurityContext (usuario autenticado).
-     * TODO: Si viene de una cita (citaId != null), actualizar estado de la cita a COMPLETADA.
+     * Si viene vinculada a una cita, esa cita se marca como COMPLETADA.
      */
     @PostMapping("/guardar")
-    public String guardar(RedirectAttributes redirectAttrs) {
-        // TODO: Implementar este método
-        redirectAttrs.addFlashAttribute("infoMsg",
-                "Módulo en construcción. Implementar el formulario de historia clínica.");
-        return "redirect:/historia";
+    public String guardar(@Valid @ModelAttribute("historia") HistoriaClinica historia,
+                          BindingResult result,
+                          @RequestParam(required = false) Long citaId,
+                          Model model,
+                          RedirectAttributes redirectAttrs) {
+        if (result.hasErrors()) {
+            cargarFormulario(model);
+            return "historia/formulario";
+        }
+        try {
+            if (citaId != null) {
+                Cita cita = citaService.obtenerPorId(citaId);
+                if (!cita.getPaciente().getId().equals(historia.getPaciente().getId())) {
+                    throw new IllegalArgumentException("El paciente de la historia clínica no coincide con el paciente de la cita seleccionada.");
+                }
+                historia.setCita(cita);
+            } else {
+                historia.setCita(null);
+            }
+            HistoriaClinica guardada = historiaClinicaService.guardar(historia);
+            if (guardada.getCita() != null) {
+                citaService.completar(guardada.getCita().getId());
+            }
+            redirectAttrs.addFlashAttribute("successMsg", "Consulta registrada correctamente.");
+            return "redirect:/historia/" + guardada.getId();
+        } catch (RuntimeException e) {
+            cargarFormulario(model);
+            model.addAttribute("error", e.getMessage());
+            return "historia/formulario";
+        }
+    }
+
+    // ── Métodos privados ──────────────────────────────────────────────────────
+
+    private void cargarFormulario(Model model) {
+        model.addAttribute("pacientes", pacienteService.listarTodos(null));
+        model.addAttribute("personal", personalService.listarVeterinarios());
+        model.addAttribute("citas", citaService.listarTodas().stream()
+                .filter(c -> c.getEstado() == EstadoCita.PENDIENTE || c.getEstado() == EstadoCita.EN_PROCESO)
+                .toList());
+        model.addAttribute("activePage", "historia");
     }
 
     // ── Detalle de historia ───────────────────────────────────────────────────
 
     /**
      * Vista de detalle de una consulta.
-     * TODO: Incluir en el modelo: la historia, sus recetas y las vacunas del paciente.
+     * Incluye en el modelo: la historia, sus recetas y las vacunas del paciente.
      */
     @GetMapping("/{id}")
     public String detalle(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
         try {
-            model.addAttribute("historia", historiaClinicaService.obtenerPorId(id));
+            var historia = historiaClinicaService.obtenerPorId(id);
+            model.addAttribute("historia", historia);
+            model.addAttribute("recetas", recetaService.listarPorHistoria(historia.getId()));
+            model.addAttribute("vacunas", vacunaService.listarPorPaciente(historia.getPaciente().getId()));
             model.addAttribute("activePage", "historia");
             return "historia/detalle";
         } catch (Exception e) {

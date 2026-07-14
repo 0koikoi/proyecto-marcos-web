@@ -204,28 +204,49 @@ th:replace="~{layout :: page('Dashboard Principal', 'dashboard', ~{::main}, ~{})
         </div>
 
         <div class="col-md-6">
-            <div class="card p-3 border-0 shadow-sm">
-                <h6 class="fw-bold">
-    <i class="fa-solid fa-tag me-2"></i>
-    Productos más vendidos
-</h6>
 
-<ul class="list-group list-group-flush">
+    <div class="card p-3 border-0 shadow-sm">
 
-    <li class="list-group-item d-flex justify-content-between"
-        th:each="producto : ${productosMasVendidos}">
+        <h6 class="fw-bold">
+            <i class="fa-solid fa-fire me-2 text-danger"></i>
+            Productos más vendidos
+        </h6>
 
-        <span th:text="${producto[0]}"></span>
+        <div th:if="${#lists.isEmpty(productosMasVendidos)}">
 
-        <span class="badge bg-primary"
-              th:text="${producto[1]} + ' ventas'">
-        </span>
+            <p class="text-muted small">
+                No existen ventas registradas.
+            </p>
 
-    </li>
-
-</ul>
-            </div>
         </div>
+
+        <ul class="list-group list-group-flush"
+            th:unless="${#lists.isEmpty(productosMasVendidos)}">
+
+            <li class="list-group-item d-flex justify-content-between align-items-center"
+                th:each="producto : ${productosMasVendidos}">
+
+                <span>
+                    <i class="fa-solid fa-box text-primary me-2"></i>
+
+                    <span th:text="${producto[0]}">
+                        Producto
+                    </span>
+
+                </span>
+
+                <span class="badge bg-primary rounded-pill"
+                      th:text="${producto[1]} + ' vendidos'">
+                    0 vendidos
+                </span>
+
+            </li>
+
+        </ul>
+
+    </div>
+
+</div>
     </div>
 </main>
 
