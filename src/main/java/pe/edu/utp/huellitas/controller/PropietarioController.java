@@ -25,8 +25,10 @@ public class PropietarioController {
     }
 
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("propietarios", propietarioService.listarTodos());
+    public String listar(@org.springframework.web.bind.annotation.RequestParam(required = false) String buscar,
+            Model model) {
+        model.addAttribute("propietarios", propietarioService.buscarPropietarios(buscar));
+        model.addAttribute("buscar", buscar);
         return "propietarios/listar";
     }
 
@@ -34,7 +36,7 @@ public class PropietarioController {
     public String nuevo(Model model) {
         PropietarioDTO propietario = new PropietarioDTO();
         propietario.setCorreo("@gmail.com");
-        
+
         model.addAttribute("propietario", propietario);
         model.addAttribute("titulo", "Registrar propietario");
         return "propietarios/form";
@@ -97,4 +99,3 @@ public class PropietarioController {
         return "redirect:/propietarios";
     }
 }
-

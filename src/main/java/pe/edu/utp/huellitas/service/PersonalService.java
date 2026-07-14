@@ -1,36 +1,37 @@
 package pe.edu.utp.huellitas.service;
 
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.transaction.Transactional;
 import pe.edu.utp.huellitas.model.Personal;
 import pe.edu.utp.huellitas.model.Rol;
 import pe.edu.utp.huellitas.repository.PersonalRepository;
 import pe.edu.utp.huellitas.repository.RolRepository;
 
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
+
 /**
  * Servicio de gestión del personal de la clínica.
  * Centraliza la lógica de negocio y manejo de contraseñas.
- * Los controladores NO deben acceder a PersonalRepository ni RolRepository directamente.
+ * Los controladores NO deben acceder a PersonalRepository ni RolRepository
+ * directamente.
  */
 @Service
 public class PersonalService {
 
     private final PersonalRepository repository;
-    private final RolRepository      rolRepository;
-    private final PasswordEncoder    passwordEncoder;
+    private final RolRepository rolRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public PersonalService(PersonalRepository repository,
-                           RolRepository rolRepository,
-                           PasswordEncoder passwordEncoder) {
-        this.repository       = repository;
-        this.rolRepository    = rolRepository;
-        this.passwordEncoder  = passwordEncoder;
+            RolRepository rolRepository,
+            PasswordEncoder passwordEncoder) {
+        this.repository = repository;
+        this.rolRepository = rolRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // ── Consultas ─────────────────────────────────────────────────────────────
@@ -57,12 +58,14 @@ public class PersonalService {
      * Guarda o actualiza un miembro del personal.
      *
      * Reglas de negocio:
-     *   - El código institucional debe tener formato C######.
-     *   - Si es un registro nuevo (id == null) y se proporciona rawPassword, se hashea.
-     *   - Si es una edición y rawPassword está en blanco, se conserva el hash actual.
+     * - El código institucional debe tener formato C######.
+     * - Si es un registro nuevo (id == null) y se proporciona rawPassword, se
+     * hashea.
+     * - Si es una edición y rawPassword está en blanco, se conserva el hash actual.
      *
-     * @param personal   Entidad con los datos del formulario
-     * @param rawPassword Contraseña en texto plano (puede ser null/blank en edición)
+     * @param personal    Entidad con los datos del formulario
+     * @param rawPassword Contraseña en texto plano (puede ser null/blank en
+     *                    edición)
      * @return null si OK, o un mensaje de error de negocio
      */
     @Transactional
@@ -159,5 +162,4 @@ public class PersonalService {
     public List<Rol> listarRoles() {
         return rolRepository.findAll();
     }
-
 }

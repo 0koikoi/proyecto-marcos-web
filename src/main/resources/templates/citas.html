@@ -53,15 +53,15 @@
         <div class="card-body py-3">
             <form method="get" th:action="@{/citas}" class="row g-3 align-items-end">
                 <div class="col-md-3">
-                    <label class="form-label small text-muted"><i class="fa-solid fa-id-card me-1"></i>DNI Propietario</label>
+                    <label class="form-label small text-muted"><i class="fa-solid fa-id-card me-1"></i> DNI Propietario</label>
                     <input type="text" name="dni" class="form-control form-control-sm" th:value="${paramDni}" placeholder="Ej: 72134567">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small text-muted"><i class="fa-solid fa-calendar me-1"></i>Fecha Inicio</label>
+                    <label class="form-label small text-muted"><i class="fa-solid fa-calendar me-1"></i> Fecha Inicio</label>
                     <input type="date" name="fechaInicio" class="form-control form-control-sm" th:value="${paramFechaInicio}">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small text-muted"><i class="fa-solid fa-calendar me-1"></i>Fecha Fin</label>
+                    <label class="form-label small text-muted"><i class="fa-solid fa-calendar me-1"></i> Fecha Fin</label>
                     <input type="date" name="fechaFin" class="form-control form-control-sm" th:value="${paramFechaFin}">
                 </div>
                 <div class="col-md-3 d-flex gap-2">
@@ -78,98 +78,88 @@
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
-                    <tr>
-                        <th class="ps-4">#</th>
-                        <th>Paciente</th>
-                        <th>Dueño</th>
-                        <th>Veterinario</th>
-                        <th>Fecha y Hora</th>
-                        <th>Estado</th>
-                        <th class="text-center pe-4">Acciones</th>
-                    </tr>
+                        <tr>
+                            <th class="ps-4">#</th>
+                            <th>Paciente</th>
+                            <th>Dueño</th>
+                            <th>Veterinario</th>
+                            <th>Fecha y Hora</th>
+                            <th>Estado</th>
+                            <th class="text-center pe-4" style="min-width: 180px;">Acciones</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr th:if="${citas.empty}">
-                        <td colspan="8" class="text-center text-muted py-5">
-                            <i class="fa-solid fa-calendar-xmark fa-2x mb-2 d-block"></i>
-                            No hay citas registradas. <a th:href="@{/citas/nuevo}">Crea la primera aquí</a>.
-                        </td>
-                    </tr>
-                    <tr th:each="cita, iterStat : ${citas}">
-                        <td class="ps-4 text-muted" th:text="${iterStat.count}"></td>
-                        <td>
-                            <div class="fw-semibold" th:text="${cita.paciente.nombre}"></div>
-                            <small class="text-muted" th:text="${cita.paciente.especie}"></small>
-                        </td>
-                        <td th:text="${cita.paciente.propietario.nombreCompleto}"></td>
-                        <td>
-                            <div th:text="${cita.personal.nombreCompleto}"></div>
-                            <small class="text-muted" th:text="${cita.personal.cargo}"></small>
-                        </td>
-                        <td>
-                            <div th:text="${#temporals.format(cita.fechaHora, 'dd/MM/yyyy')}"></div>
-                            <small class="text-muted" th:text="${#temporals.format(cita.fechaHora, 'HH:mm')} + ' hrs'"></small>
-                        </td>
-                        <td>
-                            <span th:text="${cita.estado}"
-                                  th:class="${cita.estado.name() == 'PENDIENTE'}   ? 'badge bg-warning text-dark'
-                                           : (${cita.estado.name() == 'EN_PROCESO'} ? 'badge bg-primary'
-                                           : (${cita.estado.name() == 'COMPLETADA'} ? 'badge bg-success'
-                                           : 'badge bg-danger'))">
-                            </span>
-                        </td>
-                        <td class="text-center pe-4">
-                            <div class="d-flex justify-content-center gap-1">
-                                <!-- Botón Ver -->
-                                <button type="button" class="btn btn-sm btn-outline-info" title="Ver Detalles"
+                        <tr th:if="${citas.empty}">
+                            <td colspan="7" class="text-center text-muted py-5">
+                                <i class="fa-solid fa-calendar-xmark fa-2x mb-2 d-block"></i>
+                                No hay citas registradas. <a th:href="@{/citas/nuevo}">Crea la primera aquí</a>.
+                            </td>
+                        </tr>
+                        <tr th:each="cita, iterStat : ${citas}">
+                            <td class="ps-4 text-muted" th:text="${iterStat.count}"></td>
+                            <td>
+                                <div class="fw-semibold" th:text="${cita.paciente.nombre}"></div>
+                                <small class="text-muted" th:text="${cita.paciente.especie}"></small>
+                            </td>
+                            <td th:text="${cita.paciente.propietario.nombreCompleto}"></td>
+                            <td>
+                                <div th:text="${cita.personal.nombreCompleto}"></div>
+                                <small class="text-muted" th:text="${cita.personal.cargo}"></small>
+                            </td>
+                            <td>
+                                <div th:text="${#temporals.format(cita.fechaHora, 'dd/MM/yyyy')}"></div>
+                                <small class="text-muted" th:text="${#temporals.format(cita.fechaHora, 'HH:mm')} + ' hrs'"></small>
+                            </td>
+                            <td>
+                                <span th:text="${cita.estado}" 
+                                      th:class="${cita.estado.name() == 'PENDIENTE'} ? 'badge bg-warning text-dark'
+                                            : (${cita.estado.name() == 'EN_PROCESO'} ? 'badge bg-primary'
+                                            : (${cita.estado.name() == 'COMPLETADA'} ? 'badge bg-success'
+                                            : 'badge bg-danger'))">
+                                </span>
+                            </td>
+                            <td class="text-center pe-4">
+                                <div class="d-flex justify-content-center gap-1">
+                                    <button type="button" class="btn btn-sm btn-icon btn-outline-info" title="Ver Detalles"
                                         th:data-paciente="${cita.paciente.nombre}"
                                         th:data-especie="${cita.paciente.especie}"
                                         th:data-dueno="${cita.paciente.propietario.nombreCompleto}"
                                         th:data-dni="${cita.paciente.propietario.dni}"
                                         th:data-vet="${cita.personal.nombreCompleto}"
                                         th:data-fecha="${#temporals.format(cita.fechaHora, 'dd/MM/yyyy HH:mm')} + ' hrs'"
-                                        th:data-estado="${cita.estado}"
-                                        th:data-motivo="${cita.motivo}"
+                                        th:data-estado="${cita.estado}" th:data-motivo="${cita.motivo}"
                                         onclick="abrirModalCita(this)">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                                <!-- Editar es solo lectura (GET seguro) -->
-                                <a th:href="@{/citas/editar/{id}(id=${cita.id})}"
-                                   class="btn btn-sm btn-outline-primary" title="Editar">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </a>
-                                <!-- Cancelar: POST para proteger CSRF -->
-                                <form th:if="${cita.estado.name() != 'CANCELADA' and cita.estado.name() != 'COMPLETADA'}"
-                                      th:action="@{/citas/cancelar/{id}(id=${cita.id})}"
-                                      method="post" class="d-inline"
-                                      onsubmit="return confirm('¿Cancelar esta cita?')">
-                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                    <button type="submit" class="btn btn-sm btn-outline-warning" title="Cancelar">
-                                        <i class="fa-solid fa-ban"></i>
+                                        <i class="fa-solid fa-eye"></i>
                                     </button>
-                                </form>
-                                <!-- Completar: POST -->
-                                <form th:if="${cita.estado.name() == 'PENDIENTE' or cita.estado.name() == 'EN_PROCESO'}"
-                                      th:action="@{/citas/completar/{id}(id=${cita.id})}"
-                                      method="post" class="d-inline"
-                                      onsubmit="return confirm('¿Marcar esta cita como completada?')">
-                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Completar">
-                                        <i class="fa-solid fa-check-double"></i>
-                                    </button>
-                                </form>
-                                <!-- Eliminar: POST para proteger CSRF -->
-                                <form th:action="@{/citas/eliminar/{id}(id=${cita.id})}"
-                                      method="post" class="d-inline"
-                                      onsubmit="return confirm('¿Eliminar esta cita permanentemente?')">
-                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
+                                    <a th:href="@{/citas/editar/{id}(id=${cita.id})}" class="btn btn-sm btn-icon btn-outline-primary" title="Editar">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <form th:if="${cita.estado.name() != 'CANCELADA' and cita.estado.name() != 'COMPLETADA'}"
+                                        th:action="@{/citas/cancelar/{id}(id=${cita.id})}" method="post"
+                                        class="d-inline" onsubmit="return confirm('¿Cancelar esta cita?')">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                        <button type="submit" class="btn btn-sm btn-icon btn-outline-warning" title="Cancelar">
+                                            <i class="fa-solid fa-ban"></i>
+                                        </button>
+                                    </form>
+                                    <form th:if="${cita.estado.name() == 'PENDIENTE' or cita.estado.name() == 'EN_PROCESO'}"
+                                        th:action="@{/citas/completar/{id}(id=${cita.id})}" method="post"
+                                        class="d-inline" onsubmit="return confirm('¿Marcar esta cita como completada?')">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                        <button type="submit" class="btn btn-sm btn-icon btn-outline-success" title="Completar">
+                                            <i class="fa-solid fa-check-double"></i>
+                                        </button>
+                                    </form>
+                                    <form th:action="@{/citas/eliminar/{id}(id=${cita.id})}" method="post"
+                                        class="d-inline" onsubmit="return confirm('¿Eliminar esta cita permanentemente?')">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                        <button type="submit" class="btn btn-sm btn-icon btn-outline-danger" title="Eliminar">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -181,7 +171,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow">
                 <div class="modal-header border-bottom-0 pb-0">
-                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-notes-medical text-primary me-2"></i>Detalles de Cita</h5>
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-notes-medical text-primary me-2"></i> Detalles de Cita</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body pt-3">
@@ -194,15 +184,15 @@
                     </div>
                     <div class="row g-2 small mb-3">
                         <div class="col-6">
-                            <span class="text-muted d-block"><i class="fa-solid fa-user me-1"></i>Propietario</span>
+                            <span class="text-muted d-block"><i class="fa-solid fa-user me-1"></i> Propietario</span>
                             <span class="fw-medium" id="modalDueno">Dueño</span> (<span id="modalDni">DNI</span>)
                         </div>
                         <div class="col-6">
-                            <span class="text-muted d-block"><i class="fa-solid fa-user-doctor me-1"></i>Veterinario</span>
+                            <span class="text-muted d-block"><i class="fa-solid fa-user-doctor me-1"></i> Veterinario</span>
                             <span class="fw-medium" id="modalVet">Vet</span>
                         </div>
                         <div class="col-12 mt-2">
-                            <span class="text-muted d-block"><i class="fa-solid fa-calendar-day me-1"></i>Fecha y Hora</span>
+                            <span class="text-muted d-block"><i class="fa-solid fa-calendar-day me-1"></i> Fecha y Hora</span>
                             <span class="fw-medium" id="modalFecha">Fecha</span>
                         </div>
                     </div>
@@ -220,28 +210,29 @@
 </main>
 
 <div id="custom-scripts">
-<script>
-    function abrirModalCita(btn) {
-        document.getElementById('modalPaciente').textContent = btn.getAttribute('data-paciente');
-        document.getElementById('modalEspecie').textContent = btn.getAttribute('data-especie');
-        document.getElementById('modalDueno').textContent = btn.getAttribute('data-dueno');
-        document.getElementById('modalDni').textContent = btn.getAttribute('data-dni');
-        document.getElementById('modalVet').textContent = btn.getAttribute('data-vet');
-        document.getElementById('modalFecha').textContent = btn.getAttribute('data-fecha');
-        document.getElementById('modalMotivo').textContent = btn.getAttribute('data-motivo');
-        
-        const estado = btn.getAttribute('data-estado');
-        const badge = document.getElementById('modalEstado');
-        badge.textContent = estado;
-        badge.className = 'badge';
-        if (estado === 'PENDIENTE') badge.classList.add('bg-warning', 'text-dark');
-        else if (estado === 'EN_PROCESO') badge.classList.add('bg-primary');
-        else if (estado === 'COMPLETADA') badge.classList.add('bg-success');
-        else badge.classList.add('bg-danger');
+    <script>
+        function abrirModalCita(btn) {
+            document.getElementById('modalPaciente').textContent = btn.getAttribute('data-paciente');
+            document.getElementById('modalEspecie').textContent = btn.getAttribute('data-especie');
+            document.getElementById('modalDueno').textContent = btn.getAttribute('data-dueno');
+            document.getElementById('modalDni').textContent = btn.getAttribute('data-dni');
+            document.getElementById('modalVet').textContent = btn.getAttribute('data-vet');
+            document.getElementById('modalFecha').textContent = btn.getAttribute('data-fecha');
+            document.getElementById('modalMotivo').textContent = btn.getAttribute('data-motivo');
 
-        const modal = new bootstrap.Modal(document.getElementById('modalCita'));
-        modal.show();
-    }
-</script>
+            const estado = btn.getAttribute('data-estado');
+            const badge = document.getElementById('modalEstado');
+            badge.textContent = estado;
+            badge.className = 'badge';
+            if (estado === 'PENDIENTE') badge.classList.add('bg-warning', 'text-dark');
+            else if (estado === 'EN_PROCESO') badge.classList.add('bg-primary');
+            else if (estado === 'COMPLETADA') badge.classList.add('bg-success');
+            else badge.classList.add('bg-danger');
+
+            const modal = new bootstrap.Modal(document.getElementById('modalCita'));
+            modal.show();
+        }
+    </script>
 </div>
+
 </html>

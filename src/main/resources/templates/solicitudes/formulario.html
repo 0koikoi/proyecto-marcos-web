@@ -1,5 +1,5 @@
 <html th:replace="~{layout :: page('Nueva Solicitud de Material', 'solicitudes', ~{::main}, ~{})}"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 
 <main>
     <div class="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
@@ -11,6 +11,7 @@
         </h2>
     </div>
 
+
     <div class="card shadow-sm border-0">
         <div class="card-body p-4">
             <form th:action="@{/solicitudes/guardar}" method="post">
@@ -20,23 +21,21 @@
                     <label for="productoId" class="form-label fw-bold">Producto / Insumo *</label>
                     <select id="productoId" name="producto.id" class="form-select" required>
                         <option value="">Seleccionar producto...</option>
-                        <option th:each="p : ${productos}"
-                                th:value="${p.id}"
-                                th:text="${p.nombre + ' (Stock: ' + p.stockActual + ')'}">
+                        <option th:each="p : ${productos}" th:value="${p.id}"
+                            th:text="${p.nombre + ' (Stock: ' + p.stockActual + ')'}">
                         </option>
                     </select>
                 </div>
 
                 <div class="mb-3">
                     <label for="cantidad" class="form-label fw-bold">Cantidad solicitada *</label>
-                    <input type="number" id="cantidad" name="cantidadSolicitada"
-                           min="1" class="form-control" required>
+                    <input type="number" id="cantidad" name="cantidadSolicitada" min="1" class="form-control" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="motivo" class="form-label fw-bold">Motivo de la solicitud *</label>
                     <textarea id="motivo" name="motivo" rows="3" class="form-control" required
-                              placeholder="Describa para qué necesita este material"></textarea>
+                        placeholder="Describa para qué necesita este material"></textarea>
                 </div>
 
                 <div class="mt-4">
@@ -49,4 +48,5 @@
         </div>
     </div>
 </main>
+
 </html>

@@ -1,95 +1,153 @@
-/* SISTEMA VET HUELLITAS - DISEÑO MINIMALISTA Y SEMÁNTICO */
+/* SISTEMA VET HUELLITAS - DISEÑO PREMIUM Y MODERNO */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-    /* 1. Paleta Semántica */
-    --bg-app: #FFF8E9;
-    --primary: #2584A7;
-    --accent: #24E5D2;
-    --danger: #FE6D73;
-    --warning: #FFCB77;
+    /* Paleta de Colores Moderna (Tonos Joya y Neutros Elegantes) */
+    --bg-app: #f4f6f9;
+    --primary: #1e3a8a;       /* Azul marino profundo */
+    --primary-light: #3b82f6; /* Azul brillante */
+    --accent: #10b981;        /* Verde esmeralda (success) */
+    --accent-hover: #059669;
+    --danger: #ef4444;        /* Rojo coral */
+    --warning: #f59e0b;       /* Naranja ámbar */
+    --info: #0ea5e9;          /* Azul cielo */
 
-    /* 2. Colores Estructurales */
-    --text-main: #1f2937;
-    --text-muted: #64748b;
-    --border-color: #e5e7eb;
-    --sidebar-bg: #ffffff;
+    /* Colores Estructurales */
+    --text-main: #1f2937;     /* Gris muy oscuro */
+    --text-muted: #6b7280;    /* Gris medio */
+    --border-color: #e5e7eb;  /* Gris claro para bordes */
+    --surface: #ffffff;       /* Fondo de tarjetas */
+    
+    /* Variables de Sombra y Transiciones */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Animaciones Base ────────────────────────────────────────── */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
 /* ── Tipografía y Base ────────────────────────────────────────── */
-html,
-body {
+html, body {
     overflow-x: hidden;
     width: 100%;
-    background-color: var(--bg-app) !important;
-    font-family: 'Inter', 'Poppins', sans-serif;
+    background-color: var(--bg-app);
+    font-family: 'Inter', sans-serif;
     color: var(--text-main);
     min-height: 100vh;
-    padding-top: 60px;
-    /* Espacio para el navbar fijo */
+    padding-top: 70px; /* Espacio para el navbar fijo */
 }
 
 ::placeholder {
-    color: #cbd5e1 !important;
+    color: #9ca3af !important;
     opacity: 1;
     font-weight: 300;
 }
 
 /* ── Layout Global ────────────────────────────────────────────── */
-/* Navbar */
+/* Navbar Solid */
 .navbar {
     background-color: var(--primary) !important;
-    border-bottom: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
 }
 
 .navbar-brand {
-    font-weight: 600;
-    color: #fff !important;
+    font-weight: 700;
+    color: #ffffff !important;
     letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
 }
 
 .navbar-brand i {
-    margin-right: 8px;
+    margin-right: 10px;
     color: var(--warning);
+    font-size: 1.2rem;
+    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.4));
+}
+
+.navbar .btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.navbar .btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: #fff;
+    transform: translateY(-2px);
 }
 
 /* Sidebar */
 .sidebar {
     position: fixed;
-    top: 0;
+    top: 70px;
     bottom: 0;
     left: 0;
     z-index: 100;
-    padding: 70px 0 0;
-    background-color: var(--sidebar-bg) !important;
+    padding: 20px 0;
+    background-color: var(--surface);
     border-right: 1px solid var(--border-color);
     width: 260px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+    overflow-y: auto;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
 }
 
 .sidebar .nav-link {
     font-weight: 500;
-    padding: 0.75rem 1.5rem;
+    padding: 0.85rem 1.5rem;
     color: var(--text-muted);
     border-left: 4px solid transparent;
-    margin-bottom: 2px;
-}
-
-.sidebar .nav-link:hover {
-    background-color: rgba(37, 132, 167, 0.05);
-    color: var(--primary);
-}
-
-.sidebar .nav-link.active {
-    background-color: rgba(36, 229, 210, 0.1);
-    color: var(--primary);
-    border-left-color: var(--accent);
-    font-weight: 600;
+    margin: 4px 12px;
+    border-radius: 8px;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
 }
 
 .sidebar .nav-link i {
     width: 24px;
     margin-right: 12px;
     color: #9ca3af;
+    transition: var(--transition);
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+    color: var(--primary-light);
+    transform: translateX(4px);
+}
+
+.sidebar .nav-link:hover i {
+    color: var(--primary-light);
+}
+
+.sidebar .nav-link.active {
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, rgba(255,255,255,0) 100%);
+    color: var(--primary);
+    border-left: 4px solid var(--primary);
+    font-weight: 600;
 }
 
 .sidebar .nav-link.active i {
@@ -99,349 +157,359 @@ body {
 main {
     margin-left: 260px;
     padding: 30px;
+    animation: fadeIn 0.6s ease-out;
 }
 
 /* ── UI Core (Tarjetas, Botones, Tablas) ──────────────────────── */
+/* Tarjetas */
 .card {
-    background-color: #ffffff;
-    border: 1px solid var(--border-color) !important;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
-    transition: none;
-}
-
-.card-header{
-    padding:1rem 1.25rem;
-    font-weight:700;
-    font-size:1rem;
-    border-bottom:1px solid #e9ecef;
-}
-
-.btn {
+    background-color: var(--surface);
+    border: 1px solid rgba(0,0,0,0.05) !important;
     border-radius: 6px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    background-color: transparent;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--primary);
+}
+
+/* Botones */
+.btn {
+    border-radius: 4px;
     font-weight: 500;
-    padding: 0.5rem 1.25rem;
-    letter-spacing: 0.3px;
-    border: none;
+    padding: 0.4rem 1rem;
+    letter-spacing: 0.2px;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-primary {
     background-color: var(--primary) !important;
+    border: none !important;
     color: white !important;
 }
 
 .btn-primary:hover {
-    background-color: #1e6c8a !important;
+    background-color: var(--primary-light) !important;
     transform: translateY(-1px);
 }
 
 .btn-success {
-    background-color: #10b981 !important;
+    background-color: var(--accent) !important;
+    border: none !important;
     color: white !important;
+}
+
+.btn-success:hover {
+    background-color: var(--accent-hover) !important;
+    transform: translateY(-1px);
 }
 
 .btn-danger {
     background-color: var(--danger) !important;
+    border: none !important;
     color: white !important;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626 !important;
+    transform: translateY(-1px);
 }
 
 .btn-warning {
     background-color: var(--warning) !important;
-    color: #000 !important;
+    border: none !important;
+    color: #fff !important;
+}
+
+.btn-warning:hover {
+    background-color: #d97706 !important;
+    transform: translateY(-1px);
 }
 
 /* Formularios */
-.form-control,
-.form-select {
-    border-radius: 6px;
+.form-control, .form-select {
+    border-radius: 4px;
     border: 1px solid var(--border-color);
-    padding: 0.6rem 1rem;
+    padding: 0.65rem 1rem;
     color: var(--text-main);
     font-size: 0.95rem;
-    box-shadow: none;
+    background-color: #f9fafb;
+    transition: var(--transition);
 }
 
-.form-control:focus,
-.form-select:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37, 132, 167, 0.1);
+.form-control:focus, .form-select:focus {
+    background-color: #ffffff;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    outline: none;
 }
 
-label.form-label,
-.text-muted.small.d-block {
-    font-weight: 500;
+label.form-label {
+    font-weight: 600;
     color: var(--text-muted);
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.5rem;
     font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.error-message {
-    color: var(--danger);
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-h2.fw-bold {
-    color: var(--primary);
-    letter-spacing: -0.5px;
+    letter-spacing: 0.3px;
 }
 
 /* Tablas */
+.table-responsive {
+    border-radius: 4px;
+    overflow: hidden;
+}
+
 .table {
     vertical-align: middle;
+    margin-bottom: 0;
 }
 
 .table thead th {
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
     color: var(--text-muted);
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
-    padding: 1rem;
-    background-color: transparent !important;
+    letter-spacing: 0.8px;
+    padding: 1rem 1.25rem;
+    background-color: #f8fafc !important;
+}
+
+.table tbody tr {
+    transition: var(--transition);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: scale(1.002);
+    box-shadow: inset 4px 0 0 var(--primary-light);
 }
 
 .table tbody td {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-color);
+    padding: 1.25rem;
     color: var(--text-main);
+    border: none;
 }
 
+/* ── Estilos Específicos de Módulos ────────────────────────────────── */
 
-/* ── ESTILOS ESPECÍFICOS DE MÓDULOS (Extraídos de Vistas) ─────── */
-
-/* Encabezado y pills de estadística */
-.page-title {
+/* Títulos y Encabezados de Página */
+h2.fw-bold {
     color: var(--primary);
-    font-size: 1.5rem;
     letter-spacing: -0.5px;
+    animation: slideInRight 0.5s ease-out;
 }
 
+/* Pills de Estadísticas / Badges */
 .stat-pill {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.82rem;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.85rem;
     font-weight: 600;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
 }
 
-.stat-admin {
-    background: #fef3c7;
-    color: #92400e;
+.stat-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
-.stat-recep {
-    background: #e0f2fe;
-    color: #0369a1;
-}
+.stat-admin { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; border: 1px solid #fcd34d; }
+.stat-recep { background: linear-gradient(135deg, #e0f2fe, #bae6fd); color: #0369a1; border: 1px solid #7dd3fc; }
+.stat-vet { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46; border: 1px solid #6ee7b7; }
 
-.stat-vet {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-/* Panel formulario Custom */
-.form-panel {
-    position: sticky;
-    top: 80px;
-}
-
+/* Panel Formulario Custom */
 .card-header-custom {
-    padding: 1.25rem 1.5rem;
-    background: linear-gradient(135deg, var(--primary) 0%, #1e6c8a 100%);
+    padding: 1.5rem;
+    background-color: var(--primary);
     color: white;
-    border-radius: 12px 12px 0 0;
-    transition: background 0.3s ease;
+    border-radius: 6px 6px 0 0;
+    transition: var(--transition);
 }
 
 .card-header-custom.editing {
-    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+    background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
 }
 
 .header-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
     background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
+    font-size: 1.25rem;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3);
 }
 
-.header-icon.editing {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-/* Filtros de rol */
+/* Filtros de rol tipo Pills */
 .role-filter-tabs {
     display: flex;
-    gap: 8px;
+    gap: 12px;
     flex-wrap: wrap;
+    margin-bottom: 1.5rem;
 }
 
 .role-tab {
-    padding: 7px 16px;
-    border-radius: 20px;
-    border: 2px solid var(--border-color);
-    background: white;
-    font-size: 0.82rem;
+    padding: 6px 16px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background: var(--surface);
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition);
     color: var(--text-muted);
+    box-shadow: var(--shadow-sm);
 }
 
 .role-tab:hover {
-    border-color: var(--primary);
-    color: var(--primary);
+    border-color: var(--primary-light);
+    color: var(--primary-light);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 .role-tab.active {
     background: var(--primary);
     color: white;
     border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
 }
 
 /* Tarjetas de personal (Staff Cards) */
-.staff-card-inner {
-    border-radius: 12px;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+.staff-card {
+    border-left: 4px solid transparent;
 }
-
-.staff-card-inner:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
-}
-
-.role-accent-bar {
-    height: 4px;
-    width: 100%;
-}
-
-.bar-administrador {
-    background: linear-gradient(90deg, #f59e0b, #fbbf24);
-}
-
-.bar-recepcion {
-    background: linear-gradient(90deg, var(--primary), var(--accent));
-}
-
-.bar-veterinario {
-    background: linear-gradient(90deg, #10b981, #34d399);
-}
+.staff-card[data-rol="ADMINISTRADOR"] { border-left-color: #f59e0b; }
+.staff-card[data-rol="RECEPCION"] { border-left-color: var(--primary-light); }
+.staff-card[data-rol="VETERINARIO"] { border-left-color: var(--accent); }
 
 /* Avatares con inicial */
 .staff-avatar {
-    width: 46px;
-    height: 46px;
-    border-radius: 12px;
+    width: 50px;
+    height: 50px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: 700;
     flex-shrink: 0;
     color: white;
+    box-shadow: var(--shadow-sm);
 }
 
-.avatar-administrador {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-}
+.avatar-administrador { background-color: var(--warning); }
+.avatar-recepcion { background-color: var(--info); }
+.avatar-veterinario { background-color: var(--accent); }
 
-.avatar-recepcion {
-    background: linear-gradient(135deg, var(--primary), #1e6c8a);
-}
-
-.avatar-veterinario {
-    background: linear-gradient(135deg, #10b981, #059669);
-}
-
-/* Badges de rol */
+/* Badges de rol generales */
 .badge-rol {
     font-size: 0.7rem;
     font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 4px;
+    padding: 4px 10px;
+    border-radius: 6px;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
 }
 
-.badge-rol-administrador {
-    background: #fef3c7;
-    color: #92400e;
+.badge-rol-administrador { background: #fef3c7; color: #92400e; }
+.badge-rol-recepcion { background: #e0f2fe; color: #0369a1; }
+.badge-rol-veterinario { background: #d1fae5; color: #065f46; }
+
+/* ── Alertas (Flash Messages) ────────────────────────────────── */
+.alert {
+    border: none;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    font-weight: 500;
+    animation: fadeIn 0.4s ease-out;
 }
 
-.badge-rol-recepcion {
-    background: #e0f2fe;
-    color: #0369a1;
-}
+.alert-success { background-color: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
+.alert-danger { background-color: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
+.alert-warning { background-color: #fef3c7; color: #92400e; border-left: 4px solid #f59e0b; }
 
-.badge-rol-veterinario {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-/* Grid de información interna */
-.staff-info-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.info-row {
-    display: grid;
-    grid-template-columns: 16px 80px 1fr;
-    gap: 6px;
-    align-items: center;
-}
-
-.info-row i {
-    font-size: 0.75rem;
-    text-align: center;
-}
-
-/* Botones Outlines (Ajuste global) */
-.btn-outline-primary {
-    border-color: var(--primary) !important;
-    color: var(--primary) !important;
-}
-
-.btn-outline-primary:hover {
-    background-color: var(--primary) !important;
-    color: white !important;
-}
-
-
-/* responsive simple */
+/* ── Responsive ────────────────────────────────────────────── */
 @media (max-width: 767.98px) {
     .sidebar {
         position: static;
         width: 100%;
         height: auto;
-        padding-top: 0;
+        padding-top: 10px;
         border-right: none;
         border-bottom: 1px solid var(--border-color);
+        box-shadow: none;
     }
 
     main {
         margin-left: 0 !important;
-        padding: 15px;
+        padding: 20px 15px;
     }
 
     body {
-        padding-top: 56px;
+        padding-top: 60px;
+    }
+    
+    .table-responsive {
+        border-radius: 8px;
     }
 }
 
-/* impresión — ocultar chrome del sistema al imprimir una receta */
+/* ── Impresión ─────────────────────────────────────────────── */
 @media print {
-    nav, .sidebar, .btn, .no-print { display: none !important; }
-    main { margin: 0 !important; padding: 0 !important; }
-    body { font-size: 12pt; padding-top: 0; }
+    nav, .sidebar, .btn, .no-print, .role-filter-tabs {
+        display: none !important;
+    }
+
+    main {
+        margin: 0 !important;
+        padding: 0 !important;
+        animation: none !important;
+    }
+
+    body {
+        font-size: 12pt;
+        padding-top: 0;
+        background: white !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+    }
 }

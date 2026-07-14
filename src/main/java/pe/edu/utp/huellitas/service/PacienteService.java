@@ -23,7 +23,8 @@ public class PacienteService {
 
     public List<Paciente> listarTodos(String buscar) {
         if (buscar != null && !buscar.trim().isEmpty()) {
-            return pacienteRepository.findByNombreContainingIgnoreCase(buscar.trim());
+            String b = buscar.trim();
+            return pacienteRepository.findByNombreContainingIgnoreCaseOrEspecieContainingIgnoreCaseOrPropietarioNombreCompletoContainingIgnoreCase(b, b, b);
         }
         return pacienteRepository.findAll();
     }

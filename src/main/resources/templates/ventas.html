@@ -1,4 +1,5 @@
 <html th:replace="~{layout :: page('Ventas', 'ventas', ~{::main}, ~{})}">
+
 <main>
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
         <h2 class="fw-bold">Registro de Ventas</h2>
@@ -37,7 +38,6 @@
             </div>
         </form>
     </div>
-
     <div class="card shadow-sm border-0">
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -48,6 +48,7 @@
                         <th>Fecha</th>
                         <th>Cliente</th>
                         <th>M. Pago</th>
+                        <th>Vendedor</th>
                         <th>Estado</th>
                         <th class="text-end">Total</th>
                         <th class="text-center pe-4">Acciones</th>
@@ -58,7 +59,8 @@
                         <td class="ps-4 fw-bold text-secondary" th:text="${venta.nroBoleta}"></td>
                         <td th:text="${#temporals.format(venta.fechaEmision, 'dd/MM/yyyy HH:mm')}"></td>
                         <td th:text="${venta.propietario != null ? venta.propietario.nombreCompleto : 'Público General'}"></td>
-                        <td th:text="${venta.metodoPago != null ? venta.metodoPago : 'Efectivo'}"></td>
+                        <td th:text="${venta.tipoPago != null ? venta.tipoPago : 'EFECTIVO'}"></td>
+                        <td th:text="${venta.personal != null ? venta.personal.nombreCompleto : '—'}"></td>
                         <td>
                             <span th:text="${venta.estado}"
                                   th:class="${venta.estado.name() == 'PAGADA'}   ? 'badge bg-success'
@@ -86,7 +88,7 @@
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(ventas)}">
-                        <td colspan="7" class="text-center text-muted py-5">
+                        <td colspan="8" class="text-center text-muted py-5">
                             <i class="fa-solid fa-box-open fa-2x mb-3 d-block text-secondary"></i>
                             No se encontraron ventas registradas.
                         </td>
@@ -97,4 +99,5 @@
         </div>
     </div>
 </main>
+
 </html>

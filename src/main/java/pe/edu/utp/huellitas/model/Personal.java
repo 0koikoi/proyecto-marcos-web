@@ -12,18 +12,6 @@ import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Entidad que representa al personal de la clínica y al mismo tiempo
- * actúa como principal de Spring Security (implementa UserDetails).
- *
- * Roles disponibles (tabla 'rol'):
- *   ADMINISTRADOR — acceso total al sistema
- *   RECEPCION     — ventas, citas, propietarios y pacientes
- *   VETERINARIO   — historia clínica, recetas, vacunas, solicitudes de material
- *
- * TODO (mejora futura): separar UserDetails en PersonalUserPrincipal
- * para cumplir SRP y desacoplar dominio de Spring Security.
- */
 @Data
 @Entity
 @Table(name = "personal")
@@ -38,10 +26,7 @@ public class Personal implements UserDetails {
     private String codigoInstitucional;
 
     @NotBlank(message = "El nombre es obligatorio")
-    @Pattern(
-        regexp = "^[A-Za-zÁÉÍÓÚáéíóúÑñ. ]+$",
-        message = "El nombre solo puede contener letras"
-    )
+    @Pattern(regexp = "^[A-Za-zÁÉÍÓÚáéíóúÑñ. ]+$", message = "El nombre solo puede contener letras")
     @Column(nullable = false)
     private String nombreCompleto;
 
@@ -57,10 +42,7 @@ public class Personal implements UserDetails {
     @Column(length = 100)
     private String especialidad;
 
-    @Pattern(
-        regexp = "^(\\+51\\s?)?9\\d{8}$",
-        message = "El teléfono debe tener formato 912345678 o +51 912345678"
-    )
+    @Pattern(regexp = "^(9\\d{8})?$", message = "El teléfono debe tener 9 dígitos y comenzar con 9")
     @Column(length = 15)
     private String telefono;
 
@@ -109,18 +91,15 @@ public class Personal implements UserDetails {
     @Column(nullable = false)
     private OffsetDateTime updatedAt = OffsetDateTime.now();
 
-    // ─── UserDetails implementation ───────────────────────────────────────────
-
-    /**
-     * Devuelve el rol con prefijo "ROLE_" que exige Spring Security.
-     * Ejemplo: ROLE_ADMINISTRADOR, ROLE_VETERINARIO, ROLE_RECEPCION
-     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + rol.getNombre()));
     }
 
-    /** Spring Security usa este método para obtener la contraseña (hash BCrypt). */
+    /**
+     * Spring Security usa este método para obtener la contraseña con
+     * hashbycscprinjdsdjkfjsk
+     */
     @Override
     public String getPassword() {
         return this.passwordHash;
@@ -133,18 +112,20 @@ public class Personal implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired()     { return true; }
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
     @Override
-    public boolean isAccountNonLocked()      { return true; }
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
     @Override
-    public boolean isCredentialsNonExpired() { return true; }
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-    /**
-     * Un miembro del personal con activo=false no puede iniciar sesión.
-     * El administrador puede desactivar usuarios desde el módulo de Personal.
-     */
     @Override
     public boolean isEnabled() {
         return Boolean.TRUE.equals(this.activo);

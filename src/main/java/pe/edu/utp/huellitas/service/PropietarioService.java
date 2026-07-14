@@ -22,6 +22,13 @@ public class PropietarioService {
         return propietarioRepository.findAll();
     }
 
+    public List<Propietario> buscarPropietarios(String buscar) {
+        if (estaVacio(buscar)) {
+            return listarTodos();
+        }
+        return propietarioRepository.findByNombreCompletoContainingIgnoreCaseOrDniContaining(buscar, buscar);
+    }
+
     public Propietario obtenerPorId(Long id) {
         return propietarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No se encontró el propietario con ID: " + id));

@@ -2,11 +2,9 @@ package pe.edu.utp.huellitas.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import jakarta.servlet.http.HttpSession;
 import pe.edu.utp.huellitas.model.Personal;
@@ -35,18 +33,17 @@ public class ProveedorController {
 
     // GUARDAR
     @PostMapping("/guardar")
-    public String guardar(
-            @ModelAttribute Proveedor proveedor,
-            HttpSession session) {
-
+    public String guardar(@Valid @ModelAttribute("nuevoProveedor") Proveedor proveedor, BindingResult result, Model model, HttpSession session) {
         Personal usuario = (Personal) session.getAttribute("usuario");
-
-        if (usuario == null ||
-                !usuario.getCargo().equals("ADMINISTRADOR")) {
-
+        if (usuario == null || !usuario.getCargo().equals("ADMINISTRADOR")) {
             return "redirect:/dashboard?error=AccesoDenegado";
         }
 
+        if (result.hasErrors()) {
+            model.addAttribute("listaProveedores", proveedorService.listar());
+            model.addAttribute("activePage", "proveedores");
+            return "proveedores";
+        }
         proveedorService.guardar(proveedor);
 
         return "redirect:/proveedores";
@@ -70,25 +67,14 @@ public class ProveedorController {
 
         return "redirect:/proveedores";
     }
-
     // editar
 
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id, Model model) {
-
         Proveedor proveedor = proveedorService.buscarPorId(id);
-
         model.addAttribute("nuevoProveedor", proveedor);
-
-        model.addAttribute(
-                "listaProveedores",
-                proveedorService.listar());
-
-        model.addAttribute(
-                "activePage",
-                "proveedores");
-
+        model.addAttribute("listaProveedores", proveedorService.listar());
+        model.addAttribute("activePage", "proveedores");
         return "proveedores";
     }
-
 }

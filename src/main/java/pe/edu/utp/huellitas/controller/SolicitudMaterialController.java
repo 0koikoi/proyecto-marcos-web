@@ -13,6 +13,41 @@ import pe.edu.utp.huellitas.service.PersonalService;
 import pe.edu.utp.huellitas.service.ProductoService;
 import pe.edu.utp.huellitas.service.SolicitudMaterialService;
 
+/**
+ * Controller de Solicitudes de Material.
+ *
+ * ════════════════════════════════════════════════════════════
+ * TODO — MÓDULO A IMPLEMENTAR POR EL EQUIPO
+ * ════════════════════════════════════════════════════════════
+ *
+ * La estructura base está lista. El desarrollador asignado debe:
+ *
+ * 1. Implementar el cuerpo de los métodos marcados con TODO.
+ *
+ * 2. Crear los templates en src/main/resources/templates/solicitudes/:
+ * - lista.html → vista diferenciada según rol:
+ * - ADMIN ve tabla con todas, con botones de acción
+ * - VET ve solo las suyas, sin botones de acción
+ * - formulario.html → formulario simple: select producto, cantidad, motivo
+ *
+ * 3. En el template lista.html, usar sec:authorize para mostrar u ocultar:
+ * - Botón "Aprobar" → sec:authorize="hasRole('ADMINISTRADOR')"
+ * - Botón "Rechazar" → sec:authorize="hasRole('ADMINISTRADOR')"
+ * - Botón "Marcar entregada" → sec:authorize="hasRole('ADMINISTRADOR')"
+ *
+ * 4. El estado de cada solicitud debe mostrarse con un badge de color:
+ * PENDIENTE → amarillo | APROBADA → azul | ENTREGADA → verde | RECHAZADA → rojo
+ *
+ * 5. Al aprobar/rechazar, mostrar un modal con campo para observación.
+ *
+ * 6. Al marcar como entregada, pedir la cantidad entregada real.
+ *
+ * Referencia de permisos:
+ * ADMINISTRADOR → ver todas, aprobar, rechazar, entregar
+ * VETERINARIO → crear solicitud, ver las propias
+ * RECEPCION → SIN acceso a este módulo
+ * ════════════════════════════════════════════════════════════
+ */
 @Controller
 @RequestMapping("/solicitudes")
 @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO')")
@@ -30,6 +65,12 @@ public class SolicitudMaterialController {
         this.personalService = personalService;
     }
 
+    // ── Lista — diferenciada por rol ──────────────────────────────────────────
+
+    /**
+     * ADMIN: ve todas las solicitudes.
+     * VETERINARIO: ve solo las propias.
+     */
     @GetMapping
     public String listar(Authentication authentication, Model model) {
         Personal usuarioActual = (Personal) authentication.getPrincipal();
@@ -45,6 +86,8 @@ public class SolicitudMaterialController {
         model.addAttribute("activePage", "solicitudes");
         return "solicitudes/lista";
     }
+
+    // ── Formulario nueva solicitud (solo VETERINARIO) ─────────────────────────
 
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO')")
     @GetMapping("/nueva")
@@ -70,6 +113,8 @@ public class SolicitudMaterialController {
         return "redirect:/solicitudes";
     }
 
+    // ── Aprobar (solo ADMINISTRADOR) ──────────────────────────────────────────
+
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/aprobar/{id}")
     public String aprobar(@PathVariable Long id,
@@ -86,6 +131,12 @@ public class SolicitudMaterialController {
         return "redirect:/solicitudes";
     }
 
+    // ── Rechazar (solo ADMINISTRADOR) ─────────────────────────────────────────
+
+    /**
+     * TODO: Recibir motivoRechazo como @RequestParam del formulario modal.
+     * El motivo de rechazo es obligatorio.
+     */
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/rechazar/{id}")
     public String rechazar(@PathVariable Long id,
@@ -102,6 +153,11 @@ public class SolicitudMaterialController {
         return "redirect:/solicitudes";
     }
 
+    // ── Marcar como entregada (solo ADMINISTRADOR) ────────────────────────────
+
+    /**
+     * TODO: Recibir cantidadEntregada desde un modal con input numérico.
+     */
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/entregar/{id}")
     public String marcarEntregada(@PathVariable Long id,

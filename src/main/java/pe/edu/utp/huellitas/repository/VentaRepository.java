@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import pe.edu.utp.huellitas.model.EstadoVenta;
 import pe.edu.utp.huellitas.model.Venta;
 
 public interface VentaRepository extends JpaRepository<Venta, Long> {
@@ -19,5 +20,7 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     BigDecimal totalVentasMes();
 
     List<Venta> findTop10ByOrderByFechaEmisionDesc();
+
+    List<Venta> findByEstado(EstadoVenta estado);
 
 }

@@ -17,13 +17,8 @@ import pe.edu.utp.huellitas.model.Personal;
 import pe.edu.utp.huellitas.dto.PersonalDTO;
 import pe.edu.utp.huellitas.service.PersonalService;
 
-/**
- * CRUD completo de gestión de personal.
- * Accesible únicamente para el rol ADMINISTRADOR.
- *
- * Nota: Este controller NO inyecta RolRepository directamente.
- * Usa PersonalService.listarRoles() para obtener el catálogo de roles.
- */
+//crud para gestion de personal
+
 @Controller
 @RequestMapping("/personal")
 @PreAuthorize("hasRole('ADMINISTRADOR')")
@@ -35,8 +30,7 @@ public class PersonalController {
         this.service = service;
     }
 
-    // ── Listar ────────────────────────────────────────────────────────────────
-
+    // listar
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("listaPersonal", service.listarTodos());
@@ -62,12 +56,12 @@ public class PersonalController {
             dto.setTelefono(persona.getTelefono());
             dto.setEmail(persona.getEmail());
             dto.setUsername(persona.getUsername());
-            
+
             model.addAttribute("nuevoPersonal", dto);
             model.addAttribute("listaPersonal", service.listarTodos());
-            model.addAttribute("roles",         service.listarRoles());
-            model.addAttribute("editando",      true);
-            model.addAttribute("activePage",    "personal");
+            model.addAttribute("roles", service.listarRoles());
+            model.addAttribute("editando", true);
+            model.addAttribute("activePage", "personal");
             return "personal";
         }).orElseGet(() -> {
             redirectAttrs.addFlashAttribute("errorMsg", "No se encontró el miembro del personal.");
@@ -75,8 +69,7 @@ public class PersonalController {
         });
     }
 
-    // ── Guardar (crear o actualizar) ──────────────────────────────────────────
-
+    // guarda
     @PostMapping("/guardar")
     public String guardar(
             @Valid @ModelAttribute("nuevoPersonal") PersonalDTO dto,
@@ -87,15 +80,15 @@ public class PersonalController {
 
         if (result.hasErrors()) {
             model.addAttribute("listaPersonal", service.listarTodos());
-            model.addAttribute("roles",         service.listarRoles());
-            model.addAttribute("editando",      dto.getId() != null);
-            model.addAttribute("activePage",    "personal");
+            model.addAttribute("roles", service.listarRoles());
+            model.addAttribute("editando", dto.getId() != null);
+            model.addAttribute("activePage", "personal");
             return "personal";
         }
 
         boolean esEdicion = dto.getId() != null;
         Personal personal = esEdicion ? service.obtenerPorId(dto.getId()).orElse(new Personal()) : new Personal();
-        
+
         personal.setCodigoInstitucional(dto.getCodigoInstitucional());
         personal.setNombreCompleto(dto.getNombreCompleto());
         personal.setRol(dto.getRol());
@@ -107,14 +100,14 @@ public class PersonalController {
 
         String error = service.guardar(personal, rawPassword);
         if (error != null) {
-            model.addAttribute("errorMsg",      error);
+            model.addAttribute("errorMsg", error);
             model.addAttribute("listaPersonal", service.listarTodos());
-            model.addAttribute("roles",         service.listarRoles());
-            model.addAttribute("editando",      esEdicion);
-            model.addAttribute("activePage",    "personal");
+            model.addAttribute("roles", service.listarRoles());
+            model.addAttribute("editando", esEdicion);
+            model.addAttribute("activePage", "personal");
             return "personal";
         }
 
-    return "redirect:/personal";
-}
+        return "redirect:/personal";
+    }
 }

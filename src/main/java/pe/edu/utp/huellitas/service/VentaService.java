@@ -6,12 +6,13 @@ import pe.edu.utp.huellitas.model.DetalleVenta;
 import pe.edu.utp.huellitas.model.EstadoVenta;
 import pe.edu.utp.huellitas.model.Producto;
 import pe.edu.utp.huellitas.model.Venta;
+import pe.edu.utp.huellitas.model.TipoPago;
 import pe.edu.utp.huellitas.repository.DetalleVentaRepository;
 import pe.edu.utp.huellitas.repository.ProductoRepository;
 import pe.edu.utp.huellitas.repository.VentaRepository;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,11 +24,15 @@ public class VentaService {
     private final ProductoRepository productoRepository;
 
     public VentaService(VentaRepository ventaRepository,
-                        DetalleVentaRepository detalleVentaRepository,
-                        ProductoRepository productoRepository) {
+            DetalleVentaRepository detalleVentaRepository,
+            ProductoRepository productoRepository) {
         this.ventaRepository = ventaRepository;
         this.detalleVentaRepository = detalleVentaRepository;
         this.productoRepository = productoRepository;
+    }
+
+    public List<Venta> listarVentas() {
+        return ventaRepository.findAll();
     }
 
     public List<Venta> listarVentas(EstadoVenta estado) {
@@ -47,17 +52,18 @@ public class VentaService {
     }
 
     @Transactional
-    public void registrarVentaMultilinea(Venta venta, List<Long> productoIds, List<Integer> cantidades, String metodoPago) {
+    public void registrarVentaMultilinea(Venta venta, List<Long> productoIds, List<Integer> cantidades,
+            String metodoPago) {
         if (productoIds == null || productoIds.isEmpty()) {
             throw new IllegalArgumentException("La venta debe tener al menos un producto.");
         }
 
         BigDecimal totalVenta = BigDecimal.ZERO;
-        
+
         // 1. Guardar cabecera de la venta inicial
         venta.setNroBoleta("BOL-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        venta.setFechaEmision(LocalDateTime.now());
-        venta.setMetodoPago(metodoPago); 
+        venta.setFechaEmision(OffsetDateTime.now());
+        venta.setTipoPago(TipoPago.valueOf(metodoPago.toUpperCase()));
         venta.setEstado(EstadoVenta.PENDIENTE); // Se crea como PENDIENTE para flujo de caja/entrega
         Venta ventaGuardada = ventaRepository.save(venta);
 
@@ -86,11 +92,12 @@ public class VentaService {
             DetalleVenta detalle = new DetalleVenta();
             detalle.setVenta(ventaGuardada);
             detalle.setProducto(producto);
-            // servicio_id y descripcion quedan nulos según el constraint ck_detalle_tiene_item si hay producto
+            // servicio_id y descripcion quedan nulos según el constraint
+            // ck_detalle_tiene_item si hay producto
             detalle.setCantidad(cantidad);
             detalle.setPrecioUnitario(precioUnitario);
             detalle.setSubtotal(subtotal);
-            
+
             detalleVentaRepository.save(detalle);
         }
 
@@ -104,7 +111,7 @@ public class VentaService {
     @Transactional
     public void anularVenta(Long ventaId) {
         Venta venta = obtenerPorId(ventaId);
-        
+
         if (venta.getEstado() != EstadoVenta.PENDIENTE) {
             throw new IllegalStateException("Solo se pueden anular ventas en estado PENDIENTE.");
         }

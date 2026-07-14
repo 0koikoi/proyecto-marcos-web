@@ -16,15 +16,8 @@ import pe.edu.utp.huellitas.service.PropietarioService;
 
 import java.util.List;
 
-/**
- * Controller de gestión de pacientes (mascotas).
- *
- * Permisos:
- *   - Ver lista:            todos los roles autenticados
- *   - Crear / Editar:       todos los roles autenticados
- *   - Eliminar:             solo ADMINISTRADOR
- */
 @Controller
+
 @RequestMapping("/pacientes")
 public class PacienteController {
 
@@ -32,12 +25,12 @@ public class PacienteController {
     private final PropietarioService propietarioService;
 
     public PacienteController(PacienteService pacienteService,
-                              PropietarioService propietarioService) {
+            PropietarioService propietarioService) {
         this.pacienteService = pacienteService;
         this.propietarioService = propietarioService;
     }
 
-    // ── Listar ────────────────────────────────────────────────────────────────
+    // lista
 
     @GetMapping
     public String listar(@RequestParam(required = false) String buscar, Model model) {
@@ -52,21 +45,19 @@ public class PacienteController {
         return "pacientes/listar";
     }
 
-    // ── Formulario nuevo ──────────────────────────────────────────────────────
-
+    // form
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         cargarFormulario(model, new PacienteDTO(), "Registrar paciente");
         return "pacientes/form";
     }
 
-    // ── Guardar ───────────────────────────────────────────────────────────────
-
+    // guardar
     @PostMapping("/guardar")
     public String guardar(@Valid @ModelAttribute("paciente") PacienteDTO pacienteDTO,
-                          BindingResult result,
-                          Model model,
-                          RedirectAttributes redirectAttrs) {
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttrs) {
 
         if (result.hasErrors()) {
             cargarFormulario(model, pacienteDTO,
@@ -90,7 +81,7 @@ public class PacienteController {
         }
     }
 
-    // ── Formulario editar ─────────────────────────────────────────────────────
+    // editar
 
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
@@ -104,8 +95,7 @@ public class PacienteController {
         }
     }
 
-    // ── Eliminar (solo ADMINISTRADOR) ─────────────────────────────────────────
-    // IMPORTANTE: debe ser POST — nunca usar GET para operaciones de escritura.
+    // solo admin puede eliminar
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/eliminar/{id}")
@@ -116,13 +106,12 @@ public class PacienteController {
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("errorMsg",
                     "No se pudo eliminar: el paciente tiene registros clínicos asociados. " +
-                    "Solo el administrador puede gestionar esta acción.");
+                            "Solo el administrador puede gestionar esta acción.");
         }
         return "redirect:/pacientes";
     }
 
-   // ── Métodos privados de mapeo ─────────────────────────────────────────────
-   // TODO: Mover a una clase PacienteMapper cuando el equipo refactorice los demás módulos.
+    // mapeo, mover después a un mapper
 
     private void cargarFormulario(Model model, PacienteDTO pacienteDTO, String titulo) {
         model.addAttribute("paciente", pacienteDTO);

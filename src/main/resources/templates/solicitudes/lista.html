@@ -1,6 +1,6 @@
 <html th:replace="~{layout :: page('Solicitudes de Material', 'solicitudes', ~{::main}, ~{})}"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 
 <main>
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
@@ -13,12 +13,13 @@
                 <span sec:authorize="hasRole('VETERINARIO')">Mis solicitudes de material e insumos</span>
             </p>
         </div>
-        <a th:href="@{/solicitudes/nueva}" sec:authorize="hasRole('VETERINARIO')"
+        <a th:href="@{/solicitudes/nueva}" sec:authorize="hasAnyRole('ADMINISTRADOR','VETERINARIO')"
            class="btn btn-primary">
             <i class="fa-solid fa-plus me-1"></i> Nueva Solicitud
         </a>
     </div>
 
+    <!-- Mensajes flash -->
     <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show">
         <span th:text="${successMsg}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -27,6 +28,7 @@
         <span th:text="${errorMsg}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+
 
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body p-0">
@@ -47,7 +49,7 @@
                     <tr th:each="s : ${solicitudes}">
                         <td class="ps-4" th:text="${#temporals.format(s.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                         <td sec:authorize="hasRole('ADMINISTRADOR')">
-                            <span th:if="${s.solicitante != null}" th:text="${s.solicitante.getNombres() + ' ' + s.solicitante.getApellidos()}"></span>
+                            <span th:if="${s.solicitante != null}" th:text="${s.solicitante.nombreCompleto}"></span>
                             <span th:if="${s.solicitante == null}" class="text-muted fst-italic">Sin asignar</span>
                         </td>
                         <td th:text="${s.producto.nombre}"></td>
@@ -177,4 +179,5 @@
     </th:block>
 
 </main>
+
 </html>

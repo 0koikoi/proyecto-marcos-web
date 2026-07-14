@@ -159,34 +159,6 @@ src/main/resources/templates/
 | Personal | ✅ | ❌ | ❌ |
 | Proveedores | ✅ | ❌ | ❌ |
 
----
-
-## 🚧 Módulos Pendientes (Planificación Equipo de 5)
-
-Cada módulo tiene su **Service completamente implementado** con la lógica de negocio, y un **Controller scaffold** con todas las rutas definidas y documentadas.
-
-### 👤 PERSONA 1 — Módulo de Ventas (Completar)
-- **Archivos:** `VentaController.java`, `VentaService.java`, `ventas.html`, `formulario-venta.html`
-- **Tareas:** Habilitar detalle de ventas multi-producto en el formulario usando JS y guardándolo correctamente con `VentaService`. Mostrar total en tiempo real y agregar tipo de pago.
-
-### 👤 PERSONA 2 — Solicitudes de Material
-- **Archivos:** `SolicitudMaterialController.java`, `solicitudes/lista.html`, `solicitudes/formulario.html`
-- **Tareas:** Completar lógica del controller. Modales de aprobación/rechazo/entrega según rol (solo ADMIN aprueba). Usar badges de color para estados.
-
-### 👤 PERSONA 3 — Dashboard Dinámico
-- **Archivos:** `WebController.java`, `dashboard.html`
-- **Tareas:** Reemplazar actividad reciente y próximas citas hardcodeadas por consultas reales a la BD. Crear tarjetas de estadísticas de ventas (para admin) y diferenciación de vistas por rol.
-
-### 👤 PERSONA 4 — Historia Clínica, Recetas y Vacunas
-- **Archivos:** `HistoriaClinicaController.java`, `RecetaController.java`, `VacunaController.java` y vistas asociadas.
-- **Tareas:** Buscadores y filtros por paciente/fecha. Funcionalidad para exportar receta a PDF (`@media print`). Alertas visuales para vacunas por vencer (< 7 días).
-
-### 👤 PERSONA 5 — UI/UX, Validaciones y Calidad
-- **Archivos:** `style.css`, layout, vistas en general.
-- **Tareas:** Integrar `personal.css` en `style.css`. Asegurar validaciones (`@NotBlank`, `@Email`) en todos los formularios con alertas. Agregar confirmaciones de eliminación (patrón de `personal.html`). Estandarizar diseño sin `<style>` tags.
-
----
-
 ## 📐 Convenciones
 
 ### Seguridad — REGLAS CRÍTICAS:
