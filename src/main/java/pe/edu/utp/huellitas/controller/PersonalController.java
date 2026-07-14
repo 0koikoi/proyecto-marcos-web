@@ -1,13 +1,18 @@
 package pe.edu.utp.huellitas.controller;
 
-import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.validation.Valid;
 import pe.edu.utp.huellitas.model.Personal;
 import pe.edu.utp.huellitas.dto.PersonalDTO;
 import pe.edu.utp.huellitas.service.PersonalService;
@@ -110,40 +115,6 @@ public class PersonalController {
             return "personal";
         }
 
-        redirectAttrs.addFlashAttribute("successMsg",
-                esEdicion ? "Datos del personal actualizados correctamente."
-                          : "Nuevo miembro registrado correctamente.");
-        return "redirect:/personal";
-    }
-
-    // ── Eliminar ──────────────────────────────────────────────────────────────
-
-    @PostMapping("/eliminar/{id}")
-    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
-        try {
-            service.eliminar(id);
-            redirectAttrs.addFlashAttribute("successMsg", "Miembro del personal eliminado.");
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("errorMsg",
-                    "No se pudo eliminar: el usuario tiene registros asociados en el sistema. " +
-                    "Considere desactivarlo en su lugar.");
-        }
-        return "redirect:/personal";
-    }
-
-    // ── Activar / Desactivar ──────────────────────────────────────────────────
-
-    @PostMapping("/desactivar/{id}")
-    public String desactivar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
-        service.cambiarEstado(id, false);
-        redirectAttrs.addFlashAttribute("successMsg", "Usuario desactivado correctamente.");
-        return "redirect:/personal";
-    }
-
-    @PostMapping("/activar/{id}")
-    public String activar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
-        service.cambiarEstado(id, true);
-        redirectAttrs.addFlashAttribute("successMsg", "Usuario activado correctamente.");
-        return "redirect:/personal";
-    }
+    return "redirect:/personal";
+}
 }

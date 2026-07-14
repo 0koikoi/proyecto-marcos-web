@@ -2,10 +2,14 @@ package pe.edu.utp.huellitas.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import jakarta.servlet.http.HttpSession;
+import pe.edu.utp.huellitas.model.Personal;
 import pe.edu.utp.huellitas.model.Proveedor;
 import pe.edu.utp.huellitas.dto.ProveedorDTO;
 import pe.edu.utp.huellitas.service.ProveedorService;
@@ -28,43 +32,63 @@ public class ProveedorController {
         model.addAttribute("activePage", "proveedores"); // Esto activa el color azul en el menú
         return "proveedores";
     }
-    
 
     // GUARDAR
     @PostMapping("/guardar")
-    public String guardar(@Valid @ModelAttribute("nuevoProveedor") ProveedorDTO dto, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            model.addAttribute("listaProveedores", proveedorService.listar());
-            model.addAttribute("activePage", "proveedores");
-            return "proveedores";
+    public String guardar(
+            @ModelAttribute Proveedor proveedor,
+            HttpSession session) {
+
+        Personal usuario = (Personal) session.getAttribute("usuario");
+
+        if (usuario == null ||
+                !usuario.getCargo().equals("ADMINISTRADOR")) {
+
+            return "redirect:/dashboard?error=AccesoDenegado";
         }
-        
-        Proveedor proveedor = null;
-        if (dto.getId() != null) {
-            proveedor = proveedorService.buscarPorId(dto.getId());
-            if (proveedor == null) {
-                proveedor = new Proveedor();
-            }
-        } else {
-            proveedor = new Proveedor();
-        }
-        
-        proveedor.setRuc(dto.getRuc());
-        proveedor.setRazonSocial(dto.getRazonSocial());
-        proveedor.setContacto(dto.getContacto());
-        proveedor.setTelefono(dto.getTelefono());
-        
+
         proveedorService.guardar(proveedor);
 
         return "redirect:/proveedores";
     }
 
     // ELIMINAR
-    @PostMapping("/eliminar/{id}")
-    public String eliminar(@PathVariable Long id) {
+    @GetMapping("/eliminar/{id}")
+    public String eliminar(
+            @PathVariable Long id,
+            HttpSession session) {
+
+        Personal usuario = (Personal) session.getAttribute("usuario");
+
+        if (usuario == null ||
+                !usuario.getCargo().equals("ADMINISTRADOR")) {
+
+            return "redirect:/dashboard?error=AccesoDenegado";
+        }
 
         proveedorService.eliminar(id);
 
         return "redirect:/proveedores";
     }
+
+    // editar
+
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable Long id, Model model) {
+
+        Proveedor proveedor = proveedorService.buscarPorId(id);
+
+        model.addAttribute("nuevoProveedor", proveedor);
+
+        model.addAttribute(
+                "listaProveedores",
+                proveedorService.listar());
+
+        model.addAttribute(
+                "activePage",
+                "proveedores");
+
+        return "proveedores";
+    }
+
 }

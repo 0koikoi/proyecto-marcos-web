@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <!-- Pasamos el título correcto, la pestaña activa 'dashboard', el main, y un bloque vacío para scripts -->
-<html th:replace="~{layout :: page('Dashboard Principal', 'dashboard', ~{::main}, ~{})}">
+<html
+xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+th:replace="~{layout :: page('Dashboard Principal', 'dashboard', ~{::main}, ~{})}">
 
 <!-- SOLO EXISTE EL MAIN. NADA DE BODYS, NADA DE WRAPPERS DE BOOTSTRAP -->
 <main>
@@ -49,6 +52,45 @@
                 </div>
             </div>
         </div>
+
+<div class="col-md-4"
+     sec:authorize="hasAnyRole('ADMINISTRADOR','RECEPCION')">
+    <div class="card border-0 bg-warning text-dark shadow p-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="mb-2">VENTAS DEL MES</h6>
+                <h2 class="fw-bold"
+                    th:text="'S/ ' + ${ventasMes}">
+                    S/0.00
+                </h2>
+                <small>Total facturado</small>
+            </div>
+            <i class="fa-solid fa-sack-dollar fa-2x opacity-75"></i>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-4"
+     sec:authorize="hasRole('ADMINISTRADOR')">
+    <div class="card border-0 bg-info text-white shadow p-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="text-white-50 mb-2">
+                    SOLICITUDES PENDIENTES
+                </h6>
+                <h2 class="fw-bold mb-0"
+                    th:text="${solicitudesPendientes}">
+                    0
+                </h2>
+                <small class="text-white-50">
+                    Esperando aprobación
+                </small>
+            </div>
+            <i class="fa-solid fa-clipboard-list fa-2x opacity-50"></i>
+        </div>
+    </div>
+</div>
+
     </section>
 
     <!-- Actividad Reciente -->
@@ -57,40 +99,154 @@
             <h5 class="fw-bold mb-0 text-secondary">
                 <i class="fa-solid fa-clock me-2"></i>ACTIVIDAD RECIENTE
             </h5>
-            <a th:href="@{/web/actividad}" class="btn btn-sm btn-outline-primary">
+            <a th:href="@{/actividad}" class="btn btn-sm btn-outline-primary">
                 Ver todas <i class="fa-solid fa-arrow-right ms-1"></i>
             </a>
         </div>
 
         <ul class="list-group list-group-flush">
-            <!-- Items de actividad... (dejé uno de ejemplo, el bucle lo harás con th:each) -->
-            <li class="list-group-item d-flex align-items-center">
-                <div class="me-3">
-                    <i class="fa-solid fa-paw text-primary"></i>
-                </div>
-                <div>
-                    <strong>Nuevo paciente registrado:</strong> Firu (Canino)
-                    <br>
-                    <small class="text-muted">Hace 2 horas</small>
-                </div>
-            </li>
-        </ul>
+
+    <!-- Últimos pacientes -->
+    <li class="list-group-item d-flex align-items-center"
+        th:each="paciente : ${ultimosPacientes}">
+
+        <div class="me-3">
+            <i class="fa-solid fa-paw text-primary"></i>
+        </div>
+
+        <div>
+            <strong>Nuevo paciente registrado:</strong>
+            <span th:text="${paciente.nombre}"></span>
+
+            <br>
+
+            <small class="text-muted">
+                Especie:
+                <span th:text="${paciente.especie}"></span>
+            </small>
+        </div>
+
+    </li>
+
+    <!-- Últimas citas -->
+    <li class="list-group-item d-flex align-items-center"
+        th:each="cita : ${ultimasCitas}">
+
+        <div class="me-3">
+            <i class="fa-solid fa-calendar-check text-success"></i>
+        </div>
+
+        <div>
+
+            <strong>Nueva cita registrada</strong>
+            <br>
+            <small class="text-muted"
+                   th:text="${cita.paciente.nombre}">
+            </small>
+        </div>
+    </li>
+    <!-- Últimas ventas -->
+    <li class="list-group-item d-flex align-items-center"
+        th:each="venta : ${ultimasVentas}">
+        <div class="me-3">
+            <i class="fa-solid fa-money-bill-wave text-warning"></i>
+        </div>
+        <div>
+            <strong>Venta realizada</strong>
+            <br>
+            <small class="text-muted">
+                Boleta:
+                <span th:text="${venta.nroBoleta}"></span>
+            </small>
+        </div>
+    </li>
+</ul>
     </div>
 
     <!-- Información adicional -->
     <div class="row g-4 mt-2">
         <div class="col-md-6">
-            <div class="card p-3 border-0 shadow-sm">
-                <h6 class="fw-bold"><i class="fa-solid fa-chart-simple me-2"></i>Próximas citas</h6>
-                <p class="text-muted small">No hay citas programadas para las próximas horas.</p>
-            </div>
+          <div class="card p-3 border-0 shadow-sm">
+
+    <h6 class="fw-bold">
+        <i class="fa-solid fa-calendar-check me-2"></i>
+        Próximas citas
+    </h6>
+    
+
+    <div th:if="${#lists.isEmpty(proximasCitas)}">
+        <p class="text-muted small">
+            No hay citas programadas.
+        </p>
+    </div>
+
+    <ul class="list-group list-group-flush"
+        th:unless="${#lists.isEmpty(proximasCitas)}">
+
+        <li class="list-group-item"
+            th:each="cita : ${proximasCitas}">
+
+            <strong th:text="${cita.paciente.nombre}">
+                Rocky
+            </strong>
+
+            <br>
+
+            <small class="text-muted"
+                   th:text="${#temporals.format(cita.fechaHora,'dd/MM/yyyy HH:mm')}">
+            </small>
+
+        </li>
+
+    </ul>
+
+</div>
         </div>
+
         <div class="col-md-6">
-            <div class="card p-3 border-0 shadow-sm">
-                <h6 class="fw-bold"><i class="fa-solid fa-tag me-2"></i>Productos más vendidos</h6>
-                <p class="text-muted small">1. Alimento Premium | 2. Antipulgas | 3. Juguetes</p>
-            </div>
+
+    <div class="card p-3 border-0 shadow-sm">
+
+        <h6 class="fw-bold">
+            <i class="fa-solid fa-fire me-2 text-danger"></i>
+            Productos más vendidos
+        </h6>
+
+        <div th:if="${#lists.isEmpty(productosMasVendidos)}">
+
+            <p class="text-muted small">
+                No existen ventas registradas.
+            </p>
+
         </div>
+
+        <ul class="list-group list-group-flush"
+            th:unless="${#lists.isEmpty(productosMasVendidos)}">
+
+            <li class="list-group-item d-flex justify-content-between align-items-center"
+                th:each="producto : ${productosMasVendidos}">
+
+                <span>
+                    <i class="fa-solid fa-box text-primary me-2"></i>
+
+                    <span th:text="${producto[0]}">
+                        Producto
+                    </span>
+
+                </span>
+
+                <span class="badge bg-primary rounded-pill"
+                      th:text="${producto[1]} + ' vendidos'">
+                    0 vendidos
+                </span>
+
+            </li>
+
+        </ul>
+
+    </div>
+
+</div>
     </div>
 </main>
 

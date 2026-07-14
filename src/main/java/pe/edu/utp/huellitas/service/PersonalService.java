@@ -1,17 +1,17 @@
 package pe.edu.utp.huellitas.service;
 
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.transaction.Transactional;
 import pe.edu.utp.huellitas.model.Personal;
 import pe.edu.utp.huellitas.model.Rol;
 import pe.edu.utp.huellitas.repository.PersonalRepository;
 import pe.edu.utp.huellitas.repository.RolRepository;
-
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Servicio de gestión del personal de la clínica.
@@ -159,4 +159,5 @@ public class PersonalService {
     public List<Rol> listarRoles() {
         return rolRepository.findAll();
     }
+
 }

@@ -26,15 +26,16 @@ public class ProveedorService {
         return proveedorRepository.save(proveedor);
     }
 
+        // ELIMINAR
+    public void eliminar(Long id) {
+        proveedorRepository.deleteById(id);
+    }
+
     // BUSCAR POR ID
     public Proveedor buscarPorId(Long id) {
         return proveedorRepository.findById(id).orElse(null);
     }
 
-    // ELIMINAR
-    public void eliminar(Long id) {
-        proveedorRepository.deleteById(id);
-    }
 }
 
 

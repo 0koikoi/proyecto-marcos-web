@@ -121,8 +121,8 @@ public class PacienteController {
         return "redirect:/pacientes";
     }
 
-    // ── Métodos privados de mapeo ─────────────────────────────────────────────
-    // TODO: Mover a una clase PacienteMapper cuando el equipo refactorice los demás módulos.
+   // ── Métodos privados de mapeo ─────────────────────────────────────────────
+   // TODO: Mover a una clase PacienteMapper cuando el equipo refactorice los demás módulos.
 
     private void cargarFormulario(Model model, PacienteDTO pacienteDTO, String titulo) {
         model.addAttribute("paciente", pacienteDTO);

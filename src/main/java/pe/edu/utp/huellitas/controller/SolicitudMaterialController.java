@@ -23,8 +23,8 @@ public class SolicitudMaterialController {
     private final PersonalService personalService;
 
     public SolicitudMaterialController(SolicitudMaterialService solicitudService,
-                                       ProductoService productoService,
-                                       PersonalService personalService) {
+            ProductoService productoService,
+            PersonalService personalService) {
         this.solicitudService = solicitudService;
         this.productoService = productoService;
         this.personalService = personalService;
@@ -57,8 +57,8 @@ public class SolicitudMaterialController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO')")
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute SolicitudMaterial solicitud,
-                          Authentication authentication,
-                          RedirectAttributes redirectAttrs) {
+            Authentication authentication,
+            RedirectAttributes redirectAttrs) {
         try {
             Personal usuarioActual = (Personal) authentication.getPrincipal();
             solicitud.setSolicitante(usuarioActual);
@@ -73,9 +73,9 @@ public class SolicitudMaterialController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/aprobar/{id}")
     public String aprobar(@PathVariable Long id,
-                          @RequestParam(required = false) String observacion,
-                          Authentication authentication,
-                          RedirectAttributes redirectAttrs) {
+            @RequestParam(required = false) String observacion,
+            Authentication authentication,
+            RedirectAttributes redirectAttrs) {
         try {
             Personal admin = (Personal) authentication.getPrincipal();
             solicitudService.aprobar(id, admin.getId(), observacion);
@@ -89,9 +89,9 @@ public class SolicitudMaterialController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/rechazar/{id}")
     public String rechazar(@PathVariable Long id,
-                           @RequestParam String motivoRechazo,
-                           Authentication authentication,
-                           RedirectAttributes redirectAttrs) {
+            @RequestParam String motivoRechazo,
+            Authentication authentication,
+            RedirectAttributes redirectAttrs) {
         try {
             Personal admin = (Personal) authentication.getPrincipal();
             solicitudService.rechazar(id, admin.getId(), motivoRechazo);
@@ -105,8 +105,8 @@ public class SolicitudMaterialController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/entregar/{id}")
     public String marcarEntregada(@PathVariable Long id,
-                                  @RequestParam Integer cantidadEntregada,
-                                  RedirectAttributes redirectAttrs) {
+            @RequestParam Integer cantidadEntregada,
+            RedirectAttributes redirectAttrs) {
         try {
             solicitudService.marcarEntregada(id, cantidadEntregada);
             redirectAttrs.addFlashAttribute("successMsg", "Material marcado como entregado. Stock actualizado.");

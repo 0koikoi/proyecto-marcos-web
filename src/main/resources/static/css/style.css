@@ -110,10 +110,11 @@ main {
     transition: none;
 }
 
-.card-header {
-    background-color: transparent !important;
-    border-bottom: 1px solid var(--border-color);
-    padding: 1.5rem 1.5rem 0.5rem;
+.card-header{
+    padding:1rem 1.25rem;
+    font-weight:700;
+    font-size:1rem;
+    border-bottom:1px solid #e9ecef;
 }
 
 .btn {

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<html th:replace="~{layout :: page('Actividad del Sistema','dashboard',~{::main},~{})}">
+
+<main>
+
+    <div class="pt-3 pb-2 mb-4 border-bottom">
+        <h2 class="fw-bold text-primary">
+            <i class="fa-solid fa-clock-rotate-left me-2"></i>
+            Actividad del Sistema
+        </h2>
+
+        <p class="text-muted">
+            Historial de los últimos movimientos registrados en Huellitas.
+        </p>
+    </div>
+
+    <div class="row">
+
+        <!-- ===================== ÚLTIMOS PACIENTES ===================== -->
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-header bg-primary text-white fw-bold">
+                    <i class="fa-solid fa-paw me-2"></i>
+                    Últimos Pacientes
+                </div>
+
+                <div class="card-body">
+
+                    <div th:if="${#lists.isEmpty(pacientes)}">
+                        <p class="text-muted mb-0">
+                            No hay pacientes registrados.
+                        </p>
+                    </div>
+
+                    <ul class="list-group list-group-flush"
+                        th:unless="${#lists.isEmpty(pacientes)}">
+
+                        <li class="list-group-item"
+                            th:each="paciente : ${pacientes}">
+
+                            <strong th:text="${paciente.nombre}"></strong>
+
+                            <br>
+
+                            <small class="text-muted"
+                                   th:text="${paciente.especie}">
+                            </small>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ===================== ÚLTIMAS CITAS ===================== -->
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-header bg-success text-white fw-bold">
+                    <i class="fa-solid fa-calendar-check me-2"></i>
+                    Últimas Citas
+                </div>
+
+                <div class="card-body">
+
+                    <div th:if="${#lists.isEmpty(citas)}">
+                        <p class="text-muted mb-0">
+                            No existen citas registradas.
+                        </p>
+                    </div>
+
+                    <ul class="list-group list-group-flush"
+                        th:unless="${#lists.isEmpty(citas)}">
+
+                        <li class="list-group-item"
+                            th:each="cita : ${citas}">
+
+                            <strong
+                                th:text="${cita.paciente.nombre}">
+                            </strong>
+
+                            <br>
+
+                            <small class="text-muted"
+                                   th:text="${#temporals.format(cita.fechaHora,'dd/MM/yyyy HH:mm')}">
+                            </small>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ===================== ÚLTIMAS VENTAS ===================== -->
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-header bg-warning text-dark fw-bold">
+                    <i class="fa-solid fa-money-bill-wave me-2"></i>
+                    Últimas Ventas
+                </div>
+
+                <div class="card-body">
+
+                    <div th:if="${#lists.isEmpty(ventas)}">
+                        <p class="text-muted mb-0">
+                            No existen ventas registradas.
+                        </p>
+                    </div>
+
+                    <ul class="list-group list-group-flush"
+                        th:unless="${#lists.isEmpty(ventas)}">
+
+                        <li class="list-group-item"
+                            th:each="venta : ${ventas}">
+
+                            <strong
+                                th:text="${venta.nroBoleta}">
+                            </strong>
+
+                            <br>
+
+                            <small class="text-success fw-semibold">
+                                S/ <span th:text="${venta.total}"></span>
+                            </small>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+</html>

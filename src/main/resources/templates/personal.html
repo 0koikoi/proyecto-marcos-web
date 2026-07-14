@@ -1,5 +1,38 @@
 <html th:replace="~{layout :: page('Gestión de Personal', 'personal', ~{::main}, ~{::#custom-scripts})}">
 
+<<<<<<< HEAD
+<!-- Usar navbar en lugar de header-mobile -->
+<div th:replace="~{layout :: navbar}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar con página activa 'personal' -->
+        <nav th:replace="~{layout :: sidebar('personal')}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-5">
+            <h2 class="fw-bold mb-4 border-bottom pb-3">EQUIPO MÉDICO Y STAFF</h2>
+
+            <div th:if="${errorCodigo}" class="alert alert-danger" th:text="${errorCodigo}"></div>
+
+            <div th:if="${session.usuario.cargo == 'ADMINISTRADOR'}">
+            
+                <div class="card p-4 shadow-sm mb-5 border-0">
+                <form th:action="@{/personal/guardar}" th:object="${nuevoPersonal}" method="post" class="row g-3">
+                    <div class="col-md-2">
+                        <input type="text" th:field="*{codigoInstitucional}" class="form-control" placeholder="C123456" required>
+                    </div>
+
+                   <div class="col-md-4">
+    <input type="text"
+           th:field="*{nombreCompleto}"
+           class="form-control"
+           placeholder="Nombre Completo"
+           required>
+
+    <div class="text-danger small"
+         th:if="${#fields.hasErrors('nombreCompleto')}"
+         th:errors="*{nombreCompleto}">
+=======
 <main>
     <!-- Encabezado con contadores rápidos -->
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -23,6 +56,7 @@
                 <span th:text="${listaPersonal.?[rol.nombre == 'VETERINARIO'].size()}">0</span> Veterinarios
             </span>
         </div>
+>>>>>>> 9c13ca44d00247c4bbce10d007e9d7616e17cae8
     </div>
 
     <!-- Alertas flash -->
@@ -37,7 +71,57 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
+<<<<<<< HEAD
+                    <div class="col-md-4">
+                        <input type="text" th:field="*{especialidad}" class="form-control" placeholder="Especialidad (Solo Médicos)">
+                    </div>
+                <div class="col-md-4">
+    <input type="text"
+           th:field="*{telefono}"
+           class="form-control"
+           placeholder="912345678"
+           maxlength="9"
+           required>
+
+    <div class="text-danger small"
+         th:if="${#fields.hasErrors('telefono')}"
+         th:errors="*{telefono}">
+    </div>
+</div>
+                    
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary w-100">Registrar Personal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                <div class="col" th:each="persona : ${listaPersonal}">
+                    <div class="card h-100 border-0 shadow-sm" style="border-top: 4px solid var(--primary) !important; border-radius: 12px;">
+                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge rounded-pill px-3"
+                          th:style="${persona.cargo == 'VETERINARIO'} ? 'background-color: var(--primary);' : (${persona.cargo == 'ADMINISTRADOR'} ? 'background-color: var(--danger);' : 'background-color: var(--apricot-cream); color: #000;') "
+                          th:text="${persona.cargo}">Cargo</span>
+
+                                <span class="badge bg-success" th:if="${persona.activo}"><i class="fa-solid fa-check"></i> Activo</span>
+                                <span class="badge bg-danger" th:unless="${persona.activo}"><i class="fa-solid fa-xmark"></i> Inactivo</span>
+                            </div>
+
+                            <h5 class="fw-bold mb-1" th:text="${persona.nombreCompleto}" style="color: var(--text-main);">Nombre</h5>
+                            <p class="text-muted small mb-3">
+                                <i class="fa-solid fa-id-badge me-2" style="color: var(--accent);"></i>Cód: <span class="fw-medium" th:text="${persona.codigoInstitucional}"></span>
+                            </p>
+
+                            <div class="d-flex justify-content-between align-items-center text-muted small mt-auto pt-3 border-top">
+                                <span><i class="fa-solid fa-phone me-1"></i> <span th:text="${persona.telefono}"></span></span>
+                                <span><i class="fa-solid fa-user me-1"></i> <span th:text="${persona.username}"></span></span>
+                            </div>
+=======
     <div class="row g-4">
+>>>>>>> 9c13ca44d00247c4bbce10d007e9d7616e17cae8
 
         <!-- Panel formulario (izquierda) -->
         <div class="col-xl-4 col-lg-5">
