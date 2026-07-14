@@ -93,7 +93,7 @@ public class PropietarioController {
         return "propietarios/form";
     }
 
-    @GetMapping("/eliminar/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id) {
         propietarioService.eliminar(id);
         return "redirect:/propietarios";
