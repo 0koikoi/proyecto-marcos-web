@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pe.edu.utp.huellitas.model.Personal;
+import pe.edu.utp.huellitas.dto.PersonalDTO;
 import pe.edu.utp.huellitas.service.PersonalService;
 
 /**
@@ -34,7 +35,7 @@ public class PersonalController {
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("listaPersonal", service.listarTodos());
-        model.addAttribute("nuevoPersonal", new Personal());
+        model.addAttribute("nuevoPersonal", new PersonalDTO());
         model.addAttribute("roles", service.listarRoles());
         model.addAttribute("editando", false);
         model.addAttribute("activePage", "personal");
@@ -46,7 +47,18 @@ public class PersonalController {
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
         return service.obtenerPorId(id).map(persona -> {
-            model.addAttribute("nuevoPersonal", persona);
+            PersonalDTO dto = new PersonalDTO();
+            dto.setId(persona.getId());
+            dto.setCodigoInstitucional(persona.getCodigoInstitucional());
+            dto.setNombreCompleto(persona.getNombreCompleto());
+            dto.setRol(persona.getRol());
+            dto.setCargo(persona.getCargo());
+            dto.setEspecialidad(persona.getEspecialidad());
+            dto.setTelefono(persona.getTelefono());
+            dto.setEmail(persona.getEmail());
+            dto.setUsername(persona.getUsername());
+            
+            model.addAttribute("nuevoPersonal", dto);
             model.addAttribute("listaPersonal", service.listarTodos());
             model.addAttribute("roles",         service.listarRoles());
             model.addAttribute("editando",      true);
@@ -62,7 +74,7 @@ public class PersonalController {
 
     @PostMapping("/guardar")
     public String guardar(
-            @Valid @ModelAttribute("nuevoPersonal") Personal personal,
+            @Valid @ModelAttribute("nuevoPersonal") PersonalDTO dto,
             BindingResult result,
             @RequestParam(value = "rawPassword", required = false) String rawPassword,
             Model model,
@@ -71,12 +83,23 @@ public class PersonalController {
         if (result.hasErrors()) {
             model.addAttribute("listaPersonal", service.listarTodos());
             model.addAttribute("roles",         service.listarRoles());
-            model.addAttribute("editando",      personal.getId() != null);
+            model.addAttribute("editando",      dto.getId() != null);
             model.addAttribute("activePage",    "personal");
             return "personal";
         }
 
-        boolean esEdicion = personal.getId() != null;
+        boolean esEdicion = dto.getId() != null;
+        Personal personal = esEdicion ? service.obtenerPorId(dto.getId()).orElse(new Personal()) : new Personal();
+        
+        personal.setCodigoInstitucional(dto.getCodigoInstitucional());
+        personal.setNombreCompleto(dto.getNombreCompleto());
+        personal.setRol(dto.getRol());
+        personal.setCargo(dto.getCargo());
+        personal.setEspecialidad(dto.getEspecialidad());
+        personal.setTelefono(dto.getTelefono());
+        personal.setEmail(dto.getEmail());
+        personal.setUsername(dto.getUsername());
+
         String error = service.guardar(personal, rawPassword);
         if (error != null) {
             model.addAttribute("errorMsg",      error);

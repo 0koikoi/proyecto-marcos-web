@@ -138,9 +138,8 @@
                                 <i class="fa-solid fa-phone me-1 text-primary"></i>
                                 Teléfono
                             </label>
-                            <input type="text" id="telefono" th:field="*{telefono}" class="form-control"
-                                   th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid'"
-                                   placeholder="912345678" maxlength="9">
+                            <input type="text" id="telefono" th:field="*{telefono}" class="form-control" maxlength="9" placeholder="912345678"
+                                   th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid'">
                             <div class="invalid-feedback" th:errors="*{telefono}"></div>
                         </div>
 
@@ -217,7 +216,7 @@
                                     <th>Contacto</th>
                                     <th>Credenciales</th>
                                     <th>Estado</th>
-                                    <th class="text-end pe-4">Acciones</th>
+                                    <th class="text-center pe-4">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -262,8 +261,8 @@
                                             <i class="fa-solid fa-circle" style="font-size:0.45rem"></i> Inactivo
                                         </span>
                                     </td>
-                                    <td class="pe-4">
-                                        <div class="d-flex gap-2 justify-content-end">
+                                    <td class="text-center pe-4">
+                                        <div class="d-flex gap-1 justify-content-center">
                                             <a th:href="@{/personal/editar/{id}(id=${persona.id})}" class="btn btn-sm btn-outline-primary" title="Editar">
                                                 <i class="fa-solid fa-pen-to-square"></i>
                                             </a>

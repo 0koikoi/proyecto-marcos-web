@@ -48,6 +48,30 @@ public class Propietario {
     @Column(name = "telefono", length = 15, nullable = false)
     private String telefono;
 
+    public void setTelefono(String telefono) {
+        if (telefono != null) {
+            telefono = telefono.trim();
+            if (telefono.matches("^9\\d{8}$")) {
+                this.telefono = "+51 " + telefono;
+            } else {
+                this.telefono = telefono;
+            }
+        } else {
+            this.telefono = null;
+        }
+    }
+
+    public String getTelefono() {
+        if (this.telefono != null && this.telefono.startsWith("+51 ")) {
+            return this.telefono.substring(4); // Remover "+51 "
+        }
+        return this.telefono;
+    }
+
+    public String getTelefonoCompleto() {
+        return this.telefono;
+    }
+
     @Email(message = "Debe ser un correo electrónico válido")
     @Column(name = "correo", length = 150)
     private String correo;

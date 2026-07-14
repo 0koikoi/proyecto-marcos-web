@@ -29,7 +29,7 @@
                         <th>Teléfono</th>
                         <th>Correo</th>
                         <th>Dirección</th>
-                        <th class="text-end pe-4">Acciones</th>
+                        <th class="text-center pe-4">Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -39,20 +39,22 @@
                         <td th:text="${propietario.telefono}"></td>
                         <td th:text="${propietario.correo}"></td>
                         <td th:text="${propietario.direccion}"></td>
-                        <td class="text-end pe-4">
-                            <a th:href="@{/propietarios/editar/{id}(id=${propietario.id})}"
-                               class="btn btn-sm btn-outline-warning rounded-pill px-3">
-                                <i class="fa-solid fa-pen-to-square"></i> Editar
-                            </a>
-                            <!-- Eliminar: POST para proteger CSRF -->
-                            <form th:action="@{/propietarios/eliminar/{id}(id=${propietario.id})}"
-                                  method="post" class="d-inline"
-                                  onsubmit="return confirm('¿Seguro que desea eliminar este propietario? Se eliminarán sus pacientes asociados.')">
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-1">
-                                    <i class="fa-solid fa-trash"></i> Eliminar
-                                </button>
-                            </form>
+                        <td class="text-center pe-4">
+                            <div class="d-flex justify-content-center gap-1">
+                                <a th:href="@{/propietarios/editar/{id}(id=${propietario.id})}"
+                                   class="btn btn-sm btn-outline-warning rounded-pill px-3">
+                                    <i class="fa-solid fa-pen-to-square"></i> Editar
+                                </a>
+                                <!-- Eliminar: POST para proteger CSRF -->
+                                <form th:action="@{/propietarios/eliminar/{id}(id=${propietario.id})}"
+                                      method="post" class="d-inline"
+                                      onsubmit="return confirm('¿Seguro que desea eliminar este propietario? Se eliminarán sus pacientes asociados.')">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                        <i class="fa-solid fa-trash"></i> Eliminar
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(propietarios)}">

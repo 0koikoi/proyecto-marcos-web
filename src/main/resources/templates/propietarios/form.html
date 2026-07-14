@@ -35,11 +35,10 @@
 
                     <div class="col-md-4">
                         <label class="form-label"><i class="fa-solid fa-phone text-primary"></i> Teléfono <span class="text-danger">*</span></label>
-                        <input type="text" th:field="*{telefono}" maxlength="15"
-                               pattern="(\+51\s?)?9\d{8}"
+                        <input type="text" th:field="*{telefono}" maxlength="9" placeholder="912345678"
+                               pattern="9\d{8}"
                                title="Formato válido: 912345678 o +51 912345678"
-                               class="form-control" th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid' : ''"
-                               placeholder="+51 9XXXXXXXX" required>
+                               class="form-control" th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid' : ''" required>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
                     </div>
 

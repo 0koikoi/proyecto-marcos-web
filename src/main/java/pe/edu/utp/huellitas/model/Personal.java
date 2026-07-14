@@ -58,11 +58,35 @@ public class Personal implements UserDetails {
     private String especialidad;
 
     @Pattern(
-        regexp = "^(9\\d{8})?$",
-        message = "El teléfono debe tener 9 dígitos y comenzar con 9"
+        regexp = "^(\\+51\\s?)?9\\d{8}$",
+        message = "El teléfono debe tener formato 912345678 o +51 912345678"
     )
     @Column(length = 15)
     private String telefono;
+
+    public void setTelefono(String telefono) {
+        if (telefono != null) {
+            telefono = telefono.trim();
+            if (telefono.matches("^9\\d{8}$")) {
+                this.telefono = "+51 " + telefono;
+            } else {
+                this.telefono = telefono;
+            }
+        } else {
+            this.telefono = null;
+        }
+    }
+
+    public String getTelefono() {
+        if (this.telefono != null && this.telefono.startsWith("+51 ")) {
+            return this.telefono.substring(4); // Remover "+51 "
+        }
+        return this.telefono;
+    }
+
+    public String getTelefonoCompleto() {
+        return this.telefono;
+    }
 
     @NotBlank(message = "El correo es obligatorio")
     @jakarta.validation.constraints.Email(message = "Formato de correo inválido")
