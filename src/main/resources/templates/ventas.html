@@ -1,5 +1,4 @@
 <html th:replace="~{layout :: page('Ventas', 'ventas', ~{::main}, ~{})}">
-
 <main>
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
         <h2 class="fw-bold">Registro de Ventas</h2>
@@ -18,6 +17,27 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
+    <!-- Filtro -->
+    <div class="card shadow-sm border-0 mb-4 p-3 bg-light">
+        <form th:action="@{/ventas}" method="get" class="row align-items-end g-3">
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Filtrar por Estado:</label>
+                <select name="estado" class="form-select">
+                    <option value="">Todas las Ventas</option>
+                    <option th:each="est : ${estados}" 
+                            th:value="${est}" 
+                            th:text="${est}" 
+                            th:selected="${est == estadoFiltro}"></option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-secondary w-100">
+                    <i class="fa-solid fa-filter me-1"></i> Aplicar
+                </button>
+            </div>
+        </form>
+    </div>
+
     <div class="card shadow-sm border-0">
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -27,9 +47,10 @@
                         <th class="ps-4">Nro. Boleta</th>
                         <th>Fecha</th>
                         <th>Cliente</th>
-                        <th>Vendedor</th>
+                        <th>M. Pago</th>
                         <th>Estado</th>
-                        <th class="text-end pe-4">Total</th>
+                        <th class="text-end">Total</th>
+                        <th class="text-center pe-4">Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -37,7 +58,7 @@
                         <td class="ps-4 fw-bold text-secondary" th:text="${venta.nroBoleta}"></td>
                         <td th:text="${#temporals.format(venta.fechaEmision, 'dd/MM/yyyy HH:mm')}"></td>
                         <td th:text="${venta.propietario != null ? venta.propietario.nombreCompleto : 'Público General'}"></td>
-                        <td th:text="${venta.personal != null ? venta.personal.nombreCompleto : '—'}"></td>
+                        <td th:text="${venta.metodoPago != null ? venta.metodoPago : 'Efectivo'}"></td>
                         <td>
                             <span th:text="${venta.estado}"
                                   th:class="${venta.estado.name() == 'PAGADA'}   ? 'badge bg-success'
@@ -45,12 +66,29 @@
                                            : 'badge bg-danger')">
                             </span>
                         </td>
-                        <td class="text-end pe-4 fw-bold text-success" th:text="'S/ ' + ${venta.total}"></td>
+                        <td class="text-end fw-bold text-success" th:text="'S/ ' + ${venta.total}"></td>
+                        <td class="text-center pe-4 d-flex justify-content-center gap-2">
+                            
+                            <a th:href="@{/ventas/{id}/detalle(id=${venta.id})}" class="btn btn-sm btn-info text-white" title="Ver Detalle">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+
+                            <form th:if="${venta.estado.name() == 'PENDIENTE'}" 
+                                  th:action="@{/ventas/{id}/anular(id=${venta.id})}" 
+                                  method="post" 
+                                  style="display:inline;"
+                                  onsubmit="return confirm('¿Está seguro de que desea ANULAR esta venta? El stock será devuelto al inventario.');">
+                                <button type="submit" class="btn btn-sm btn-danger" title="Anular">
+                                    <i class="fa-solid fa-ban"></i>
+                                </button>
+                            </form>
+
+                        </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(ventas)}">
-                        <td colspan="6" class="text-center text-muted py-5">
+                        <td colspan="7" class="text-center text-muted py-5">
                             <i class="fa-solid fa-box-open fa-2x mb-3 d-block text-secondary"></i>
-                            No hay ventas registradas aún.
+                            No se encontraron ventas registradas.
                         </td>
                     </tr>
                     </tbody>
@@ -59,5 +97,4 @@
         </div>
     </div>
 </main>
-
 </html>
