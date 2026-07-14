@@ -15,8 +15,8 @@ public class WebController {
     private final ProductoRepository productoRepo;
 
     public WebController(PacienteRepository pacienteRepo,
-                         CitaRepository citaRepo,
-                         ProductoRepository productoRepo) {
+            CitaRepository citaRepo,
+            ProductoRepository productoRepo) {
         this.pacienteRepo = pacienteRepo;
         this.citaRepo = citaRepo;
         this.productoRepo = productoRepo;
