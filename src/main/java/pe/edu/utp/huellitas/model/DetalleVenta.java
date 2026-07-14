@@ -26,6 +26,9 @@ public class DetalleVenta {
     @JoinColumn(name = "servicio_id")
     private Servicio servicio;
 
+    @Column(length = 200)
+    private String descripcion;
+
     @Column(nullable = false)
     private Integer cantidad = 1;
 

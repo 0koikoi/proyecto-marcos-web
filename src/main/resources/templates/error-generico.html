@@ -1,0 +1,26 @@
+<html th:replace="~{layout :: page('Error del Sistema', 'dashboard', ~{::main}, ~{::#custom-scripts})}">
+
+<main>
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 65vh;">
+        <div class="card border-0 shadow-sm text-center p-5" style="max-width: 480px; width: 100%; border-top: 4px solid var(--danger) !important;">
+            <div class="mb-4">
+                <i class="fa-solid fa-triangle-exclamation fa-4x text-danger"></i>
+            </div>
+            <h4 class="fw-bold mb-3">Operación Detenida</h4>
+            <p class="text-muted mb-4" th:text="${errorGlobal}">
+                Ocurrió un error inesperado en el sistema.
+            </p>
+            <button onclick="history.back()" class="btn btn-danger w-100 py-2 fw-medium">
+                <i class="fa-solid fa-arrow-left me-2"></i> Volver e intentar de nuevo
+            </button>
+        </div>
+    </div>
+</main>
+
+<th:block id="custom-scripts">
+<script>
+    // No hay scripts específicos para esta vista
+</script>
+</th:block>
+
+</html>

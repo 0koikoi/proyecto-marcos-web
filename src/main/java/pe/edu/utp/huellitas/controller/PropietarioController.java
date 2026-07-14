@@ -2,12 +2,14 @@ package pe.edu.utp.huellitas.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import jakarta.validation.Valid;
 import pe.edu.utp.huellitas.model.Propietario;
 import pe.edu.utp.huellitas.service.PropietarioService;
 
@@ -22,8 +24,9 @@ public class PropietarioController {
     }
 
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("propietarios", propietarioService.listarTodos());
+    public String listar(@org.springframework.web.bind.annotation.RequestParam(required = false) String buscar, Model model) {
+        model.addAttribute("propietarios", propietarioService.buscarPropietarios(buscar));
+        model.addAttribute("buscar", buscar);
         return "propietarios/listar";
     }
 
@@ -39,17 +42,26 @@ public class PropietarioController {
     }
 
     @PostMapping("/guardar")
-    public String guardar(@ModelAttribute Propietario propietario, Model model) {
-        try {
-            propietarioService.guardar(propietario);
-            return "redirect:/propietarios";
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("propietario", propietario);
-            model.addAttribute("titulo", propietario.getId() == null ? "Registrar propietario" : "Editar propietario");
-            model.addAttribute("error", e.getMessage());
-            return "propietarios/form";
-        }
+public String guardar(@Valid @ModelAttribute("propietario") Propietario propietario,
+                      BindingResult result,
+                      Model model) {
+
+    if (result.hasErrors()) {
+        model.addAttribute("propietario", propietario);
+        model.addAttribute("titulo", propietario.getId() == null ? "Registrar propietario" : "Editar propietario");
+        return "propietarios/form";
     }
+
+    try {
+        propietarioService.guardar(propietario);
+        return "redirect:/propietarios";
+    } catch (IllegalArgumentException e) {
+        model.addAttribute("propietario", propietario);
+        model.addAttribute("titulo", propietario.getId() == null ? "Registrar propietario" : "Editar propietario");
+        model.addAttribute("error", e.getMessage());
+        return "propietarios/form";
+    }
+}
 
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id, Model model) {

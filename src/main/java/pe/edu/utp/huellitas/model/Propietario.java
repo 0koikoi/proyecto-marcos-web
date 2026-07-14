@@ -1,17 +1,26 @@
 package pe.edu.utp.huellitas.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 import pe.edu.utp.huellitas.validation.DniPeruano;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Propietario (cliente) de los pacientes de la clínica.
+ * Identificado de forma única por su DNI peruano (8 dígitos).
+ *
+ * Permisos:
+ *   - Ver/Crear/Editar: todos los roles autenticados
+ *   - Eliminar: solo ADMINISTRADOR
+ */
+@Data
 @Entity
 @Table(name = "propietario")
 public class Propietario {
@@ -22,6 +31,7 @@ public class Propietario {
 
     @DniPeruano
     @NotBlank(message = "El DNI es obligatorio")
+    @Pattern(regexp = "\\d{8}", message = "El DNI debe contener solo números y tener exactamente 8 dígitos")
     @Column(name = "dni", length = 8, nullable = false, unique = true)
     private String dni;
 
@@ -31,8 +41,10 @@ public class Propietario {
     private String nombreCompleto;
 
     @NotBlank(message = "El teléfono es obligatorio")
-    @NotBlank(message = "El teléfono es obligatorio")
-    @Pattern(regexp = "^(\\+51\\s?)?9\\d{8}$", message = "El teléfono debe ser válido y empezar con 9 (ej. +51 9XXXXXXXX)")
+    @Pattern(
+        regexp = "^(\\+51\\s?)?9\\d{8}$",
+        message = "El teléfono debe tener formato 912345678 o +51 912345678"
+    )
     @Column(name = "telefono", length = 15, nullable = false)
     private String telefono;
 
@@ -40,58 +52,24 @@ public class Propietario {
     @Column(name = "correo", length = 150)
     private String correo;
 
+    @NotBlank(message = "La dirección es obligatoria")
     @Size(max = 255, message = "La dirección no puede exceder los 255 caracteres")
     @Column(name = "direccion", columnDefinition = "TEXT")
     private String direccion;
 
-    public Propietario() {
-    }
+    /** Auditoría: cuándo fue registrado el propietario. */
+    @Column(nullable = false, updatable = false)
+    private OffsetDateTime createdAt = OffsetDateTime.now();
 
-    public Long getId() {
-        return id;
-    }
+    /** Auditoría: última actualización. */
+    @Column(nullable = false)
+    private OffsetDateTime updatedAt = OffsetDateTime.now();
 
-    public String getDni() {
-        return dni;
-    }
-
-    public String getNombreCompleto() {
-        return nombreCompleto;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public String getCorreo() {
-        return correo;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setDni(String dni) {
-        this.dni = dni;
-    }
-
-    public void setNombreCompleto(String nombreCompleto) {
-        this.nombreCompleto = nombreCompleto;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
+    /**
+     * Mascotas del propietario.
+     * CascadeType.ALL: si se elimina el propietario, se eliminan sus pacientes.
+     * ADVERTENCIA: el servicio debe verificar si tiene historia clínica antes de eliminar.
+     */
+    @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Paciente> pacientes = new ArrayList<>();
 }

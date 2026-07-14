@@ -11,5 +11,7 @@ public interface PropietarioRepository extends JpaRepository<Propietario, Long> 
     Optional<Propietario> findByDni(String dni);
 
     boolean existsByDni(String dni);
+
+    java.util.List<Propietario> findByNombreCompletoContainingIgnoreCaseOrDniContaining(String nombre, String dni);
 }
 

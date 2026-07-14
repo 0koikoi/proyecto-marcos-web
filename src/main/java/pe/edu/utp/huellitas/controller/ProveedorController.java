@@ -1,9 +1,10 @@
 package pe.edu.utp.huellitas.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import pe.edu.utp.huellitas.model.Proveedor;
 import pe.edu.utp.huellitas.service.ProveedorService;
@@ -12,8 +13,11 @@ import pe.edu.utp.huellitas.service.ProveedorService;
 @RequestMapping("/proveedores")
 public class ProveedorController {
 
-    @Autowired
-    private ProveedorService proveedorService;
+    private final ProveedorService proveedorService;
+
+    public ProveedorController(ProveedorService proveedorService) {
+        this.proveedorService = proveedorService;
+    }
 
     // MOSTRAR VISTA + LISTAR
   @GetMapping
@@ -27,8 +31,12 @@ public String listar(Model model) {
 
     // GUARDAR
     @PostMapping("/guardar")
-    public String guardar(@ModelAttribute Proveedor proveedor) {
-
+    public String guardar(@Valid @ModelAttribute("nuevoProveedor") Proveedor proveedor, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("listaProveedores", proveedorService.listar());
+            model.addAttribute("activePage", "proveedores");
+            return "proveedores";
+        }
         proveedorService.guardar(proveedor);
 
         return "redirect:/proveedores";
@@ -43,4 +51,3 @@ public String listar(Model model) {
         return "redirect:/proveedores";
     }
 }
-

@@ -9,11 +9,14 @@ import pe.edu.utp.huellitas.repository.ProductoRepository;
 
 @Controller
 public class WebController {
+
     private final PacienteRepository pacienteRepo;
     private final CitaRepository citaRepo;
     private final ProductoRepository productoRepo;
 
-    public WebController(PacienteRepository pacienteRepo, CitaRepository citaRepo, ProductoRepository productoRepo) {
+    public WebController(PacienteRepository pacienteRepo,
+            CitaRepository citaRepo,
+            ProductoRepository productoRepo) {
         this.pacienteRepo = pacienteRepo;
         this.citaRepo = citaRepo;
         this.productoRepo = productoRepo;
