@@ -1,5 +1,6 @@
 <html th:replace="~{layout :: page('Solicitudes de Material', 'solicitudes', ~{::main}, ~{})}"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <main>
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
@@ -12,13 +13,12 @@
                 <span sec:authorize="hasRole('VETERINARIO')">Mis solicitudes de material e insumos</span>
             </p>
         </div>
-        <a th:href="@{/solicitudes/nueva}" sec:authorize="hasAnyRole('ADMINISTRADOR','VETERINARIO')"
+        <a th:href="@{/solicitudes/nueva}" sec:authorize="hasRole('VETERINARIO')"
            class="btn btn-primary">
             <i class="fa-solid fa-plus me-1"></i> Nueva Solicitud
         </a>
     </div>
 
-    <!-- Mensajes flash -->
     <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show">
         <span th:text="${successMsg}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -28,39 +28,153 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <!--
-    TODO: Implementar tabla con solicitudes.
-    COLUMNAS: Fecha | Solicitante | Producto | Cant. Solicitada | Motivo | Estado | Acciones
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Fecha</th>
+                        <th sec:authorize="hasRole('ADMINISTRADOR')">Solicitante</th>
+                        <th>Producto</th>
+                        <th>Cant. Solicitada</th>
+                        <th>Motivo</th>
+                        <th>Estado</th>
+                        <th sec:authorize="hasRole('ADMINISTRADOR')" class="text-center pe-4">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="s : ${solicitudes}">
+                        <td class="ps-4" th:text="${#temporals.format(s.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td sec:authorize="hasRole('ADMINISTRADOR')">
+                            <span th:if="${s.solicitante != null}" th:text="${s.solicitante.getNombres() + ' ' + s.solicitante.getApellidos()}"></span>
+                            <span th:if="${s.solicitante == null}" class="text-muted fst-italic">Sin asignar</span>
+                        </td>
+                        <td th:text="${s.producto.nombre}"></td>
+                        <td th:text="${s.cantidadSolicitada}"></td>
+                        <td th:text="${s.motivo}"></td>
+                        <td>
+                            <span th:if="${s.estado.name() == 'PENDIENTE'}" class="badge bg-warning text-dark">Pendiente</span>
+                            <span th:if="${s.estado.name() == 'APROBADA'}" class="badge bg-primary">Aprobada</span>
+                            <span th:if="${s.estado.name() == 'ENTREGADA'}" class="badge bg-success">Entregada</span>
+                            <span th:if="${s.estado.name() == 'RECHAZADA'}" class="badge bg-danger">Rechazada</span>
+                        </td>
 
-    ESTADOS con badge:
-        PENDIENTE  → badge bg-warning text-dark
-        APROBADA   → badge bg-primary
-        ENTREGADA  → badge bg-success
-        RECHAZADA  → badge bg-danger
-
-    BOTONES (todos POST con CSRF):
-        Aprobar:   <form method="post" th:action="@{/solicitudes/aprobar/{id}(id=${s.id})}">
-        Rechazar:  <form method="post" th:action="@{/solicitudes/rechazar/{id}(id=${s.id})}">
-        Entregar:  <form method="post" th:action="@{/solicitudes/entregar/{id}(id=${s.id})}">
-        Cada form debe incluir: <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-
-    MODAL PARA MOTIVO DE RECHAZO:
-        Al hacer clic en "Rechazar", mostrar un modal Bootstrap con textarea.
-        El motivo es OBLIGATORIO (param motivoRechazo en el controller).
-
-    MODAL PARA CANTIDAD ENTREGADA:
-        Al hacer clic en "Marcar entregada", pedir cantidadEntregada (puede ser menor).
-    -->
-
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-4">
-            <div class="alert alert-warning mb-0">
-                <i class="fa-solid fa-triangle-exclamation me-2"></i>
-                <strong>Módulo en construcción.</strong>
-                Implementar la tabla en <code>SolicitudMaterialController.java</code>.
+                        <td sec:authorize="hasRole('ADMINISTRADOR')" class="text-center pe-4">
+                            <div class="d-flex gap-2 justify-content-center">
+                                <button th:if="${s.estado.name() == 'PENDIENTE'}" class="btn btn-sm btn-outline-success"
+                                        data-bs-toggle="modal" th:data-bs-target="'#modalAprobar' + ${s.id}" title="Aprobar">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <button th:if="${s.estado.name() == 'PENDIENTE'}" class="btn btn-sm btn-outline-danger"
+                                        data-bs-toggle="modal" th:data-bs-target="'#modalRechazar' + ${s.id}" title="Rechazar">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                                <button th:if="${s.estado.name() == 'APROBADA'}" class="btn btn-sm btn-outline-primary"
+                                        data-bs-toggle="modal" th:data-bs-target="'#modalEntregar' + ${s.id}" title="Marcar como entregada">
+                                    <i class="fa-solid fa-box-open"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(solicitudes)}">
+                        <td colspan="100%" class="text-center text-muted py-4">
+                            No hay solicitudes registradas.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-</main>
 
+    <!-- Modales fuera de la tabla para evitar problemas de diseño y z-index -->
+    <th:block sec:authorize="hasRole('ADMINISTRADOR')">
+        <div th:each="s : ${solicitudes}">
+            
+            <!-- Modal Aprobar -->
+            <div th:if="${s.estado.name() == 'PENDIENTE'}" class="modal fade" th:id="'modalAprobar' + ${s.id}" tabindex="-1">
+                <div class="modal-dialog">
+                    <form method="post" th:action="@{/solicitudes/aprobar/{id}(id=${s.id})}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <div class="modal-content text-start">
+                            <div class="modal-header border-0 pb-0">
+                                <h5 class="modal-title">Aprobar Solicitud</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>¿Aprobar la solicitud de <strong th:text="${s.producto.nombre}"></strong>?</p>
+                                <div class="mb-3">
+                                    <label class="form-label">Observación (Opcional)</label>
+                                    <textarea name="observacion" class="form-control" rows="2"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success">Aprobar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal Rechazar -->
+            <div th:if="${s.estado.name() == 'PENDIENTE'}" class="modal fade" th:id="'modalRechazar' + ${s.id}" tabindex="-1">
+                <div class="modal-dialog">
+                    <form method="post" th:action="@{/solicitudes/rechazar/{id}(id=${s.id})}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <div class="modal-content text-start">
+                            <div class="modal-header border-0 pb-0">
+                                <h5 class="modal-title">Rechazar Solicitud</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Motivo del rechazo *</label>
+                                    <textarea name="motivoRechazo" class="form-control" rows="3" required></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger">Rechazar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal Entregar -->
+            <div th:if="${s.estado.name() == 'APROBADA'}" class="modal fade" th:id="'modalEntregar' + ${s.id}" tabindex="-1">
+                <div class="modal-dialog">
+                    <form method="post" th:action="@{/solicitudes/entregar/{id}(id=${s.id})}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <div class="modal-content text-start">
+                            <div class="modal-header border-0 pb-0">
+                                <h5 class="modal-title">Entrega de Material</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="alert alert-info">
+                                    Se solicitaron <strong th:text="${s.cantidadSolicitada}"></strong> unidades.
+                                    Stock disponible: <strong th:text="${s.producto.stockActual}"></strong>.
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Cantidad a entregar real *</label>
+                                    <input type="number" name="cantidadEntregada" class="form-control"
+                                           th:value="${s.cantidadSolicitada}" min="1" th:max="${s.cantidadSolicitada}" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Marcar Entregado</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+    </th:block>
+
+</main>
 </html>
