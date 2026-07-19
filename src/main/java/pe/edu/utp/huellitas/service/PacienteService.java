@@ -24,7 +24,7 @@ public class PacienteService {
     public List<Paciente> listarTodos(String buscar) {
         if (buscar != null && !buscar.trim().isEmpty()) {
             String b = buscar.trim();
-            return pacienteRepository.findByNombreContainingIgnoreCaseOrEspecieContainingIgnoreCaseOrPropietarioNombreCompletoContainingIgnoreCase(b, b, b);
+            return pacienteRepository.findByNombreContainingIgnoreCaseOrEspecieContainingIgnoreCaseOrPropietarioNombresContainingIgnoreCaseOrPropietarioApellidosContainingIgnoreCase(b, b, b, b);
         }
         return pacienteRepository.findAll();
     }

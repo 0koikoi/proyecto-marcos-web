@@ -6,7 +6,6 @@ import pe.edu.utp.huellitas.model.DetalleVenta;
 import pe.edu.utp.huellitas.model.EstadoVenta;
 import pe.edu.utp.huellitas.model.Producto;
 import pe.edu.utp.huellitas.model.Venta;
-import pe.edu.utp.huellitas.model.TipoPago;
 import pe.edu.utp.huellitas.repository.DetalleVentaRepository;
 import pe.edu.utp.huellitas.repository.ProductoRepository;
 import pe.edu.utp.huellitas.repository.VentaRepository;
@@ -14,7 +13,6 @@ import pe.edu.utp.huellitas.repository.VentaRepository;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class VentaService {
@@ -61,13 +59,12 @@ public class VentaService {
         BigDecimal totalVenta = BigDecimal.ZERO;
 
         // 1. Guardar cabecera de la venta inicial
-        venta.setNroBoleta("BOL-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        venta.setFechaEmision(OffsetDateTime.now());
-        venta.setTipoPago(TipoPago.valueOf(metodoPago.toUpperCase()));
-        venta.setEstado(EstadoVenta.PENDIENTE); // Se crea como PENDIENTE para flujo de caja/entrega
+        venta.setFecha(OffsetDateTime.now());
+        venta.setTipoPago(metodoPago != null ? metodoPago.toUpperCase() : "EFECTIVO");
+        venta.setEstado(EstadoVenta.PENDIENTE);
         Venta ventaGuardada = ventaRepository.save(venta);
 
-        // 2. Procesar detalles alineados a tabla_detalle.png
+        // 2. Procesar detalles
         for (int i = 0; i < productoIds.size(); i++) {
             Long productoId = productoIds.get(i);
             Integer cantidad = cantidades.get(i);
@@ -80,30 +77,24 @@ public class VentaService {
             }
 
             // Descontar stock
+            // TODO (Fase 3): mover a InventarioService.descontarStock()
             producto.setStockActual(producto.getStockActual() - cantidad);
             productoRepository.save(producto);
 
-            // Cálculos
             BigDecimal precioUnitario = producto.getPrecioVenta();
             BigDecimal subtotal = precioUnitario.multiply(BigDecimal.valueOf(cantidad));
             totalVenta = totalVenta.add(subtotal);
 
-            // Persistir detalle (Esquema detalle_venta)
             DetalleVenta detalle = new DetalleVenta();
             detalle.setVenta(ventaGuardada);
             detalle.setProducto(producto);
-            // servicio_id y descripcion quedan nulos según el constraint
-            // ck_detalle_tiene_item si hay producto
             detalle.setCantidad(cantidad);
             detalle.setPrecioUnitario(precioUnitario);
             detalle.setSubtotal(subtotal);
-
             detalleVentaRepository.save(detalle);
         }
 
-        // 3. Actualizar totales de la cabecera
-        ventaGuardada.setSubtotal(totalVenta);
-        ventaGuardada.setIgv(BigDecimal.ZERO); // Aplicar lógica de IGV si es necesario
+        // 3. Actualizar total de la cabecera
         ventaGuardada.setTotal(totalVenta);
         ventaRepository.save(ventaGuardada);
     }
@@ -112,11 +103,12 @@ public class VentaService {
     public void anularVenta(Long ventaId) {
         Venta venta = obtenerPorId(ventaId);
 
-        if (venta.getEstado() != EstadoVenta.PENDIENTE) {
-            throw new IllegalStateException("Solo se pueden anular ventas en estado PENDIENTE.");
+        if (venta.getEstado() == EstadoVenta.ANULADA) {
+            throw new IllegalStateException("La venta ya está anulada.");
         }
 
-        // Revertir Stock
+        // Revertir stock
+        // TODO (Fase 3): mover a InventarioService.incrementarStock()
         List<DetalleVenta> detalles = detalleVentaRepository.findByVentaId(ventaId);
         for (DetalleVenta detalle : detalles) {
             if (detalle.getProducto() != null) {
@@ -127,6 +119,7 @@ public class VentaService {
         }
 
         venta.setEstado(EstadoVenta.ANULADA);
+        venta.setAnuladoEn(OffsetDateTime.now());
         ventaRepository.save(venta);
     }
 }

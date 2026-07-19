@@ -11,23 +11,17 @@ import pe.edu.utp.huellitas.model.Rol;
 public class PersonalDTO {
     private Long id;
 
-    @NotBlank(message = "El código institucional es obligatorio")
+    // Se genera automáticamente en el backend
     private String codigoInstitucional;
 
     @NotBlank(message = "El nombre es obligatorio")
-    @Pattern(
-        regexp = "^[A-Za-zÁÉÍÓÚáéíóúÑñ. ]+$",
-        message = "El nombre solo puede contener letras"
-    )
-    private String nombreCompleto;
+    private String nombre;
+
+    @NotBlank(message = "El apellido es obligatorio")
+    private String apellido;
 
     @NotNull(message = "El rol es obligatorio")
-    private Rol rol; // Se puede mapear directo desde select en el form
-
-    @NotBlank(message = "El cargo es obligatorio")
-    private String cargo;
-
-    private String especialidad;
+    private Rol rol;
 
     @Pattern(
         regexp = "^9\\d{8}$",
@@ -41,4 +35,11 @@ public class PersonalDTO {
 
     @NotBlank(message = "El usuario es obligatorio")
     private String username;
+
+    // Helper para compatibilidad con vistas que usen nombreCompleto (ej. tablas)
+    public String getNombreCompleto() {
+        String n = nombre != null ? nombre : "";
+        String a = apellido != null ? apellido : "";
+        return (n + " " + a).trim();
+    }
 }

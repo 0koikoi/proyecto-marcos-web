@@ -27,13 +27,13 @@ public class ActividadController {
     public String actividad(Model model) {
 
         model.addAttribute("pacientes",
-                pacienteRepo.findTop10ByOrderByCreatedAtDesc());
+                pacienteRepo.findTop10ByOrderByCreadoEnDesc());
 
         model.addAttribute("citas",
                 citaRepo.findTop10ByOrderByFechaHoraDesc());
 
         model.addAttribute("ventas",
-                ventaRepo.findTop10ByOrderByFechaEmisionDesc());
+                ventaRepo.findTop10ByOrderByFechaDesc());
 
         return "actividad";
     }

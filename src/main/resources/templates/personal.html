@@ -84,29 +84,30 @@
                                 <form th:action="@{/personal/guardar}" th:object="${nuevoPersonal}" method="post">
                                     <input type="hidden" th:field="*{id}">
 
-                                    <div class="mb-3">
-                                        <label class="form-label">
-                                            <i class="fa-solid fa-id-card me-1 text-primary"></i>
-                                            Código Institucional <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" id="codigoInstitucional" th:field="*{codigoInstitucional}"
-                                            class="form-control"
-                                            th:classappend="${#fields.hasErrors('codigoInstitucional')} ? 'is-invalid'"
-                                            placeholder="C000001" maxlength="7">
-                                        <div class="invalid-feedback" th:errors="*{codigoInstitucional}"></div>
-                                        <div class="form-text">Formato: C seguido de 6 dígitos</div>
-                                    </div>
+
 
                                     <div class="mb-3">
                                         <label class="form-label">
                                             <i class="fa-solid fa-user me-1 text-primary"></i>
-                                            Nombre Completo <span class="text-danger">*</span>
+                                            Nombre(s) <span class="text-danger">*</span>
                                         </label>
-                                        <input type="text" id="nombreCompleto" th:field="*{nombreCompleto}"
+                                        <input type="text" id="nombre" th:field="*{nombre}"
                                             class="form-control"
-                                            th:classappend="${#fields.hasErrors('nombreCompleto')} ? 'is-invalid'"
-                                            placeholder="Ej: Dr. Juan Pérez García">
-                                        <div class="invalid-feedback" th:errors="*{nombreCompleto}"></div>
+                                            th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'"
+                                            placeholder="Ej: Juan Pablo">
+                                        <div class="invalid-feedback" th:errors="*{nombre}"></div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <i class="fa-solid fa-user-tag me-1 text-primary"></i>
+                                            Apellidos <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="apellido" th:field="*{apellido}"
+                                            class="form-control"
+                                            th:classappend="${#fields.hasErrors('apellido')} ? 'is-invalid'"
+                                            placeholder="Ej: Pérez García">
+                                        <div class="invalid-feedback" th:errors="*{apellido}"></div>
                                     </div>
 
                                     <div class="mb-3">
@@ -122,23 +123,7 @@
                                         </select>
                                     </div>
 
-                                    <div class="mb-3">
-                                        <label class="form-label">
-                                            <i class="fa-solid fa-briefcase me-1 text-primary"></i>
-                                            Cargo (generado automáticamente)
-                                        </label>
-                                        <input type="text" id="cargo" th:field="*{cargo}" class="form-control bg-light"
-                                            placeholder="Se autocompleta con el rol" readonly>
-                                    </div>
 
-                                    <div class="mb-3" id="especialidadGroup">
-                                        <label class="form-label">
-                                            <i class="fa-solid fa-graduation-cap me-1 text-primary"></i>
-                                            Especialidad
-                                        </label>
-                                        <input type="text" id="especialidad" th:field="*{especialidad}"
-                                            class="form-control" placeholder="Solo para veterinarios">
-                                    </div>
 
                                     <div class="mb-3">
                                         <label class="form-label">
@@ -173,24 +158,6 @@
                                         <div class="invalid-feedback" th:errors="*{username}"></div>
                                     </div>
 
-                                    <div class="mb-4">
-                                        <label class="form-label">
-                                            <i class="fa-solid fa-lock me-1 text-primary"></i>
-                                            Contraseña
-                                            <span th:if="${editando != true}" class="text-danger">*</span>
-                                            <span th:if="${editando == true}" class="text-muted small fw-normal">(dejar
-                                                vacío para conservar)</span>
-                                        </label>
-                                        <div class="input-group">
-                                            <input type="password" id="rawPassword" name="rawPassword"
-                                                class="form-control" placeholder="Mín. 8 caracteres"
-                                                autocomplete="new-password">
-                                            <button class="btn btn-outline-secondary" type="button"
-                                                onclick="togglePassword('rawPassword', this)">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </button>
-                                        </div>
-                                    </div>
 
                                     <div class="d-grid gap-2">
                                         <button type="submit" class="btn btn-primary fw-semibold">
@@ -242,6 +209,7 @@
                                                 <th class="ps-4">Personal</th>
                                                 <th>Contacto</th>
                                                 <th>Credenciales</th>
+                                                <th>Código</th>
                                                 <th>Estado</th>
                                                 <th class="text-center pe-4">Acciones</th>
                                             </tr>
@@ -274,14 +242,7 @@
                                                             <i class="fa-solid fa-phone text-muted me-1"></i>
                                                             <span th:text="${persona.telefono}"></span>
                                                         </div>
-                                                        <div
-                                                            th:if="${persona.especialidad != null and !persona.especialidad.isBlank()}">
-                                                            <i class="fa-solid fa-graduation-cap text-muted me-1"></i>
-                                                            <span class="text-truncate d-inline-block"
-                                                                style="max-width: 120px; vertical-align: bottom;"
-                                                                th:text="${persona.especialidad}"></span>
-                                                        </div>
-                                                        <div th:if="${(persona.telefono == null or persona.telefono.isBlank()) and (persona.especialidad == null or persona.especialidad.isBlank())}"
+                                                        <div th:if="${persona.telefono == null or persona.telefono.isBlank()}"
                                                             class="text-muted fst-italic">
                                                             Sin datos
                                                         </div>
@@ -363,50 +324,60 @@
                         </div>
                     </div>
                 </div>
+                </div>
+
+                <!-- Modal de Credenciales Temporales -->
+                <div th:if="${newUserTempPassword != null}" class="modal fade" id="credentialsModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title"><i class="fa-solid fa-key me-2"></i>Credenciales Generadas</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center p-4">
+                                <p class="mb-3 text-muted">El usuario ha sido creado correctamente. Por favor, entrega estas credenciales al trabajador:</p>
+                                <div class="bg-light rounded p-3 mb-3 text-start border">
+                                    <div class="mb-2"><strong>Usuario:</strong> <span th:text="${newUserUsername}"></span></div>
+                                    <div><strong>Contraseña Temporal:</strong> <span id="tempPwdText" class="fw-bold text-success font-monospace" th:text="${newUserTempPassword}"></span></div>
+                                </div>
+                                <div class="alert alert-warning small mb-0">
+                                    <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                                    Se le pedirá cambiar esta contraseña obligatoriamente al iniciar sesión por primera vez.
+                                </div>
+                            </div>
+                            <div class="modal-footer bg-light">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="button" class="btn btn-success" onclick="copyCredentials()">
+                                    <i class="fa-solid fa-copy me-2"></i>Copiar al portapapeles
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </main>
 
             <div id="custom-scripts">
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
-                        const rolSelect = document.getElementById('rolId');
-                        const cargoInput = document.getElementById('cargo');
-                        const especialidadInput = document.getElementById('especialidad');
-
-                        function updateFormBasedOnRole() {
-                            if (!rolSelect.value) return;
-                            const rolName = rolSelect.options[rolSelect.selectedIndex].text.toUpperCase();
-
-                            if (rolName.includes('ADMINISTRADOR')) cargoInput.value = 'Administrador';
-                            else if (rolName.includes('RECEPCION')) cargoInput.value = 'Recepcionista';
-                            else if (rolName.includes('VETERINARIO')) cargoInput.value = 'Veterinario';
-                            else cargoInput.value = rolName;
-
-                            if (rolName.includes('ADMINISTRADOR') || rolName.includes('RECEPCION')) {
-                                especialidadInput.value = '';
-                                especialidadInput.disabled = true;
-                                especialidadInput.placeholder = 'No aplica para este rol';
-                            } else {
-                                especialidadInput.disabled = false;
-                                especialidadInput.placeholder = 'Solo para veterinarios';
-                            }
+                        // El formulario ya no requiere autocompletar cargo ni especialidad
+                        
+                        // Mostrar modal si existen credenciales temporales
+                        const credentialsModalEl = document.getElementById('credentialsModal');
+                        if (credentialsModalEl) {
+                            const modal = new bootstrap.Modal(credentialsModalEl);
+                            modal.show();
                         }
-
-                        rolSelect.addEventListener('change', updateFormBasedOnRole);
-                        updateFormBasedOnRole();
                     });
 
-                    function togglePassword(inputId, btn) {
-                        const input = document.getElementById(inputId);
-                        const icon = btn.querySelector('i');
-                        if (input.type === 'password') {
-                            input.type = 'text';
-                            icon.classList.replace('fa-eye', 'fa-eye-slash');
-                        } else {
-                            input.type = 'password';
-                            icon.classList.replace('fa-eye-slash', 'fa-eye');
-                        }
+                    function copyCredentials() {
+                        const pwd = document.getElementById('tempPwdText').innerText;
+                        navigator.clipboard.writeText(pwd).then(() => {
+                            alert('¡Contraseña copiada al portapapeles!');
+                        }).catch(err => {
+                            console.error('Error copiando al portapapeles: ', err);
+                        });
                     }
-
                     function confirmDelete(nombre) {
                         return confirm(
                             '¿Eliminar permanentemente a "' + nombre + '"?\n\n' +

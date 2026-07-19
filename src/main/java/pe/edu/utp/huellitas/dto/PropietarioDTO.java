@@ -13,9 +13,13 @@ public class PropietarioDTO {
     @DniPeruano
     private String dni;
 
-    @NotBlank(message = "El nombre completo es obligatorio")
-    @Pattern(regexp = "^[A-Za-zÁÉÍÓÚáéíóúÑñ. ]+$", message = "El nombre solo puede contener letras")
-    private String nombreCompleto;
+    @NotBlank(message = "Los nombres son obligatorios")
+    @Pattern(regexp = "^[A-Za-zÁÉÍÓÚáéíóúÑñ. ]+$", message = "Los nombres solo pueden contener letras")
+    private String nombres;
+
+    @NotBlank(message = "Los apellidos son obligatorios")
+    @Pattern(regexp = "^[A-Za-zÁÉÍÓÚáéíóúÑñ. ]+$", message = "Los apellidos solo pueden contener letras")
+    private String apellidos;
 
     @Pattern(
         regexp = "^9\\d{8}$",
@@ -24,7 +28,14 @@ public class PropietarioDTO {
     private String telefono;
 
     @Email(message = "Debe ser un correo electrónico válido")
-    private String correo;
+    private String email;
 
     private String direccion;
+
+    // Helper para compatibilidad con vistas existentes
+    public String getNombreCompleto() {
+        String n = nombres != null ? nombres : "";
+        String a = apellidos != null ? apellidos : "";
+        return (n + " " + a).trim();
+    }
 }

@@ -12,8 +12,8 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 
     List<Paciente> findByNombreContainingIgnoreCase(String nombre);
 
-    List<Paciente> findByNombreContainingIgnoreCaseOrEspecieContainingIgnoreCaseOrPropietarioNombreCompletoContainingIgnoreCase(
-            String nombre, String especie, String propietario);
+    List<Paciente> findByNombreContainingIgnoreCaseOrEspecieContainingIgnoreCaseOrPropietarioNombresContainingIgnoreCaseOrPropietarioApellidosContainingIgnoreCase(
+            String nombre, String especie, String propietarioNombres, String propietarioApellidos);
 
-    List<Paciente> findTop10ByOrderByCreatedAtDesc();
+    List<Paciente> findTop10ByOrderByCreadoEnDesc();
 }

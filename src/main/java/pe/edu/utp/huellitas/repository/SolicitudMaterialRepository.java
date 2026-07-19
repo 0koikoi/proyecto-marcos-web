@@ -10,12 +10,12 @@ import java.util.List;
 @Repository
 public interface SolicitudMaterialRepository extends JpaRepository<SolicitudMaterial, Long> {
 
-    /** Filtra por estado (enum). Usado para mostrar pendientes al administrador. */
-    List<SolicitudMaterial> findByEstadoOrderByCreatedAtDesc(EstadoSolicitud estado);
+    /** Filtra por estado. Usado para mostrar pendientes al administrador. */
+    List<SolicitudMaterial> findByEstadoOrderByFechaSolicitudDesc(EstadoSolicitud estado);
 
     /** Lista todas las solicitudes de un veterinario específico. */
-    List<SolicitudMaterial> findBySolicitanteIdOrderByCreatedAtDesc(Long personalId);
+    List<SolicitudMaterial> findBySolicitanteIdOrderByFechaSolicitudDesc(Long personalId);
 
-    /** Lista todas las solicitudes, ordenadas por fecha descendente. */
-    List<SolicitudMaterial> findAllByOrderByCreatedAtDesc();
+    /** Lista todas las solicitudes, más reciente primero. */
+    List<SolicitudMaterial> findAllByOrderByFechaSolicitudDesc();
 }

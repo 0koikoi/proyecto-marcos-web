@@ -64,7 +64,7 @@ public class VacunaService {
         if (vacuna.getPersonal() == null) {
             throw new IllegalArgumentException("El veterinario es obligatorio.");
         }
-        if (vacuna.getNombreVacuna() == null || vacuna.getNombreVacuna().isBlank()) {
+        if (vacuna.getNombre() == null || vacuna.getNombre().isBlank()) {
             throw new IllegalArgumentException("El nombre de la vacuna es obligatorio.");
         }
         if (vacuna.getFechaAplicacion() == null) {

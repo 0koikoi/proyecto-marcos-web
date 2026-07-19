@@ -1,0 +1,20 @@
+<html th:replace="~{layout :: page('Conflicto de Datos', 'dashboard', ~{::main}, ~{::#custom-scripts})}">
+<main>
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 65vh;">
+        <div class="card border-0 shadow-sm text-center p-5" style="max-width: 500px; width: 100%; border-top: 4px solid var(--info) !important;">
+            <div class="mb-4">
+                <i class="fa-solid fa-code-merge fa-4x text-info"></i>
+            </div>
+            <h4 class="fw-bold mb-3">Conflicto de Datos</h4>
+            <p class="text-muted mb-4" th:text="${errorMsg}">
+                La operación entra en conflicto con datos existentes.
+            </p>
+            <button onclick="history.back()" class="btn btn-info text-white w-100 py-2 fw-medium">
+                <i class="fa-solid fa-arrow-left me-2"></i> Volver e intentar de nuevo
+            </button>
+        </div>
+    </div>
+</main>
+<th:block id="custom-scripts">
+</th:block>
+</html>

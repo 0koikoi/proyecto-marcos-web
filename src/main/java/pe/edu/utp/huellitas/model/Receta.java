@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +11,8 @@ import java.util.List;
 /**
  * Receta médica emitida por un veterinario.
  * Siempre está ligada a una entrada de historia clínica.
+ *
+ * V1 SQL columns: id, historia_clinica_id, personal_id, fecha, indicaciones
  */
 @Data
 @Entity
@@ -32,14 +33,13 @@ public class Receta {
     @JoinColumn(name = "personal_id", nullable = false)
     private Personal personal;
 
-    @Column(nullable = false)
-    private LocalDate fechaEmision = LocalDate.now();
+    /** Fecha de emisión. Columna SQL: fecha */
+    @Column(name = "fecha", nullable = false)
+    private OffsetDateTime fecha = OffsetDateTime.now();
 
-    @Column(columnDefinition = "TEXT")
-    private String observacionesGenerales;
-
-    @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    /** Indicaciones generales de la receta. Columna SQL: indicaciones */
+    @Column(name = "indicaciones", columnDefinition = "TEXT")
+    private String indicaciones;
 
     /** Líneas de la receta. Se eliminan en cascada con la receta. */
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)

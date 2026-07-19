@@ -123,7 +123,7 @@ public class SolicitudMaterialController {
             RedirectAttributes redirectAttrs) {
         try {
             Personal admin = (Personal) authentication.getPrincipal();
-            solicitudService.aprobar(id, admin.getId(), observacion);
+            solicitudService.aprobar(id, admin.getId());
             redirectAttrs.addFlashAttribute("successMsg", "Solicitud aprobada correctamente.");
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("errorMsg", "No se pudo aprobar: " + e.getMessage());
@@ -145,7 +145,7 @@ public class SolicitudMaterialController {
             RedirectAttributes redirectAttrs) {
         try {
             Personal admin = (Personal) authentication.getPrincipal();
-            solicitudService.rechazar(id, admin.getId(), motivoRechazo);
+            solicitudService.rechazar(id, admin.getId());
             redirectAttrs.addFlashAttribute("successMsg", "Solicitud rechazada.");
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("errorMsg", "No se pudo rechazar: " + e.getMessage());
@@ -164,7 +164,7 @@ public class SolicitudMaterialController {
             @RequestParam Integer cantidadEntregada,
             RedirectAttributes redirectAttrs) {
         try {
-            solicitudService.marcarEntregada(id, cantidadEntregada);
+            solicitudService.marcarEntregada(id);
             redirectAttrs.addFlashAttribute("successMsg", "Material marcado como entregado. Stock actualizado.");
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("errorMsg", "No se pudo marcar como entregado: " + e.getMessage());

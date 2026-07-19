@@ -49,10 +49,9 @@ public class PersonalController {
             PersonalDTO dto = new PersonalDTO();
             dto.setId(persona.getId());
             dto.setCodigoInstitucional(persona.getCodigoInstitucional());
-            dto.setNombreCompleto(persona.getNombreCompleto());
+            dto.setNombre(persona.getNombre());
+            dto.setApellido(persona.getApellido());
             dto.setRol(persona.getRol());
-            dto.setCargo(persona.getCargo());
-            dto.setEspecialidad(persona.getEspecialidad());
             dto.setTelefono(persona.getTelefono());
             dto.setEmail(persona.getEmail());
             dto.setUsername(persona.getUsername());
@@ -90,13 +89,17 @@ public class PersonalController {
         Personal personal = esEdicion ? service.obtenerPorId(dto.getId()).orElse(new Personal()) : new Personal();
 
         personal.setCodigoInstitucional(dto.getCodigoInstitucional());
-        personal.setNombreCompleto(dto.getNombreCompleto());
+        personal.setNombre(dto.getNombre());
+        personal.setApellido(dto.getApellido());
         personal.setRol(dto.getRol());
-        personal.setCargo(dto.getCargo());
-        personal.setEspecialidad(dto.getEspecialidad());
         personal.setTelefono(dto.getTelefono());
         personal.setEmail(dto.getEmail());
         personal.setUsername(dto.getUsername());
+        String passwordTemporal = null;
+        if (!esEdicion) {
+            passwordTemporal = service.generarPasswordTemporal();
+            rawPassword = passwordTemporal;
+        }
 
         String error = service.guardar(personal, rawPassword);
         if (error != null) {
@@ -108,6 +111,43 @@ public class PersonalController {
             return "personal";
         }
 
+        if (passwordTemporal != null) {
+            redirectAttrs.addFlashAttribute("successMsg", "Personal registrado exitosamente en el sistema.");
+            redirectAttrs.addFlashAttribute("newUserUsername", personal.getUsername());
+            redirectAttrs.addFlashAttribute("newUserTempPassword", passwordTemporal);
+        } else {
+            redirectAttrs.addFlashAttribute("successMsg", "Personal actualizado exitosamente.");
+        }
+
+        return "redirect:/personal";
+    }
+
+    // ── Acciones (Eliminar, Activar, Desactivar) ──────────────────────────────
+    
+    @PostMapping("/eliminar/{id}")
+    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
+        try {
+            service.eliminar(id);
+            redirectAttrs.addFlashAttribute("successMsg", "Personal eliminado permanentemente.");
+        } catch (pe.edu.utp.huellitas.exception.NegocioException e) {
+            redirectAttrs.addFlashAttribute("errorMsg", e.getMessage());
+        } catch (Exception e) {
+            redirectAttrs.addFlashAttribute("errorMsg", "No se pudo eliminar el personal porque tiene registros asociados. Considérelo desactivarlo en lugar de eliminarlo.");
+        }
+        return "redirect:/personal";
+    }
+
+    @PostMapping("/desactivar/{id}")
+    public String desactivar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
+        service.desactivar(id);
+        redirectAttrs.addFlashAttribute("successMsg", "El acceso del personal ha sido desactivado.");
+        return "redirect:/personal";
+    }
+
+    @PostMapping("/activar/{id}")
+    public String activar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
+        service.cambiarEstado(id, true);
+        redirectAttrs.addFlashAttribute("successMsg", "El acceso del personal ha sido restaurado.");
         return "redirect:/personal";
     }
 }

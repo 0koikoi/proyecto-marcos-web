@@ -1,7 +1,6 @@
 package pe.edu.utp.huellitas.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -18,12 +17,12 @@ import java.util.List;
  *
  * Permisos:
  *   - Ver/Crear/Editar: todos los roles autenticados
- *   - Eliminar: solo ADMINISTRADOR
+ *   - Eliminar: solo ADMINISTRADOR (con validación de historial)
  */
 @Data
 @Entity
 @Table(name = "propietario")
-public class Propietario {
+public class Propietario extends pe.edu.utp.huellitas.audit.Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,18 +34,47 @@ public class Propietario {
     @Column(name = "dni", length = 8, nullable = false, unique = true)
     private String dni;
 
-    @NotBlank(message = "El nombre completo es obligatorio")
-    @Size(min = 3, max = 100, message = "El nombre debe tener entre 3 y 100 caracteres")
-    @Column(name = "nombre_completo", nullable = false)
-    private String nombreCompleto;
+    @NotBlank(message = "Los nombres son obligatorios")
+    @Size(min = 2, max = 100, message = "Los nombres deben tener entre 2 y 100 caracteres")
+    @Column(name = "nombres", nullable = false, length = 100)
+    private String nombres;
+
+    @NotBlank(message = "Los apellidos son obligatorios")
+    @Size(min = 2, max = 100, message = "Los apellidos deben tener entre 2 y 100 caracteres")
+    @Column(name = "apellidos", nullable = false, length = 100)
+    private String apellidos;
 
     @NotBlank(message = "El teléfono es obligatorio")
     @Pattern(
         regexp = "^(\\+51\\s?)?9\\d{8}$",
         message = "El teléfono debe tener formato 912345678 o +51 912345678"
     )
-    @Column(name = "telefono", length = 15, nullable = false)
+    @Column(name = "telefono", length = 20, nullable = false)
     private String telefono;
+
+    @jakarta.validation.constraints.Email(message = "Debe ser un correo electrónico válido")
+    @Column(name = "email", length = 150)
+    private String email;
+
+    @Size(max = 200, message = "La dirección no puede exceder los 200 caracteres")
+    @Column(name = "direccion", length = 200)
+    private String direccion;
+
+
+
+    /**
+     * Mascotas del propietario.
+     * ADVERTENCIA: el servicio debe verificar historial antes de eliminar al propietario.
+     */
+    @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Paciente> pacientes = new ArrayList<>();
+
+    // --- Helper ---
+
+    @Transient
+    public String getNombreCompleto() {
+        return nombres + " " + apellidos;
+    }
 
     public void setTelefono(String telefono) {
         if (telefono != null) {
@@ -63,7 +91,7 @@ public class Propietario {
 
     public String getTelefono() {
         if (this.telefono != null && this.telefono.startsWith("+51 ")) {
-            return this.telefono.substring(4); // Remover "+51 "
+            return this.telefono.substring(4);
         }
         return this.telefono;
     }
@@ -71,29 +99,4 @@ public class Propietario {
     public String getTelefonoCompleto() {
         return this.telefono;
     }
-
-    @Email(message = "Debe ser un correo electrónico válido")
-    @Column(name = "correo", length = 150)
-    private String correo;
-
-    @NotBlank(message = "La dirección es obligatoria")
-    @Size(max = 255, message = "La dirección no puede exceder los 255 caracteres")
-    @Column(name = "direccion", columnDefinition = "TEXT")
-    private String direccion;
-
-    /** Auditoría: cuándo fue registrado el propietario. */
-    @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
-
-    /** Auditoría: última actualización. */
-    @Column(nullable = false)
-    private OffsetDateTime updatedAt = OffsetDateTime.now();
-
-    /**
-     * Mascotas del propietario.
-     * CascadeType.ALL: si se elimina el propietario, se eliminan sus pacientes.
-     * ADVERTENCIA: el servicio debe verificar si tiene historia clínica antes de eliminar.
-     */
-    @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Paciente> pacientes = new ArrayList<>();
 }

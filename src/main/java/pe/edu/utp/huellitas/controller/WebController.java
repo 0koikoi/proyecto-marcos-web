@@ -43,9 +43,9 @@ public class WebController {
         model.addAttribute("stockCritico", productoRepo.findStockCritico().size());
 
         model.addAttribute("ventasMes", ventaRepo.totalVentasMes());
-        model.addAttribute("ultimosPacientes", pacienteRepo.findTop10ByOrderByCreatedAtDesc());
+        model.addAttribute("ultimosPacientes", pacienteRepo.findTop10ByOrderByCreadoEnDesc());
         model.addAttribute("ultimasCitas", citaRepo.findTop10ByOrderByFechaHoraDesc());
-        model.addAttribute("ultimasVentas", ventaRepo.findTop10ByOrderByFechaEmisionDesc());
+        model.addAttribute("ultimasVentas", ventaRepo.findTop10ByOrderByFechaDesc());
         model.addAttribute("solicitudesPendientes", 0);
         model.addAttribute("productosMasVendidos", detalleVentaRepo.productosMasVendidos());
 

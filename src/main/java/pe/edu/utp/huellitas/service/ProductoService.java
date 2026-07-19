@@ -81,10 +81,6 @@ public class ProductoService {
     // ── Validación privada ────────────────────────────────────────────────────
 
     private void validarProducto(Producto producto) {
-        if (producto.getPrecioCompra() != null &&
-                producto.getPrecioCompra().compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("El precio de compra no puede ser negativo");
-        }
         if (producto.getPrecioVenta() != null &&
                 producto.getPrecioVenta().compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("El precio de venta no puede ser negativo");

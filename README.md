@@ -2,6 +2,9 @@
 
 **Stack:** Java 21 · Spring Boot 4.0.7 · Spring Security · Spring Data JPA · Thymeleaf · PostgreSQL (Neon)
 
+> [!IMPORTANT]
+> **ATENCIÓN EQUIPO DE DESARROLLO:** La Fase 1 (Arquitectura Base y Núcleo) ha sido **COMPLETADA**. Para ver exactamente qué tareas le corresponden a cada rol (Persona 2 a Persona 6) a partir de este punto, por favor consulten la **[Guía Consolidada de Desarrollo](guia-equipo-consolidada.md)** ubicada en la raíz de este repositorio.
+
 ---
 
 ## 📋 Tabla de Contenidos
@@ -48,22 +51,16 @@ mvn spring-boot:run
 
 ## 🗄️ Base de Datos
 
-**Schema versión:** v3.0
-**Archivo:** `schema-v3.sql`
+**Schema versión:** v3.0 (Aplicado automáticamente vía Flyway)
+**Archivos base:** `src/main/resources/db/migration/V1__esquema_inicial.sql`
 
-### Cambios en v3 respecto a v2:
-| Tabla | Cambio |
-|---|---|
-| `personal` | + columna `email VARCHAR(150)` |
-| `solicitud_material` | + columna `cantidad_entregada INT` |
-| `vacuna` | + FK `historia_clinica_id` (trazabilidad clínica) |
-| `personal` (semilla) | + campo email en todos los usuarios |
+> **Nota:** Hibernate está configurado en `validate`. Si necesitan alterar el esquema, creen obligatoriamente un nuevo script de migración en Flyway (`V3__...sql`).
 
 ---
 
 ## 👥 Usuarios iniciales
 
-**Contraseña de todos:** `Huellitas2025!`
+**Contraseña de todos:** Las contraseñas ahora son auto-generadas. Revisen las credenciales temporales generadas en los logs o usen una de prueba si corrieron el script de la V2. 
 
 | Usuario | Rol | Código |
 |---|---|---|
@@ -73,7 +70,7 @@ mvn spring-boot:run
 | `recep2` | RECEPCION | C000004 |
 | `vet1` — `vet8` | VETERINARIO | C000005 — C000012 |
 
-> 🔒 **El equipo debe cambiar las contraseñas al primer acceso.**
+> 🔒 **El equipo debe cambiar las contraseñas al primer acceso.** El sistema bloquea cuentas tras 3 intentos fallidos por 10 minutos.
 
 ---
 
@@ -83,7 +80,15 @@ mvn spring-boot:run
 src/main/java/pe/edu/utp/huellitas/
 │
 ├── config/
-│   └── SecurityConfig.java          ← Mapa completo de permisos por rol
+│   └── SecurityConfig.java          ✅ Configurado con maximumSessions(1) y permisos RBAC
+│
+├── exception/
+│   ├── GlobalExceptionHandler.java  ✅ Único punto de manejo de errores
+│   └── NegocioException.java        ✅ Excepción base a lanzar desde los servicios
+│
+├── audit/
+│   ├── Auditable.java               ✅ Todos los modelos heredan de aquí (o usan @EntityListeners)
+│   └── AuditorAwareImpl.java        ✅ Registra automáticamente el usuario logueado
 │
 ├── controller/
 │   ├── CitaController.java          ✅ Implementado
@@ -99,36 +104,8 @@ src/main/java/pe/edu/utp/huellitas/
 │   ├── RecetaController.java           🚧 Scaffold listo — pendiente implementar
 │   └── SolicitudMaterialController.java 🚧 Scaffold listo — pendiente implementar
 │
-├── model/
-│   ├── EstadoCita.java              ✅ Enum (PENDIENTE, EN_PROCESO, COMPLETADA, CANCELADA)
-│   ├── EstadoSolicitud.java         ✅ Enum (PENDIENTE, APROBADA, RECHAZADA, ENTREGADA)
-│   ├── EstadoVenta.java             ✅ Enum (PENDIENTE, PAGADA, ANULADA)
-│   └── TipoPago.java                ✅ Enum (EFECTIVO, TARJETA, TRANSFERENCIA, MIXTO)
-│
-├── service/
-│   ├── HistoriaClinicaService.java  🚧 Scaffold listo — métodos base implementados
-│   ├── VacunaService.java           🚧 Scaffold listo — métodos base implementados
-│   ├── RecetaService.java           🚧 Scaffold listo — métodos base implementados
-│   └── SolicitudMaterialService.java 🚧 Scaffold listo — flujo completo implementado
-│
 └── repository/
     └── (todos los repositorios base están listos)
-
-src/main/resources/templates/
-├── historia/
-│   ├── lista.html       🚧 Scaffold listo
-│   ├── formulario.html  🚧 Scaffold listo
-│   └── detalle.html     🚧 Scaffold listo
-├── vacunas/
-│   ├── lista.html       🚧 Scaffold listo
-│   └── formulario.html  🚧 Scaffold listo
-├── recetas/
-│   ├── lista.html       🚧 Scaffold listo
-│   ├── formulario.html  🚧 Scaffold listo
-│   └── detalle.html     🚧 Scaffold listo (con CSS @media print)
-└── solicitudes/
-    ├── lista.html       🚧 Scaffold listo
-    └── formulario.html  🚧 Scaffold listo
 ```
 
 ---
@@ -159,16 +136,27 @@ src/main/resources/templates/
 | Personal | ✅ | ❌ | ❌ |
 | Proveedores | ✅ | ❌ | ❌ |
 
+---
+
+## 🚀 Módulos pendientes (Por Roles)
+
+> **Ver detalles técnicos exhaustivos en `guia-equipo-consolidada.md`**
+
+1. **Persona 2 (Clientes):** Vistas adaptadas a los nuevos campos, validaciones de DNI y eliminación protegida de `Paciente`.
+2. **Persona 3 (Inventario):** `InventarioService` (centralización de stock) y registro en `movimiento_stock`.
+3. **Persona 4 (Agenda):** Validar cruces/solapamiento de horarios en `CitaService`.
+4. **Persona 5 (Médico):** Relación de Recetas con Inventario, e impresiones médicas.
+5. **Persona 6 (Ventas):** Multilínea mixta (productos + servicios) y reabastecimiento de stock automático al anular (vía `InventarioService`).
+
+---
+
 ## 📐 Convenciones
 
 ### Seguridad — REGLAS CRÍTICAS:
 1. **Nunca usar GET para modificar datos** — todas las operaciones de guardar/cancelar/eliminar deben ser `POST`.
-2. **Incluir CSRF token** en todos los forms:
-   ```html
-   <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-   ```
+2. **Incluir CSRF token** en todos los forms, aunque con el form de Thymeleaf por defecto se incluye solo (siempre usar el `th:action`).
 3. **Anotar con `@PreAuthorize`** en controllers para módulos restringidos.
-4. **No inyectar repositorios en controllers** — solo inyectar servicios.
+4. **Manejo de Errores:** Usen `throw new NegocioException(...)` en sus servicios. NUNCA `try/catch` locales para lógica de negocio.
 
 ### Thymeleaf — Uso de roles en templates:
 ```html
@@ -180,53 +168,6 @@ src/main/resources/templates/
 
 <!-- Mostrar a cualquier usuario logueado -->
 <div sec:authorize="isAuthenticated()">...</div>
-```
-
-### Obtener usuario autenticado en un Controller:
-```java
-// Opción 1: vía parámetro
-@GetMapping("/mi-ruta")
-public String miMetodo(Authentication authentication) {
-    Personal usuario = (Personal) authentication.getPrincipal();
-    // ...
-}
-
-// Opción 2: anotación
-@GetMapping("/mi-ruta")
-public String miMetodo(@AuthenticationPrincipal Personal usuario) {
-    // ...
-}
-```
-
-### Estructura de un Controller (patrón del proyecto):
-```java
-@Controller
-@RequestMapping("/modulo")
-@PreAuthorize("hasAnyRole('ADMINISTRADOR','ROL_NECESARIO')")
-public class ModuloController {
-
-    private final ModuloService service;
-
-    public ModuloController(ModuloService service) {
-        this.service = service;
-    }
-
-    @GetMapping
-    public String listar(Model model) { ... }
-
-    @GetMapping("/nuevo")
-    public String nuevo(Model model) { ... }
-
-    @PostMapping("/guardar")
-    public String guardar(@Valid @ModelAttribute Entidad entidad,
-                          BindingResult result,
-                          Model model,
-                          RedirectAttributes redirectAttrs) { ... }
-
-    @PostMapping("/eliminar/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttrs) { ... }
-}
 ```
 
 ---

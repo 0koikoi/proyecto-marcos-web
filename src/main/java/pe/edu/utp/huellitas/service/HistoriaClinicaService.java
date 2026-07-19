@@ -37,7 +37,7 @@ public class HistoriaClinicaService {
      * @return Lista de entradas de historia clínica, más reciente primero
      */
     public List<HistoriaClinica> listarPorPaciente(Long pacienteId) {
-        return historiaClinicaRepository.findByPacienteIdOrderByFechaConsultaDesc(pacienteId);
+        return historiaClinicaRepository.findByPacienteIdOrderByFechaDesc(pacienteId);
     }
 
     /**
@@ -87,10 +87,6 @@ public class HistoriaClinicaService {
         if (historiaClinica.getPersonal() == null) {
             throw new IllegalArgumentException("El veterinario tratante es obligatorio.");
         }
-        if (historiaClinica.getMotivoConsulta() == null || historiaClinica.getMotivoConsulta().isBlank()) {
-            throw new IllegalArgumentException("El motivo de consulta es obligatorio.");
-        }
-        historiaClinica.setUpdatedAt(OffsetDateTime.now());
         return historiaClinicaRepository.save(historiaClinica);
     }
 

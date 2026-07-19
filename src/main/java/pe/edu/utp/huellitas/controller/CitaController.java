@@ -123,7 +123,7 @@ public class CitaController {
         try {
             if (authentication != null && authentication.getName() != null) {
                 personalService.obtenerPorUsername(authentication.getName())
-                        .ifPresent(cita::setCreatedBy);
+                        .ifPresent(cita::setCreadoPor);
             }
             citaService.guardar(cita);
             redirectAttrs.addFlashAttribute("successMsg", "Cita registrada correctamente.");

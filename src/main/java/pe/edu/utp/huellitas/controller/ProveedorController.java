@@ -34,11 +34,7 @@ public class ProveedorController {
     // GUARDAR
     @PostMapping("/guardar")
     public String guardar(@Valid @ModelAttribute("nuevoProveedor") Proveedor proveedor, BindingResult result, Model model, HttpSession session) {
-        Personal usuario = (Personal) session.getAttribute("usuario");
-        if (usuario == null || !usuario.getCargo().equals("ADMINISTRADOR")) {
-            return "redirect:/dashboard?error=AccesoDenegado";
-        }
-
+        // Autorización gestionada por @PreAuthorize en SecurityConfig
         if (result.hasErrors()) {
             model.addAttribute("listaProveedores", proveedorService.listar());
             model.addAttribute("activePage", "proveedores");
@@ -55,13 +51,7 @@ public class ProveedorController {
             @PathVariable Long id,
             HttpSession session) {
 
-        Personal usuario = (Personal) session.getAttribute("usuario");
-
-        if (usuario == null ||
-                !usuario.getCargo().equals("ADMINISTRADOR")) {
-
-            return "redirect:/dashboard?error=AccesoDenegado";
-        }
+        // Autorización gestionada por @PreAuthorize en SecurityConfig
 
         proveedorService.eliminar(id);
 

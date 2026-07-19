@@ -35,7 +35,7 @@ public class PropietarioController {
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         PropietarioDTO propietario = new PropietarioDTO();
-        propietario.setCorreo("@gmail.com");
+        propietario.setEmail("@gmail.com");
 
         model.addAttribute("propietario", propietario);
         model.addAttribute("titulo", "Registrar propietario");
@@ -62,9 +62,10 @@ public class PropietarioController {
             }
             
             propietario.setDni(dto.getDni());
-            propietario.setNombreCompleto(dto.getNombreCompleto());
+            propietario.setNombres(dto.getNombres());
+            propietario.setApellidos(dto.getApellidos());
             propietario.setTelefono(dto.getTelefono());
-            propietario.setCorreo(dto.getCorreo());
+            propietario.setEmail(dto.getEmail());
             propietario.setDireccion(dto.getDireccion());
             
             propietarioService.guardar(propietario);
@@ -83,9 +84,10 @@ public class PropietarioController {
         PropietarioDTO dto = new PropietarioDTO();
         dto.setId(prop.getId());
         dto.setDni(prop.getDni());
-        dto.setNombreCompleto(prop.getNombreCompleto());
+        dto.setNombres(prop.getNombres());
+        dto.setApellidos(prop.getApellidos());
         dto.setTelefono(prop.getTelefono());
-        dto.setCorreo(prop.getCorreo());
+        dto.setEmail(prop.getEmail());
         dto.setDireccion(prop.getDireccion());
 
         model.addAttribute("propietario", dto);

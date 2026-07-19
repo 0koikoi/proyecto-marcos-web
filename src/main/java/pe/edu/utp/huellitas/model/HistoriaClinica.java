@@ -1,7 +1,6 @@
 package pe.edu.utp.huellitas.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -18,6 +17,7 @@ import java.time.OffsetDateTime;
 @Data
 @Entity
 @Table(name = "historia_clinica")
+@EntityListeners(org.springframework.data.jpa.domain.support.AuditingEntityListener.class)
 public class HistoriaClinica {
 
     @Id
@@ -39,33 +39,35 @@ public class HistoriaClinica {
     @JoinColumn(name = "cita_id")
     private Cita cita;
 
-    @Column(nullable = false)
-    private OffsetDateTime fechaConsulta = OffsetDateTime.now();
+    /** Fecha y hora de la consulta. Mapeada a la columna 'fecha' del SQL. */
+    @Column(name = "fecha", nullable = false)
+    private OffsetDateTime fecha = OffsetDateTime.now();
 
-    @NotBlank(message = "El motivo de consulta es obligatorio")
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String motivoConsulta;
-
-    @Column(columnDefinition = "TEXT")
-    private String diagnostico;
-
-    @Column(columnDefinition = "TEXT")
-    private String tratamiento;
-
-    @Column(columnDefinition = "TEXT")
-    private String observaciones;
-
-    /** Peso del animal en el momento de la consulta (kg). */
-    @Column(precision = 5, scale = 2)
+    /** Peso del animal en el momento de la consulta (kg). Columna: peso_kg */
+    @Column(name = "peso_kg", precision = 5, scale = 2)
     private BigDecimal pesoKg;
 
-    /** Temperatura corporal (°C). */
-    @Column(precision = 4, scale = 1)
-    private BigDecimal temperaturaC;
+    /** Temperatura corporal (°C). Columna: temperatura */
+    @Column(name = "temperatura", precision = 4, scale = 1)
+    private BigDecimal temperatura;
 
-    @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    @Column(name = "diagnostico", columnDefinition = "TEXT")
+    private String diagnostico;
 
-    @Column(nullable = false)
-    private OffsetDateTime updatedAt = OffsetDateTime.now();
+    @Column(name = "tratamiento", columnDefinition = "TEXT")
+    private String tratamiento;
+
+    @Column(name = "observaciones", columnDefinition = "TEXT")
+    private String observaciones;
+
+    // --- Auditoría ---
+
+    @org.springframework.data.annotation.CreatedDate
+    @Column(name = "creado_en", nullable = false, updatable = false)
+    private OffsetDateTime creadoEn;
+
+    @org.springframework.data.annotation.CreatedBy
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creado_por", updatable = false)
+    private Personal creadoPor;
 }

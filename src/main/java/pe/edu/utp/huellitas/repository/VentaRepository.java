@@ -14,12 +14,12 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     @Query("""
         SELECT COALESCE(SUM(v.total),0)
         FROM Venta v
-        WHERE MONTH(v.fechaEmision)=MONTH(CURRENT_DATE)
-        AND YEAR(v.fechaEmision)=YEAR(CURRENT_DATE)
+        WHERE MONTH(v.fecha)=MONTH(CURRENT_DATE)
+        AND YEAR(v.fecha)=YEAR(CURRENT_DATE)
     """)
     BigDecimal totalVentasMes();
 
-    List<Venta> findTop10ByOrderByFechaEmisionDesc();
+    List<Venta> findTop10ByOrderByFechaDesc();
 
     List<Venta> findByEstado(EstadoVenta estado);
 

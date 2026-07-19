@@ -21,3 +21,4 @@ public enum TipoPago {
     /** Combinación de dos o más métodos (ej: parte efectivo, parte tarjeta). */
     MIXTO
 }
+
