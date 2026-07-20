@@ -151,7 +151,7 @@ public class HistoriaClinicaController {
             } else {
                 historia.setCita(null);
             }
-            HistoriaClinica guardada = historiaClinicaService.guardar(historia);
+            HistoriaClinica guardada = historiaClinicaService.guardar(historia, pacienteService);
             if (guardada.getCita() != null) {
                 citaService.completar(guardada.getCita().getId());
             }

@@ -81,4 +81,8 @@ public class CitaService {
         cita.setEstado(EstadoCita.COMPLETADA);
         citaRepository.save(cita);
     }
+    
+    public boolean tieneCitas(Long pacienteId) {
+        return citaRepository.existsByPacienteId(pacienteId);
+    }
 }

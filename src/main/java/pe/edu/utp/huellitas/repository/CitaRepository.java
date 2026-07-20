@@ -31,4 +31,6 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
     List<Cita> buscarPorFiltros(@Param("dni") String dni, 
                                 @Param("start") OffsetDateTime start, 
                                 @Param("end") OffsetDateTime end);
+                                
+    boolean existsByPacienteId(Long pacienteId);
 }

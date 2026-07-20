@@ -33,4 +33,6 @@ public interface HistoriaClinicaRepository extends JpaRepository<HistoriaClinica
     List<HistoriaClinica> buscar(@Param("buscar") String buscar,
                                   @Param("desde") OffsetDateTime desde,
                                   @Param("hasta") OffsetDateTime hasta);
+                                  
+    boolean existsByPacienteId(Long pacienteId);
 }

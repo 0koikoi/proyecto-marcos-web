@@ -29,14 +29,24 @@
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
                     </div>
 
-                    <div class="col-md-8">
+                    <div class="col-md-4">
                         <label class="form-label">
-                            <i class="fa-solid fa-user text-primary me-1"></i> Nombre Completo <span class="text-danger">*</span>
+                            <i class="fa-solid fa-user text-primary me-1"></i> Nombres <span class="text-danger">*</span>
                         </label>
-                        <input type="text" th:field="*{nombreCompleto}" class="form-control"
-                               th:classappend="${#fields.hasErrors('nombreCompleto')} ? 'is-invalid' : ''"
-                               placeholder="Ej. Juan Pérez" required>
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('nombreCompleto')}" th:errors="*{nombreCompleto}"></div>
+                        <input type="text" th:field="*{nombres}" class="form-control" id="nombres"
+                               th:classappend="${#fields.hasErrors('nombres')} ? 'is-invalid' : ''"
+                               placeholder="Ej. Juan" required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('nombres')}" th:errors="*{nombres}"></div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">
+                            <i class="fa-solid fa-user text-primary me-1"></i> Apellidos <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" th:field="*{apellidos}" class="form-control"
+                               th:classappend="${#fields.hasErrors('apellidos')} ? 'is-invalid' : ''"
+                               placeholder="Ej. Pérez" required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}"></div>
                     </div>
 
                     <div class="col-md-4">
@@ -53,10 +63,10 @@
                         <label class="form-label">
                             <i class="fa-solid fa-envelope text-primary me-1"></i> Correo
                         </label>
-                        <input type="email" th:field="*{correo}" class="form-control"
-                               th:classappend="${#fields.hasErrors('correo')} ? 'is-invalid' : ''"
+                        <input type="email" th:field="*{email}" class="form-control"
+                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
                                placeholder="ejemplo@gmail.com">
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('correo')}" th:errors="*{correo}"></div>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                     </div>
 
                     <div class="col-md-12">
@@ -79,5 +89,45 @@
             </div>
         </div>
     </div>
+    
+    <script>
+        document.querySelector('form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = this;
+            const id = document.getElementById('id').value;
+            const dni = document.getElementById('dni').value;
+            const nombres = document.getElementById('nombres').value;
+            const telefono = document.getElementById('telefono').value;
+            
+            if (!dni || !nombres || !telefono) {
+                form.submit();
+                return;
+            }
+            
+            try {
+                if (!id) {
+                    const resDni = await fetch(`/propietarios/api/validar-dni?dni=${encodeURIComponent(dni)}`);
+                    const existeDni = await resDni.json();
+                    if (existeDni) {
+                        alert('Error: Ya existe un propietario registrado con este DNI.');
+                        return;
+                    }
+                }
+                
+                const resSim = await fetch(`/propietarios/api/validar-similar?nombres=${encodeURIComponent(nombres)}&telefono=${encodeURIComponent(telefono)}`);
+                const existeSim = await resSim.json();
+                
+                if (existeSim) {
+                    if (confirm('Advertencia: Existe un propietario con nombres o teléfono similares. ¿Desea continuar?')) {
+                        form.submit();
+                    }
+                } else {
+                    form.submit();
+                }
+            } catch (err) {
+                form.submit();
+            }
+        });
+    </script>
 </main>
 </html>

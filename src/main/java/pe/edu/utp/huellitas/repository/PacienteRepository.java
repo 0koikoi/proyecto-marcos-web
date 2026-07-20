@@ -16,4 +16,7 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
             String nombre, String especie, String propietarioNombres, String propietarioApellidos);
 
     List<Paciente> findTop10ByOrderByCreadoEnDesc();
+
+    @org.springframework.data.jpa.repository.Query("SELECT p FROM Paciente p WHERE p.propietario.id = :propietarioId AND LOWER(p.nombre) = LOWER(:nombre) AND LOWER(p.especie) = LOWER(:especie)")
+    List<Paciente> buscarSimilares(@org.springframework.data.repository.query.Param("propietarioId") Long propietarioId, @org.springframework.data.repository.query.Param("nombre") String nombre, @org.springframework.data.repository.query.Param("especie") String especie);
 }

@@ -28,6 +28,16 @@ public class PacienteDTO {
 
     private String genero;
 
+    private String estado;
+    
+    private String alergias;
+    
+    private Boolean esterilizado;
+    
+    private Boolean fechaNacimientoEstimada;
+    
+    private java.math.BigDecimal pesoReferencia;
+
     @NotNull(message = "Debe seleccionar un propietario")
     private Long propietarioId;
 
@@ -60,6 +70,26 @@ public class PacienteDTO {
 
     public String getGenero() {
         return genero;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public String getAlergias() {
+        return alergias;
+    }
+
+    public Boolean getEsterilizado() {
+        return esterilizado;
+    }
+
+    public Boolean getFechaNacimientoEstimada() {
+        return fechaNacimientoEstimada;
+    }
+
+    public java.math.BigDecimal getPesoReferencia() {
+        return pesoReferencia;
     }
 
     public Long getPropietarioId() {
@@ -96,6 +126,26 @@ public class PacienteDTO {
 
     public void setGenero(String genero) {
         this.genero = genero;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public void setAlergias(String alergias) {
+        this.alergias = alergias;
+    }
+
+    public void setEsterilizado(Boolean esterilizado) {
+        this.esterilizado = esterilizado;
+    }
+
+    public void setFechaNacimientoEstimada(Boolean fechaNacimientoEstimada) {
+        this.fechaNacimientoEstimada = fechaNacimientoEstimada;
+    }
+
+    public void setPesoReferencia(java.math.BigDecimal pesoReferencia) {
+        this.pesoReferencia = pesoReferencia;
     }
 
     public void setPropietarioId(Long propietarioId) {

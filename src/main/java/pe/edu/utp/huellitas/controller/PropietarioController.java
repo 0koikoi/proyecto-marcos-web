@@ -35,7 +35,6 @@ public class PropietarioController {
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         PropietarioDTO propietario = new PropietarioDTO();
-        propietario.setEmail("@gmail.com");
 
         model.addAttribute("propietario", propietario);
         model.addAttribute("titulo", "Registrar propietario");
@@ -99,5 +98,17 @@ public class PropietarioController {
     public String eliminar(@PathVariable Long id) {
         propietarioService.eliminar(id);
         return "redirect:/propietarios";
+    }
+    
+    @GetMapping("/api/validar-dni")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public org.springframework.http.ResponseEntity<Boolean> validarDni(@org.springframework.web.bind.annotation.RequestParam String dni) {
+        return org.springframework.http.ResponseEntity.ok(propietarioService.existeDni(dni));
+    }
+    
+    @GetMapping("/api/validar-similar")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public org.springframework.http.ResponseEntity<Boolean> validarSimilar(@org.springframework.web.bind.annotation.RequestParam String nombres, @org.springframework.web.bind.annotation.RequestParam String telefono) {
+        return org.springframework.http.ResponseEntity.ok(propietarioService.existeSimilar(nombres, telefono));
     }
 }

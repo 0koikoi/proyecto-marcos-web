@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -100,14 +101,8 @@ public class PacienteController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
-        try {
-            pacienteService.eliminar(id);
-            redirectAttrs.addFlashAttribute("successMsg", "Paciente eliminado correctamente.");
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("errorMsg",
-                    "No se pudo eliminar: el paciente tiene registros clínicos asociados. " +
-                            "Solo el administrador puede gestionar esta acción.");
-        }
+        pacienteService.eliminar(id);
+        redirectAttrs.addFlashAttribute("successMsg", "Paciente procesado correctamente (eliminado o desactivado).");
         return "redirect:/pacientes";
     }
 
@@ -128,6 +123,11 @@ public class PacienteController {
         dto.setRaza(paciente.getRaza());
         dto.setFechaNacimiento(paciente.getFechaNacimiento());
         dto.setGenero(paciente.getGenero());
+        dto.setEstado(paciente.getEstado());
+        dto.setAlergias(paciente.getAlergias());
+        dto.setEsterilizado(paciente.getEsterilizado());
+        dto.setFechaNacimientoEstimada(paciente.getFechaNacimientoEstimada());
+        dto.setPesoReferencia(paciente.getPesoReferencia());
 
         if (paciente.getPropietario() != null) {
             dto.setPropietarioId(paciente.getPropietario().getId());
@@ -138,13 +138,22 @@ public class PacienteController {
     }
 
     private Paciente convertirAEntidad(PacienteDTO dto) {
-        Paciente paciente = new Paciente();
-        paciente.setId(dto.getId());
+        Paciente paciente;
+        if (dto.getId() != null) {
+            paciente = pacienteService.obtenerPorId(dto.getId());
+        } else {
+            paciente = new Paciente();
+        }
+        
         paciente.setNombre(dto.getNombre());
         paciente.setEspecie(dto.getEspecie());
         paciente.setRaza(dto.getRaza());
         paciente.setFechaNacimiento(dto.getFechaNacimiento());
         paciente.setGenero(dto.getGenero());
+        paciente.setEstado(dto.getEstado() != null ? dto.getEstado() : "ACTIVO");
+        paciente.setAlergias(dto.getAlergias());
+        paciente.setEsterilizado(dto.getEsterilizado() != null ? dto.getEsterilizado() : false);
+        paciente.setFechaNacimientoEstimada(dto.getFechaNacimientoEstimada() != null ? dto.getFechaNacimientoEstimada() : false);
 
         if (dto.getPropietarioId() != null) {
             Propietario propietario = new Propietario();
@@ -152,5 +161,14 @@ public class PacienteController {
             paciente.setPropietario(propietario);
         }
         return paciente;
+    }
+    
+    @GetMapping("/api/validar-similar")
+    @ResponseBody
+    public ResponseEntity<Boolean> validarSimilar(@RequestParam Long propietarioId, 
+                                                  @RequestParam String nombre, 
+                                                  @RequestParam String especie) {
+        boolean exists = pacienteService.existeSimilar(propietarioId, nombre, especie);
+        return ResponseEntity.ok(exists);
     }
 }
