@@ -1,6 +1,12 @@
 package pe.edu.utp.huellitas.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import java.beans.PropertyEditorSupport;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +35,26 @@ import java.util.List;
 @RequestMapping("/vacunas")
 @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO')")
 public class VacunaController {
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(OffsetDateTime.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                if (text == null || text.isBlank()) {
+                    setValue(null);
+                    return;
+                }
+                if (text.length() == 10) {
+                    setValue(LocalDate.parse(text).atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime());
+                } else if (text.length() == 16) {
+                    setValue(LocalDateTime.parse(text).atZone(ZoneId.systemDefault()).toOffsetDateTime());
+                } else {
+                    setValue(OffsetDateTime.parse(text));
+                }
+            }
+        });
+    }
 
     private final VacunaService vacunaService;
     private final PacienteService pacienteService;

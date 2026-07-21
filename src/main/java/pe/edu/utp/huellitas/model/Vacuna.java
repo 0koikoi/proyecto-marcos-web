@@ -47,9 +47,11 @@ public class Vacuna {
 
     @NotNull(message = "La fecha de aplicación es obligatoria")
     @Column(name = "fecha_aplicacion", nullable = false)
-    private LocalDate fechaAplicacion;
+    @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
+    private OffsetDateTime fechaAplicacion;
 
     /** Fecha programada para la siguiente dosis. Puede ser null. */
     @Column(name = "fecha_proxima_dosis")
-    private LocalDate fechaProximaDosis;
+    @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
+    private OffsetDateTime fechaProximaDosis;
 }

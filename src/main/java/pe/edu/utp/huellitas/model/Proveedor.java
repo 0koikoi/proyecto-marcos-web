@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import java.time.OffsetDateTime;
 
 /**
@@ -14,6 +15,7 @@ import java.time.OffsetDateTime;
  *                 creado_en, creado_por, actualizado_en, actualizado_por
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "proveedor")
 public class Proveedor extends pe.edu.utp.huellitas.audit.Auditable {
@@ -72,3 +74,4 @@ public class Proveedor extends pe.edu.utp.huellitas.audit.Auditable {
         return this.telefono;
     }
 }
+

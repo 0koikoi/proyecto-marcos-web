@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
@@ -39,9 +39,8 @@ public class OrdenCompra extends pe.edu.utp.huellitas.audit.Auditable {
     @Column(name = "observaciones", columnDefinition = "TEXT")
     private String observaciones;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "fecha_recepcion")
-    private Date fechaRecepcion;
+    private OffsetDateTime fechaRecepcion;
 
     @OneToMany(mappedBy = "ordenCompra", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleOrdenCompra> detalles = new ArrayList<>();

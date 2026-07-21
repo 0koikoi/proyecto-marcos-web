@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.edu.utp.huellitas.model.Vacuna;
 import pe.edu.utp.huellitas.repository.VacunaRepository;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
@@ -42,8 +42,8 @@ public class VacunaService {
      * @param diasAnticipacion Número de días de anticipación (ej: 7)
      */
     public List<Vacuna> listarProximasDosis(int diasAnticipacion) {
-        LocalDate hoy = LocalDate.now();
-        LocalDate limite = hoy.plusDays(diasAnticipacion);
+        OffsetDateTime hoy = OffsetDateTime.now();
+        OffsetDateTime limite = hoy.plusDays(diasAnticipacion);
         return vacunaRepository.findByFechaProximaDosisBetween(hoy, limite);
     }
 

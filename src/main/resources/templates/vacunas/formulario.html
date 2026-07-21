@@ -48,19 +48,13 @@
 
                     <div class="mb-3">
                         <label class="form-label">Nombre de la vacuna</label>
-                        <input type="text" th:field="*{nombreVacuna}" class="form-control" required>
-                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('nombreVacuna')}" th:errors="*{nombreVacuna}"></div>
+                        <input type="text" th:field="*{nombre}" class="form-control" required>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Laboratorio</label>
-                            <input type="text" th:field="*{laboratorio}" class="form-control">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Lote</label>
-                            <input type="text" th:field="*{lote}" class="form-control">
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Lote</label>
+                        <input type="text" th:field="*{lote}" class="form-control">
                     </div>
 
                     <div class="row">
@@ -75,10 +69,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Observaciones</label>
-                        <textarea th:field="*{observaciones}" class="form-control" rows="2"></textarea>
-                    </div>
+
 
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-success">

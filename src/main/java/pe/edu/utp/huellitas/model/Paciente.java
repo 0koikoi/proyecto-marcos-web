@@ -7,6 +7,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
@@ -22,6 +23,7 @@ import java.time.OffsetDateTime;
  *   - Eliminar: solo ADMINISTRADOR (con validación de historial)
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "paciente")
 public class Paciente extends pe.edu.utp.huellitas.audit.Auditable {
@@ -89,3 +91,4 @@ public class Paciente extends pe.edu.utp.huellitas.audit.Auditable {
 
 
 }
+

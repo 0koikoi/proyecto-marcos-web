@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 
@@ -20,6 +21,7 @@ import java.math.BigDecimal;
  *       El costo de compra se registra en detalle_orden_compra.
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "producto")
 public class Producto extends pe.edu.utp.huellitas.audit.Auditable {
@@ -66,3 +68,4 @@ public class Producto extends pe.edu.utp.huellitas.audit.Auditable {
     @Column(name = "version", nullable = false)
     private Long version = 0L;
 }
+
