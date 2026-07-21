@@ -1,6 +1,7 @@
 package pe.edu.utp.huellitas.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -40,7 +41,9 @@ import pe.edu.utp.huellitas.service.PersonalUserDetailsService;
  * Recetas              ✅              ❌           ✅
  * Solicitudes (crear)  ✅              ❌           ✅
  * Solicitudes (gest.)  ✅              ❌           ❌
- * Ventas               ✅              ✅           ❌
+ * Ventas (ver)         ✅              ✅           ❌
+ * Ventas (registrar)   ❌              ✅           ❌
+ * Ventas (anular)      ✅              ❌           ❌
  * Inventario (ver)     ✅              ✅           ✅
  * Inventario (CUD)     ✅              ❌           ❌
  * Servicios (ver)      ✅              ✅           ✅
@@ -161,10 +164,15 @@ public class SecurityConfig {
 
                 // ── ADMINISTRADOR + RECEPCION ──────────────────────────────────
 
-                // Ventas y facturación (anulación solo admin)
+                // Ventas y facturación:
+                // - Anular: solo ADMINISTRADOR.
+                // - Registrar (ver formulario y guardar): solo RECEPCION.
+                // - Ver listado/detalle: ADMINISTRADOR y RECEPCION.
                 .requestMatchers(
                     "/ventas/*/anular"
                 ).hasRole("ADMINISTRADOR")
+                .requestMatchers(HttpMethod.GET, "/ventas/nuevo").hasRole("RECEPCION")
+                .requestMatchers(HttpMethod.POST, "/ventas/guardar").hasRole("RECEPCION")
                 .requestMatchers(
                     "/ventas/**"
                 ).hasAnyRole("ADMINISTRADOR", "RECEPCION")

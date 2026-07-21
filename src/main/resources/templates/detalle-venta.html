@@ -1,17 +1,23 @@
 <html th:replace="~{layout :: page('Detalle de Venta', 'ventas', ~{::main}, ~{})}">
 <main>
-    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3 no-print">
         <div class="d-flex align-items-center gap-3">
             <a th:href="@{/ventas}" class="btn btn-sm btn-outline-secondary">
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
-            <h2 class="fw-bold m-0" th:text="'Detalle Venta: ' + ${venta.nroBoleta}"></h2>
+            <h2 class="fw-bold m-0" th:text="'Detalle Venta: #' + ${venta.id}"></h2>
         </div>
         <span th:text="${venta.estado}"
               th:class="${venta.estado.name() == 'PAGADA'}   ? 'badge bg-success fs-6'
                        : (${venta.estado.name() == 'PENDIENTE'} ? 'badge bg-warning text-dark fs-6'
                        : 'badge bg-danger fs-6')">
         </span>
+    </div>
+
+    <!-- Encabezado de la clínica (solo para impresión) -->
+    <div class="text-center mb-4 d-none d-print-block">
+        <h3 class="fw-bold mb-0"><i class="fa-solid fa-paw me-2"></i>Clínica Veterinaria Huellitas</h3>
+        <p class="text-muted small mb-0">Boleta de Venta N.° <span th:text="${venta.id}"></span></p>
     </div>
 
     <div class="row">
@@ -25,7 +31,7 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex justify-content-between px-0">
                             <span class="text-muted">Fecha:</span>
-                            <span class="fw-bold" th:text="${#temporals.format(venta.fechaEmision, 'dd/MM/yyyy HH:mm')}"></span>
+                            <span class="fw-bold" th:text="${#temporals.format(venta.fecha, 'dd/MM/yyyy HH:mm')}"></span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between px-0">
                             <span class="text-muted">Vendedor:</span>
@@ -37,18 +43,18 @@
                         </li>
                         <li class="list-group-item d-flex justify-content-between px-0">
                             <span class="text-muted">Método de Pago:</span>
-                            <span class="fw-bold" th:text="${venta.metodoPago != null ? venta.metodoPago : 'N/A'}"></span>
+                            <span class="fw-bold" th:text="${venta.tipoPago != null ? venta.tipoPago : 'N/A'}"></span>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <!-- Tarjeta de Productos -->
+        <!-- Tarjeta de Productos y Servicios -->
         <div class="col-md-8 mb-4">
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-header bg-light fw-bold">
-                    <i class="fa-solid fa-list me-1"></i> Líneas de Detalle (Productos/Servicios)
+                    <i class="fa-solid fa-list me-1"></i> Líneas de Venta (Productos/Servicios)
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -84,6 +90,21 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Firma y sello (solo para impresión) -->
+    <div class="mt-5 pt-5 text-center d-none d-print-block">
+        <div style="border-top: 1px dashed #999; width: 260px; margin: 0 auto;"></div>
+        <div class="small text-muted mt-1">Firma y sello</div>
+    </div>
+
+    <div class="d-flex gap-2 no-print">
+        <a th:href="@{/ventas}" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left me-1"></i> Volver
+        </a>
+        <button type="button" class="btn btn-outline-primary" onclick="window.print()">
+            <i class="fa-solid fa-print me-1"></i> Imprimir Boleta
+        </button>
     </div>
 </main>
 </html>

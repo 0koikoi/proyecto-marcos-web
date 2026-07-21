@@ -120,7 +120,7 @@ th:replace="~{layout :: page('Dashboard Principal', 'dashboard', ~{::main}, ~{})
                 <div>
                     <strong>Venta registrada</strong>
                     <br>
-                    <small class="text-muted">Boleta: <span th:text="${venta.nroBoleta}"></span> | Estado: <span th:text="${venta.estado}"></span></small>
+                    <small class="text-muted">Boleta: <span th:text="'#' + ${venta.id}"></span> | Estado: <span th:text="${venta.estado}"></span></small>
                 </div>
             </li>
         </ul>

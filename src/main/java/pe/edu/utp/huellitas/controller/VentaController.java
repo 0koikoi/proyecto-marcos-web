@@ -3,7 +3,6 @@ package pe.edu.utp.huellitas.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pe.edu.utp.huellitas.model.EstadoVenta;
 import pe.edu.utp.huellitas.model.Venta;
@@ -25,9 +24,9 @@ public class VentaController {
     private final PropietarioService propietarioService;
     private final PersonalService personalService;
 
-    public VentaController(VentaService ventaService, ProductoService productoService, 
-                           ServicioService servicioService,
-                           PropietarioService propietarioService, PersonalService personalService) {
+    public VentaController(VentaService ventaService, ProductoService productoService,
+                           ServicioService servicioService, PropietarioService propietarioService,
+                           PersonalService personalService) {
         this.ventaService = ventaService;
         this.productoService = productoService;
         this.servicioService = servicioService;
@@ -53,15 +52,20 @@ public class VentaController {
         return "formulario-venta";
     }
 
+    /**
+     * Cada línea de la venta llega como una terna alineada por índice:
+     * itemId[i] + itemTipo[i] ("PRODUCTO" o "SERVICIO") + cantidad[i].
+     * Así una sola venta puede mezclar productos del inventario y servicios veterinarios.
+     */
     @PostMapping("/guardar")
     public String procesarVenta(@ModelAttribute Venta venta,
                                 @RequestParam(value = "itemId[]") List<Long> itemIds,
-                                @RequestParam(value = "tipoItem[]") List<String> tiposItem,
+                                @RequestParam(value = "itemTipo[]") List<String> itemTipos,
                                 @RequestParam(value = "cantidad[]") List<Integer> cantidades,
                                 @RequestParam(value = "metodoPago") String metodoPago,
                                 RedirectAttributes redirectAttributes) {
         try {
-            ventaService.registrarVentaMultilinea(venta, itemIds, tiposItem, cantidades, metodoPago);
+            ventaService.registrarVentaMultilinea(venta, itemIds, itemTipos, cantidades, metodoPago);
             redirectAttributes.addFlashAttribute("successMsg", "Venta registrada exitosamente.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
@@ -70,7 +74,6 @@ public class VentaController {
         return "redirect:/ventas";
     }
 
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/{id}/anular")
     public String anularVenta(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
