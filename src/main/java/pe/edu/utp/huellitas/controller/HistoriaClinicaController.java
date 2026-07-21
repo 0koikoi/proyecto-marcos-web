@@ -1,14 +1,21 @@
 package pe.edu.utp.huellitas.controller;
 
-import jakarta.validation.Valid;
+import java.time.LocalDate;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.validation.Valid;
 import pe.edu.utp.huellitas.model.Cita;
 import pe.edu.utp.huellitas.model.EstadoCita;
 import pe.edu.utp.huellitas.model.HistoriaClinica;
@@ -19,8 +26,6 @@ import pe.edu.utp.huellitas.service.PacienteService;
 import pe.edu.utp.huellitas.service.PersonalService;
 import pe.edu.utp.huellitas.service.RecetaService;
 import pe.edu.utp.huellitas.service.VacunaService;
-
-import java.time.LocalDate;
 
 /**
  * Controller de Historia Clínica.
@@ -151,7 +156,7 @@ public class HistoriaClinicaController {
             } else {
                 historia.setCita(null);
             }
-            HistoriaClinica guardada = historiaClinicaService.guardar(historia);
+            HistoriaClinica guardada = historiaClinicaService.guardar(historia, pacienteService);
             if (guardada.getCita() != null) {
                 citaService.completar(guardada.getCita().getId());
             }

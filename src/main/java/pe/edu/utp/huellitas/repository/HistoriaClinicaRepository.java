@@ -1,13 +1,14 @@
 package pe.edu.utp.huellitas.repository;
 
+import java.time.OffsetDateTime;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import pe.edu.utp.huellitas.model.HistoriaClinica;
 
-import java.time.OffsetDateTime;
-import java.util.List;
+import pe.edu.utp.huellitas.model.HistoriaClinica;
 
 @Repository
 public interface HistoriaClinicaRepository extends JpaRepository<HistoriaClinica, Long> {
@@ -33,4 +34,7 @@ public interface HistoriaClinicaRepository extends JpaRepository<HistoriaClinica
     List<HistoriaClinica> buscar(@Param("buscar") String buscar,
                                   @Param("desde") OffsetDateTime desde,
                                   @Param("hasta") OffsetDateTime hasta);
+                                  
+    boolean existsByPacienteId(Long pacienteId);
+    boolean existsByCitaId(Long citaId);
 }

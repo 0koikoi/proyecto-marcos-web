@@ -112,15 +112,9 @@ public class VacunaController {
             cargarFormulario(model);
             return "vacunas/formulario";
         }
-        try {
-            vacunaService.guardar(vacuna);
-            redirectAttrs.addFlashAttribute("successMsg", "Vacuna registrada correctamente.");
-            return "redirect:/vacunas";
-        } catch (IllegalArgumentException e) {
-            cargarFormulario(model);
-            model.addAttribute("error", e.getMessage());
-            return "vacunas/formulario";
-        }
+        vacunaService.guardar(vacuna);
+        redirectAttrs.addFlashAttribute("successMsg", "Vacuna registrada correctamente.");
+        return "redirect:/vacunas";
     }
 
     // ── Métodos privados ──────────────────────────────────────────────────────

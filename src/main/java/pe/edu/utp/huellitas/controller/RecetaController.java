@@ -104,15 +104,9 @@ public class RecetaController {
             cargarFormulario(model);
             return "recetas/formulario";
         }
-        try {
-            Receta guardada = recetaService.guardar(receta);
-            redirectAttrs.addFlashAttribute("successMsg", "Receta registrada correctamente.");
-            return "redirect:/recetas/" + guardada.getId();
-        } catch (IllegalArgumentException e) {
-            cargarFormulario(model);
-            model.addAttribute("error", e.getMessage());
-            return "recetas/formulario";
-        }
+        Receta guardada = recetaService.guardar(receta);
+        redirectAttrs.addFlashAttribute("successMsg", "Receta registrada correctamente.");
+        return "redirect:/recetas/" + guardada.getId();
     }
 
     // ── Métodos privados ──────────────────────────────────────────────────────

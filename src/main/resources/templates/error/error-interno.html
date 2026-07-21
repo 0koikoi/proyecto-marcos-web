@@ -9,6 +9,10 @@
             <p class="text-muted mb-4" th:text="${errorMsg}">
                 Ocurrió un error inesperado. Por favor, contacta al administrador.
             </p>
+            <div th:if="${detallesError}" class="alert alert-warning text-start" style="font-family: monospace; font-size: 0.85rem; word-break: break-all;">
+                <strong class="d-block mb-1">Detalles del error:</strong>
+                <span th:text="${detallesError}"></span>
+            </div>
             <a th:href="@{/dashboard}" class="btn btn-secondary w-100 py-2 fw-medium">
                 <i class="fa-solid fa-house me-2"></i> Volver al Inicio
             </a>

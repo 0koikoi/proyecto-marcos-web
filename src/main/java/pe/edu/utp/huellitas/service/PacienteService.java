@@ -8,17 +8,19 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.edu.utp.huellitas.model.Paciente;
 import pe.edu.utp.huellitas.model.Propietario;
 import pe.edu.utp.huellitas.repository.PacienteRepository;
-import pe.edu.utp.huellitas.repository.PropietarioRepository;
+
 
 @Service
 public class PacienteService {
 
     private final PacienteRepository pacienteRepository;
-    private final PropietarioRepository propietarioRepository;
+    private final pe.edu.utp.huellitas.service.PropietarioService propietarioService;
+    private final org.springframework.context.ApplicationContext context;
 
-    public PacienteService(PacienteRepository pacienteRepository, PropietarioRepository propietarioRepository) {
+    public PacienteService(PacienteRepository pacienteRepository, pe.edu.utp.huellitas.service.PropietarioService propietarioService, org.springframework.context.ApplicationContext context) {
         this.pacienteRepository = pacienteRepository;
-        this.propietarioRepository = propietarioRepository;
+        this.propietarioService = propietarioService;
+        this.context = context;
     }
 
     public List<Paciente> listarTodos(String buscar) {
@@ -40,8 +42,7 @@ public class PacienteService {
 
         Long propietarioId = paciente.getPropietario().getId();
 
-        Propietario propietario = propietarioRepository.findById(propietarioId)
-                .orElseThrow(() -> new IllegalArgumentException("El propietario seleccionado no existe."));
+        Propietario propietario = propietarioService.obtenerPorId(propietarioId);
 
         paciente.setPropietario(propietario);
         paciente.setNombre(paciente.getNombre().trim());
@@ -60,11 +61,35 @@ public class PacienteService {
 
     @Transactional
     public void eliminar(Long id) {
-        if (!pacienteRepository.existsById(id)) {
-            throw new IllegalArgumentException("No se encontró el paciente con ID: " + id);
-        }
+        Paciente paciente = pacienteRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No se encontró el paciente con ID: " + id));
 
-        pacienteRepository.deleteById(id);
+        pe.edu.utp.huellitas.service.HistoriaClinicaService historiaService = context.getBean(pe.edu.utp.huellitas.service.HistoriaClinicaService.class);
+        pe.edu.utp.huellitas.service.CitaService citaService = context.getBean(pe.edu.utp.huellitas.service.CitaService.class);
+
+        if (historiaService.tieneHistoria(id) || citaService.tieneCitas(id)) {
+            paciente.setEstado("INACTIVO");
+            pacienteRepository.save(paciente);
+        } else {
+            pacienteRepository.deleteById(id);
+        }
+    }
+    
+    public boolean existeSimilar(Long propietarioId, String nombre, String especie) {
+        List<Paciente> similares = pacienteRepository.buscarSimilares(propietarioId, nombre, especie);
+        return !similares.isEmpty();
+    }
+    
+    public boolean tienePacientes(Long propietarioId) {
+        return !pacienteRepository.findByPropietarioId(propietarioId).isEmpty();
+    }
+    
+    @Transactional
+    public void actualizarPesoReferencia(Long id, java.math.BigDecimal peso) {
+        pacienteRepository.findById(id).ifPresent(p -> {
+            p.setPesoReferencia(peso);
+            pacienteRepository.save(p);
+        });
     }
 
     private void validarPaciente(Paciente paciente) {

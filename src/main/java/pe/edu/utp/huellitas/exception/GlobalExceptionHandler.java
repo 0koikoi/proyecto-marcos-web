@@ -75,9 +75,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ModelAndView handleGenericException(Exception ex, HttpServletRequest request) {
         log.error("Error inesperado [{}]", request.getRequestURI(), ex);
-        return buildErrorView("error-interno",
+        ModelAndView mav = buildErrorView("error-interno",
                 "Ocurrió un error inesperado. Por favor contacta al administrador.",
                 request.getRequestURI());
+        mav.addObject("detallesError", ex.getClass().getName() + ": " + ex.getMessage());
+        return mav;
     }
 
     // ── Helper ────────────────────────────────────────────────────────────────

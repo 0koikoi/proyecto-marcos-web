@@ -31,7 +31,6 @@ public class AuditorAwareImpl implements AuditorAware<Personal> {
                 || !(authentication.getPrincipal() instanceof Personal personal)) {
             return Optional.empty();
         }
-
         return Optional.of(personal);
     }
 }

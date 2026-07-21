@@ -80,14 +80,19 @@ public class HistoriaClinicaService {
      * @return La historia clínica guardada
      */
     @Transactional
-    public HistoriaClinica guardar(HistoriaClinica historiaClinica) {
+    public HistoriaClinica guardar(HistoriaClinica historiaClinica, @org.springframework.context.annotation.Lazy PacienteService pacienteService) {
         if (historiaClinica.getPaciente() == null) {
             throw new IllegalArgumentException("El paciente es obligatorio.");
         }
         if (historiaClinica.getPersonal() == null) {
             throw new IllegalArgumentException("El veterinario tratante es obligatorio.");
         }
-        return historiaClinicaRepository.save(historiaClinica);
+        HistoriaClinica saved = historiaClinicaRepository.save(historiaClinica);
+        if (historiaClinica.getPesoKg() != null) {
+            pacienteService.actualizarPesoReferencia(historiaClinica.getPaciente().getId(), historiaClinica.getPesoKg());
+        }
+        
+        return saved;
     }
 
     // ── Eliminar ──────────────────────────────────────────────────────────────
@@ -102,5 +107,9 @@ public class HistoriaClinicaService {
             throw new IllegalArgumentException("No se encontró la historia clínica con ID: " + id);
         }
         historiaClinicaRepository.deleteById(id);
+    }
+    
+    public boolean tieneHistoria(Long pacienteId) {
+        return historiaClinicaRepository.existsByPacienteId(pacienteId);
     }
 }

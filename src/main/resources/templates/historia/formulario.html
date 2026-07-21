@@ -28,6 +28,7 @@
                         <select name="paciente" class="form-select" required>
                             <option value="">-- Seleccione un paciente --</option>
                             <option th:each="p : ${pacientes}" th:value="${p.id}"
+                                    th:attr="data-especie=${p.especie}"
                                     th:text="${p.nombre} + ' (' + ${p.especie} + ')'"
                                     th:selected="${historia.paciente != null and historia.paciente.id == p.id}">
                             </option>
@@ -106,6 +107,40 @@
             </div>
         </div>
     </div>
+    
+    <script>
+        document.getElementById('pesoKg').addEventListener('blur', function() {
+            const peso = parseFloat(this.value);
+            if (isNaN(peso)) return;
+            
+            const pacienteSelect = document.querySelector('select[name="paciente"]');
+            const selectedOption = pacienteSelect.options[pacienteSelect.selectedIndex];
+            if (!selectedOption || !selectedOption.dataset.especie) return;
+            
+            const especie = selectedOption.dataset.especie.toLowerCase();
+            let min = 0; let max = Infinity;
+            
+            if (especie.includes('perro')) { min = 0.5; max = 90; }
+            else if (especie.includes('gato')) { min = 0.5; max = 15; }
+            else if (especie.includes('ave')) { min = 0.01; max = 5; }
+            else if (especie.includes('roedor') || especie.includes('hamster')) { min = 0.02; max = 3; }
+            else if (especie.includes('reptil')) { min = 0.01; max = 20; }
+            
+            if (max !== Infinity && (peso < min || peso > max)) {
+                let msg = document.getElementById('pesoWarning');
+                if (!msg) {
+                    msg = document.createElement('div');
+                    msg.id = 'pesoWarning';
+                    msg.className = 'text-warning small mt-1';
+                    this.parentNode.appendChild(msg);
+                }
+                msg.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Advertencia: El peso parece estar fuera del rango normal (' + min + ' - ' + max + ' kg) para ' + especie;
+            } else {
+                const msg = document.getElementById('pesoWarning');
+                if (msg) msg.remove();
+            }
+        });
+    </script>
 </main>
 
 </html>
