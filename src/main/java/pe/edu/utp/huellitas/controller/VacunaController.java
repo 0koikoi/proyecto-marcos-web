@@ -68,17 +68,11 @@ public class VacunaController {
     // ── Vacunas por paciente ──────────────────────────────────────────────────
 
     @GetMapping("/paciente/{pacienteId}")
-    public String listarPorPaciente(@PathVariable Long pacienteId, Model model,
-                                     RedirectAttributes redirectAttrs) {
-        try {
-            model.addAttribute("vacunas", vacunaService.listarPorPaciente(pacienteId));
-            model.addAttribute("paciente", pacienteService.obtenerPorId(pacienteId));
-            model.addAttribute("activePage", "vacunas");
-            return "vacunas/lista";
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("errorMsg", "No se encontró el paciente.");
-            return "redirect:/pacientes";
-        }
+    public String listarPorPaciente(@PathVariable Long pacienteId, Model model) {
+        model.addAttribute("vacunas", vacunaService.listarPorPaciente(pacienteId));
+        model.addAttribute("paciente", pacienteService.obtenerPorId(pacienteId));
+        model.addAttribute("activePage", "vacunas");
+        return "vacunas/lista";
     }
 
     // ── Formulario nueva vacuna ───────────────────────────────────────────────
@@ -112,22 +106,16 @@ public class VacunaController {
             cargarFormulario(model);
             return "vacunas/formulario";
         }
-        try {
-            vacunaService.guardar(vacuna);
-            redirectAttrs.addFlashAttribute("successMsg", "Vacuna registrada correctamente.");
-            return "redirect:/vacunas";
-        } catch (IllegalArgumentException e) {
-            cargarFormulario(model);
-            model.addAttribute("error", e.getMessage());
-            return "vacunas/formulario";
-        }
+        vacunaService.guardar(vacuna);
+        redirectAttrs.addFlashAttribute("successMsg", "Vacuna registrada correctamente.");
+        return "redirect:/vacunas";
     }
 
     // ── Métodos privados ──────────────────────────────────────────────────────
 
     private void cargarFormulario(Model model) {
         model.addAttribute("pacientes", pacienteService.listarTodos(null));
-        model.addAttribute("personal", personalService.listarTodos());
+        model.addAttribute("personal", personalService.listarVeterinarios());
         model.addAttribute("activePage", "vacunas");
     }
 
@@ -136,12 +124,8 @@ public class VacunaController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
-        try {
-            vacunaService.eliminar(id);
-            redirectAttrs.addFlashAttribute("successMsg", "Registro de vacuna eliminado.");
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("errorMsg", "No se pudo eliminar: " + e.getMessage());
-        }
+        vacunaService.eliminar(id);
+        redirectAttrs.addFlashAttribute("successMsg", "Registro de vacuna eliminado.");
         return "redirect:/vacunas";
     }
 }

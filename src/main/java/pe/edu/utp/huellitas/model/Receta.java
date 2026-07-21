@@ -17,7 +17,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "receta")
-public class Receta {
+public class Receta extends pe.edu.utp.huellitas.audit.Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

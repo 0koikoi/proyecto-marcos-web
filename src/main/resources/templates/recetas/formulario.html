@@ -26,7 +26,7 @@
                     <select name="historiaClinica" class="form-select" required>
                         <option value="">-- Seleccione una consulta --</option>
                         <option th:each="h : ${historias}" th:value="${h.id}"
-                                th:text="${h.paciente.nombre} + ' — ' + ${#temporals.format(h.fechaConsulta, 'dd/MM/yyyy')}"
+                                th:text="${h.paciente.nombre} + ' — ' + ${#temporals.format(h.fecha, 'dd/MM/yyyy')}"
                                 th:selected="${receta.historiaClinica != null and receta.historiaClinica.id == h.id}">
                         </option>
                     </select>
@@ -37,50 +37,50 @@
                     <select name="personal" class="form-select" required>
                         <option value="">-- Seleccione un veterinario --</option>
                         <option th:each="v : ${personal}" th:value="${v.id}"
-                                th:text="${v.nombreCompleto} + ' — ' + ${v.cargo}"
+                                th:text="${v.nombreCompleto}"
                                 th:selected="${receta.personal != null and receta.personal.id == v.id}">
                         </option>
                     </select>
                     <div class="text-danger small mt-1" th:if="${#fields.hasErrors('personal')}" th:errors="*{personal}"></div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Fecha de emisión</label>
-                    <input type="date" th:field="*{fechaEmision}"
-                           th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
-                           class="form-control" required>
-                </div>
-            </div>
             <div class="mb-3">
-                <label class="form-label">Observaciones generales</label>
-                <textarea th:field="*{observacionesGenerales}" class="form-control" rows="2"></textarea>
+                <label class="form-label">Indicaciones generales</label>
+                <textarea th:field="*{indicaciones}" class="form-control" rows="2"></textarea>
             </div>
         </div>
 
         <div class="card shadow-sm border-0 p-4 mb-4">
             <h5 class="fw-semibold mb-3">Medicamentos</h5>
+            <p class="text-muted small">
+                El campo <strong>Producto (inventario)</strong> es opcional: solo enlazalo si el medicamento
+                corresponde a un producto del inventario — así el equipo de Ventas puede precargarlo
+                automáticamente al facturar. Si es un medicamento que no se vende como producto, dejalo en blanco.
+            </p>
             <div class="table-responsive">
                 <table id="tabla-medicamentos" class="table align-middle">
                     <thead class="table-light">
                         <tr>
                             <th>Medicamento</th>
-                            <th>Presentación</th>
                             <th>Dosis</th>
                             <th>Frecuencia</th>
-                            <th>Duración (días)</th>
-                            <th>Cantidad</th>
+                            <th>Duración</th>
+                            <th>Producto (inventario)</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="fila-medicamento">
                             <td><input type="text" name="detalles[0].medicamento" class="form-control" required></td>
-                            <td><input type="text" name="detalles[0].presentacion" class="form-control"></td>
                             <td><input type="text" name="detalles[0].dosis" class="form-control" required></td>
                             <td><input type="text" name="detalles[0].frecuencia" class="form-control" required></td>
-                            <td><input type="number" min="1" name="detalles[0].duracionDias" class="form-control"></td>
-                            <td><input type="number" min="1" name="detalles[0].cantidad" class="form-control"></td>
+                            <td><input type="text" name="detalles[0].duracion" class="form-control" placeholder="ej: 7 días"></td>
+                            <td>
+                                <select name="detalles[0].producto" class="form-select">
+                                    <option value="">-- Sin enlazar --</option>
+                                    <option th:each="p : ${productos}" th:value="${p.id}" th:text="${p.nombre}"></option>
+                                </select>
+                            </td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-sm btn-outline-danger btn-quitar-fila">
                                     <i class="fa-solid fa-xmark"></i>
@@ -110,9 +110,9 @@
     document.getElementById('agregar-medicamento').addEventListener('click', function () {
         const filas = document.querySelectorAll('.fila-medicamento');
         const template = filas[0].cloneNode(true);
-        template.querySelectorAll('input').forEach(function (input) {
-            input.name = input.name.replace('[0]', '[' + contador + ']');
-            input.value = '';
+        template.querySelectorAll('input, select').forEach(function (campo) {
+            campo.name = campo.name.replace('[0]', '[' + contador + ']');
+            campo.value = '';
         });
         document.querySelector('#tabla-medicamentos tbody').appendChild(template);
         contador++;

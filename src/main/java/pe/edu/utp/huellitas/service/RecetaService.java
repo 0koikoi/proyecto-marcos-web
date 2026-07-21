@@ -2,10 +2,14 @@ package pe.edu.utp.huellitas.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pe.edu.utp.huellitas.exception.NegocioException;
+import pe.edu.utp.huellitas.model.DetalleReceta;
+import pe.edu.utp.huellitas.model.Producto;
 import pe.edu.utp.huellitas.model.Receta;
 import pe.edu.utp.huellitas.repository.RecetaRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Servicio de gestión de recetas médicas.
@@ -36,12 +40,29 @@ public class RecetaService {
     /**
      * Obtiene una receta por su ID, incluyendo sus líneas de detalle.
      *
-     * @throws IllegalArgumentException si no existe
+     * @throws NegocioException si no existe
      */
     public Receta obtenerPorId(Long id) {
         return recetaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new NegocioException(
                         "No se encontró la receta con ID: " + id));
+    }
+
+    /**
+     * Devuelve los productos del inventario enlazados a los medicamentos de una receta.
+     * Solo incluye las líneas de {@link DetalleReceta} que tienen un {@code producto} asociado
+     * (el enlace es opcional en el formulario) — son los únicos que Ventas puede precargar
+     * automáticamente al momento de facturar.
+     *
+     * @param recetaId ID de la receta
+     * @return Lista de productos vendibles (puede estar vacía si ningún medicamento se enlazó)
+     */
+    public List<Producto> obtenerMedicamentosVendibles(Long recetaId) {
+        Receta receta = obtenerPorId(recetaId);
+        return receta.getDetalles().stream()
+                .map(DetalleReceta::getProducto)
+                .filter(java.util.Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     // ── Guardar ───────────────────────────────────────────────────────────────
@@ -58,13 +79,13 @@ public class RecetaService {
     @Transactional
     public Receta guardar(Receta receta) {
         if (receta.getHistoriaClinica() == null) {
-            throw new IllegalArgumentException("La historia clínica es obligatoria.");
+            throw new NegocioException("La historia clínica es obligatoria.");
         }
         if (receta.getPersonal() == null) {
-            throw new IllegalArgumentException("El veterinario firmante es obligatorio.");
+            throw new NegocioException("El veterinario firmante es obligatorio.");
         }
         if (receta.getDetalles() == null || receta.getDetalles().isEmpty()) {
-            throw new IllegalArgumentException("La receta debe tener al menos un medicamento.");
+            throw new NegocioException("La receta debe tener al menos un medicamento.");
         }
         // Asegurar que cada detalle apunte a esta receta
         receta.getDetalles().forEach(detalle -> detalle.setReceta(receta));
@@ -77,7 +98,7 @@ public class RecetaService {
     @Transactional
     public void eliminar(Long id) {
         if (!recetaRepository.existsById(id)) {
-            throw new IllegalArgumentException("No se encontró la receta con ID: " + id);
+            throw new NegocioException("No se encontró la receta con ID: " + id);
         }
         recetaRepository.deleteById(id);
     }

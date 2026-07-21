@@ -74,18 +74,16 @@
                             <th>Paciente</th>
                             <th>Propietario</th>
                             <th>Veterinario</th>
-                            <th>Motivo</th>
                             <th>Diagnóstico</th>
                             <th class="text-center pe-4">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="h : ${historias}">
-                            <td class="ps-4" th:text="${#temporals.format(h.fechaConsulta, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td class="ps-4" th:text="${#temporals.format(h.fecha, 'dd/MM/yyyy HH:mm')}"></td>
                             <td th:text="${h.paciente.nombre}"></td>
                             <td th:text="${h.paciente.propietario.nombreCompleto}"></td>
                             <td th:text="${h.personal.nombreCompleto}"></td>
-                            <td th:text="${h.motivoConsulta}"></td>
                             <td th:text="${h.diagnostico ?: '—'}"></td>
                             <td class="text-center pe-4">
                                 <a th:href="@{/historia/{id}(id=${h.id})}" class="btn btn-sm btn-outline-primary">

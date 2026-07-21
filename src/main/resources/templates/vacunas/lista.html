@@ -66,7 +66,6 @@
                         <tr>
                             <th class="ps-4">Paciente</th>
                             <th>Vacuna</th>
-                            <th>Laboratorio</th>
                             <th>Lote</th>
                             <th>Fecha aplicación</th>
                             <th>Próxima dosis</th>
@@ -78,8 +77,7 @@
                         <tr th:each="v : ${vacunas}"
                             th:classappend="${v.fechaProximaDosis != null and !v.fechaProximaDosis.isBefore(T(java.time.LocalDate).now()) and !v.fechaProximaDosis.isAfter(fechaLimite)} ? 'table-warning' : ''">
                             <td class="ps-4" th:text="${v.paciente.nombre}"></td>
-                            <td th:text="${v.nombreVacuna}"></td>
-                            <td th:text="${v.laboratorio ?: '—'}"></td>
+                            <td th:text="${v.nombre}"></td>
                             <td th:text="${v.lote ?: '—'}"></td>
                             <td th:text="${#temporals.format(v.fechaAplicacion, 'dd/MM/yyyy')}"></td>
                             <td th:text="${v.fechaProximaDosis != null ? #temporals.format(v.fechaProximaDosis, 'dd/MM/yyyy') : '—'}"></td>

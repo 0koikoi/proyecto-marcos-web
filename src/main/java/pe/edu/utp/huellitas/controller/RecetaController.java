@@ -14,6 +14,7 @@ import pe.edu.utp.huellitas.model.HistoriaClinica;
 import pe.edu.utp.huellitas.model.Receta;
 import pe.edu.utp.huellitas.service.HistoriaClinicaService;
 import pe.edu.utp.huellitas.service.PersonalService;
+import pe.edu.utp.huellitas.service.ProductoService;
 import pe.edu.utp.huellitas.service.RecetaService;
 
 import java.time.LocalDate;
@@ -34,13 +35,16 @@ public class RecetaController {
     private final RecetaService recetaService;
     private final HistoriaClinicaService historiaClinicaService;
     private final PersonalService personalService;
+    private final ProductoService productoService;
 
     public RecetaController(RecetaService recetaService,
                             HistoriaClinicaService historiaClinicaService,
-                            PersonalService personalService) {
+                            PersonalService personalService,
+                            ProductoService productoService) {
         this.recetaService = recetaService;
         this.historiaClinicaService = historiaClinicaService;
         this.personalService = personalService;
+        this.productoService = productoService;
     }
 
     // ── Lista general ─────────────────────────────────────────────────────────
@@ -56,17 +60,11 @@ public class RecetaController {
     // ── Recetas por historia clínica ──────────────────────────────────────────
 
     @GetMapping("/historia/{historiaId}")
-    public String listarPorHistoria(@PathVariable Long historiaId, Model model,
-                                     RedirectAttributes redirectAttrs) {
-        try {
-            model.addAttribute("recetas", recetaService.listarPorHistoria(historiaId));
-            model.addAttribute("historia", historiaClinicaService.obtenerPorId(historiaId));
-            model.addAttribute("activePage", "recetas");
-            return "recetas/lista";
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("errorMsg", "No se encontró la historia clínica.");
-            return "redirect:/historia";
-        }
+    public String listarPorHistoria(@PathVariable Long historiaId, Model model) {
+        model.addAttribute("recetas", recetaService.listarPorHistoria(historiaId));
+        model.addAttribute("historia", historiaClinicaService.obtenerPorId(historiaId));
+        model.addAttribute("activePage", "recetas");
+        return "recetas/lista";
     }
 
     // ── Formulario nueva receta ───────────────────────────────────────────────
@@ -104,22 +102,19 @@ public class RecetaController {
             cargarFormulario(model);
             return "recetas/formulario";
         }
-        try {
-            Receta guardada = recetaService.guardar(receta);
-            redirectAttrs.addFlashAttribute("successMsg", "Receta registrada correctamente.");
-            return "redirect:/recetas/" + guardada.getId();
-        } catch (IllegalArgumentException e) {
-            cargarFormulario(model);
-            model.addAttribute("error", e.getMessage());
-            return "recetas/formulario";
-        }
+        Receta guardada = recetaService.guardar(receta);
+        redirectAttrs.addFlashAttribute("successMsg", "Receta registrada correctamente.");
+        return "redirect:/recetas/" + guardada.getId();
     }
 
     // ── Métodos privados ──────────────────────────────────────────────────────
 
     private void cargarFormulario(Model model) {
         model.addAttribute("historias", historiaClinicaService.listarTodas());
-        model.addAttribute("personal", personalService.listarTodos());
+        model.addAttribute("personal", personalService.listarVeterinarios());
+        model.addAttribute("productos", productoService.listar().stream()
+                .filter(p -> Boolean.TRUE.equals(p.getActivo()))
+                .toList());
         model.addAttribute("activePage", "recetas");
     }
 
@@ -127,15 +122,10 @@ public class RecetaController {
 
     /** Vista de detalle de la receta, diseñada para impresión. */
     @GetMapping("/{id}")
-    public String detalle(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
-        try {
-            model.addAttribute("receta", recetaService.obtenerPorId(id));
-            model.addAttribute("activePage", "recetas");
-            return "recetas/detalle";
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("errorMsg", "No se encontró la receta.");
-            return "redirect:/historia";
-        }
+    public String detalle(@PathVariable Long id, Model model) {
+        model.addAttribute("receta", recetaService.obtenerPorId(id));
+        model.addAttribute("activePage", "recetas");
+        return "recetas/detalle";
     }
 
     // ── Eliminar (solo ADMIN) ─────────────────────────────────────────────────
@@ -143,12 +133,8 @@ public class RecetaController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
-        try {
-            recetaService.eliminar(id);
-            redirectAttrs.addFlashAttribute("successMsg", "Receta eliminada.");
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("errorMsg", "No se pudo eliminar: " + e.getMessage());
-        }
+        recetaService.eliminar(id);
+        redirectAttrs.addFlashAttribute("successMsg", "Receta eliminada.");
         return "redirect:/historia";
     }
 }

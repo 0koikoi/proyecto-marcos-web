@@ -17,7 +17,7 @@ import java.time.OffsetDateTime;
 @Data
 @Entity
 @Table(name = "vacuna")
-public class Vacuna {
+public class Vacuna extends pe.edu.utp.huellitas.audit.Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

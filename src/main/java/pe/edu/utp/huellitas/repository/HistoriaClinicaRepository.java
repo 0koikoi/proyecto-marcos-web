@@ -33,4 +33,10 @@ public interface HistoriaClinicaRepository extends JpaRepository<HistoriaClinica
     List<HistoriaClinica> buscar(@Param("buscar") String buscar,
                                   @Param("desde") OffsetDateTime desde,
                                   @Param("hasta") OffsetDateTime hasta);
+
+    /**
+     * Usado por PacienteService.eliminar() para decidir si un paciente con historial
+     * debe desactivarse en vez de borrarse físicamente. Mismo método que ya existe en main.
+     */
+    boolean existsByPacienteId(Long pacienteId);
 }
