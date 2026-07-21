@@ -2,6 +2,8 @@ package pe.edu.utp.huellitas.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import pe.edu.utp.huellitas.exception.NegocioException;
 import pe.edu.utp.huellitas.model.DetalleVenta;
 import pe.edu.utp.huellitas.model.EstadoVenta;
 import pe.edu.utp.huellitas.model.Producto;
@@ -51,7 +53,7 @@ public class VentaService {
 
     public Venta obtenerPorId(Long id) {
         return ventaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Venta no encontrada"));
+                .orElseThrow(() -> new NegocioException("Venta no encontrada: " + id));
     }
 
     public List<DetalleVenta> obtenerDetallesPorVenta(Long ventaId) {
@@ -62,7 +64,7 @@ public class VentaService {
     public void registrarVentaMultilinea(Venta venta, List<Long> itemIds, List<String> tiposItem, List<Integer> cantidades,
             String metodoPago) {
         if (itemIds == null || itemIds.isEmpty()) {
-            throw new IllegalArgumentException("La venta debe tener al menos un producto o servicio.");
+            throw new NegocioException("La venta debe tener al menos un producto o servicio.");
         }
 
         BigDecimal totalVenta = BigDecimal.ZERO;
@@ -86,17 +88,17 @@ public class VentaService {
 
             if ("PRODUCTO".equalsIgnoreCase(tipo)) {
                 Producto producto = productoRepository.findById(itemId)
-                        .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado: " + itemId));
+                        .orElseThrow(() -> new NegocioException("Producto no encontrado: " + itemId));
                 inventarioService.descontarStock(producto.getId(), cantidad, OrigenMovimiento.VENTA, ventaGuardada.getId());
                 precioUnitario = producto.getPrecioVenta();
                 detalle.setProducto(producto);
             } else if ("SERVICIO".equalsIgnoreCase(tipo)) {
                 pe.edu.utp.huellitas.model.Servicio servicio = servicioRepository.findById(itemId)
-                        .orElseThrow(() -> new IllegalArgumentException("Servicio no encontrado: " + itemId));
+                        .orElseThrow(() -> new NegocioException("Servicio no encontrado: " + itemId));
                 precioUnitario = servicio.getPrecio();
                 detalle.setServicio(servicio);
             } else {
-                throw new IllegalArgumentException("Tipo de item inválido: " + tipo);
+                throw new NegocioException("Tipo de item inválido: " + tipo);
             }
 
             BigDecimal subtotal = precioUnitario.multiply(BigDecimal.valueOf(cantidad));
@@ -117,7 +119,7 @@ public class VentaService {
         Venta venta = obtenerPorId(ventaId);
 
         if (venta.getEstado() == EstadoVenta.ANULADA) {
-            throw new IllegalStateException("La venta ya está anulada.");
+            throw new NegocioException("La venta ya está anulada.");
         }
 
         // Revertir stock
