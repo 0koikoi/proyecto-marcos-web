@@ -1,4 +1,4 @@
-<html th:replace="~{layout :: page('Formulario Paciente', 'pacientes', ~{::main}, ~{})}">
+<html th:replace="~{layout :: page('Formulario Paciente', 'pacientes', ~{::main}, ~{::#custom-scripts})}">
 <main>
     <div class="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
         <a th:href="@{/pacientes}" class="btn btn-sm btn-outline-secondary btn-icon">
@@ -7,10 +7,7 @@
         <h2 class="fw-bold m-0" th:text="${titulo}">Formulario Paciente</h2>
     </div>
 
-    <div th:if="${error}" class="alert alert-danger">
-        <i class="fa-solid fa-circle-exclamation me-2"></i>
-        <span th:text="${error}"></span>
-    </div>
+    <div th:replace="~{layout :: alerts}"></div>
 
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -58,11 +55,12 @@
 
                     <div class="col-md-4">
                         <label class="form-label">
-                            <i class="fa-solid fa-calendar text-primary me-1"></i> Fecha de Nacimiento
+                            <i class="fa-solid fa-calendar text-primary me-1"></i> Fecha de Nacimiento <span class="text-danger">*</span>
                         </label>
-                        <input type="date" th:field="*{fechaNacimiento}" class="form-control"
-                               th:classappend="${#fields.hasErrors('fechaNacimiento')} ? 'is-invalid' : ''">
+                        <input type="date" th:field="*{fechaNacimiento}" class="form-control" id="fechaNacimiento"
+                               th:classappend="${#fields.hasErrors('fechaNacimiento')} ? 'is-invalid' : ''" required>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}"></div>
+                        <small id="edadMascota" class="text-muted mt-1 d-block fw-semibold"></small>
                     </div>
                     
                     <div class="col-md-2 d-flex align-items-center mt-4">
@@ -139,7 +137,63 @@
             </div>
         </div>
     </div>
+</main>
+<div id="custom-scripts">
     <script>
+        function calcularEdad(fechaNacimiento) {
+            if (!fechaNacimiento) return '';
+            
+            const hoy = new Date();
+            const nac = new Date(fechaNacimiento);
+            
+            // Usamos UTC para evitar desfasajes horarios
+            const utcHoy = new Date(Date.UTC(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()));
+            const utcNac = new Date(Date.UTC(nac.getFullYear(), nac.getMonth(), nac.getDate()));
+            
+            if (utcNac > utcHoy) return 'Edad: Fecha inválida (en el futuro)';
+            
+            let years = utcHoy.getUTCFullYear() - utcNac.getUTCFullYear();
+            let months = utcHoy.getUTCMonth() - utcNac.getUTCMonth();
+            let days = utcHoy.getUTCDate() - utcNac.getUTCDate();
+            
+            if (days < 0) {
+                months--;
+                // Obtener días del mes anterior
+                const ultimoDiaMesAnterior = new Date(Date.UTC(utcHoy.getUTCFullYear(), utcHoy.getUTCMonth(), 0)).getUTCDate();
+                days += ultimoDiaMesAnterior;
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            
+            let texto = 'Edad aproximada: ';
+            if (years > 0) {
+                texto += years + (years === 1 ? ' año' : ' años');
+                if (months > 0) texto += ', ' + months + (months === 1 ? ' mes' : ' meses');
+            } else if (months > 0) {
+                texto += months + (months === 1 ? ' mes' : ' meses');
+                if (days > 0) texto += ' y ' + days + (days === 1 ? ' día' : ' días');
+            } else {
+                texto += days + (days === 1 ? ' día' : ' días') + ' de nacido';
+            }
+            
+            return texto;
+        }
+
+        const inputFecha = document.getElementById('fechaNacimiento');
+        const spanEdad = document.getElementById('edadMascota');
+        
+        if (inputFecha) {
+            inputFecha.addEventListener('change', function() {
+                spanEdad.textContent = calcularEdad(this.value);
+            });
+            // Calcular al cargar
+            if (inputFecha.value) {
+                spanEdad.textContent = calcularEdad(inputFecha.value);
+            }
+        }
+
         document.getElementById('pacienteForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const form = this;
@@ -174,5 +228,5 @@
             }
         });
     </script>
-</main>
+</div>
 </html>

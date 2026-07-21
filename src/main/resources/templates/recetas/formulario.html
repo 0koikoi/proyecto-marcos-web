@@ -34,11 +34,10 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Veterinario firmante</label>
-                    <select name="personal" class="form-select" required>
+                    <select th:field="*{personal}" class="form-select" required>
                         <option value="">-- Seleccione un veterinario --</option>
-                        <option th:each="v : ${personal}" th:value="${v.id}"
-                                th:text="${v.nombreCompleto}"
-                                th:selected="${receta.personal != null and receta.personal.id == v.id}">
+                        <option th:each="v : ${listaVeterinarios}" th:value="${v.id}"
+                                th:text="${v.nombreCompleto}">
                         </option>
                     </select>
                     <div class="text-danger small mt-1" th:if="${#fields.hasErrors('personal')}" th:errors="*{personal}"></div>
@@ -104,7 +103,7 @@
     </form>
 </main>
 
-<th:block id="custom-scripts">
+<div id="custom-scripts">
 <script>
     let contador = 1;
     document.getElementById('agregar-medicamento').addEventListener('click', function () {
@@ -127,6 +126,6 @@
         }
     });
 </script>
-</th:block>
+</div>
 
 </html>

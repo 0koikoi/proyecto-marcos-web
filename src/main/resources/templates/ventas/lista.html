@@ -9,15 +9,7 @@
         </a>
     </div>
 
-    <!-- Mensajes flash -->
-    <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <span th:text="${successMsg}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <span th:text="${errorMsg}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+    <div th:replace="~{layout :: alerts}"></div>
 
     <!-- Filtro -->
     <div class="card shadow-sm border-0 mb-4 p-3 bg-light">

@@ -17,19 +17,7 @@
         </a>
     </div>
 
-    <!-- Mensajes flash -->
-    <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show">
-        <span th:text="${successMsg}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show">
-        <span th:text="${errorMsg}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    <div th:if="${infoMsg}" class="alert alert-info alert-dismissible fade show">
-        <span th:text="${infoMsg}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+    <div th:replace="~{layout :: alerts}"></div>
 
     <!-- Filtro por paciente -->
     <form method="GET" th:action="@{/vacunas}" class="row g-2 align-items-end mb-3">

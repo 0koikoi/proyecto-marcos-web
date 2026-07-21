@@ -38,7 +38,7 @@ public class PersonalController {
         model.addAttribute("roles", service.listarRoles());
         model.addAttribute("editando", false);
         model.addAttribute("activePage", "personal");
-        return "personal";
+        return "personal/lista";
     }
 
     // ── Formulario de edición ─────────────────────────────────────────────────
@@ -61,7 +61,7 @@ public class PersonalController {
             model.addAttribute("roles", service.listarRoles());
             model.addAttribute("editando", true);
             model.addAttribute("activePage", "personal");
-            return "personal";
+            return "personal/lista";
         }).orElseGet(() -> {
             redirectAttrs.addFlashAttribute("errorMsg", "No se encontró el miembro del personal.");
             return "redirect:/personal";
@@ -82,7 +82,7 @@ public class PersonalController {
             model.addAttribute("roles", service.listarRoles());
             model.addAttribute("editando", dto.getId() != null);
             model.addAttribute("activePage", "personal");
-            return "personal";
+            return "personal/lista";
         }
 
         boolean esEdicion = dto.getId() != null;
@@ -108,7 +108,7 @@ public class PersonalController {
             model.addAttribute("roles", service.listarRoles());
             model.addAttribute("editando", esEdicion);
             model.addAttribute("activePage", "personal");
-            return "personal";
+            return "personal/lista";
         }
 
         if (passwordTemporal != null) {

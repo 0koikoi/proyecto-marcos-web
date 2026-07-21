@@ -86,7 +86,7 @@ public class CitaController {
         model.addAttribute("paramFechaInicio", fechaInicio);
         model.addAttribute("paramFechaFin", fechaFin);
         model.addAttribute("activePage", "citas");
-        return "citas";
+        return "citas/lista";
     }
 
     // ── Formulario nueva cita ─────────────────────────────────────────────────
@@ -96,7 +96,7 @@ public class CitaController {
     public String nuevo(Model model) {
         model.addAttribute("cita", new Cita());
         cargarFormulario(model);
-        return "formulario-cita";
+        return "citas/formulario";
     }
 
     // ── Guardar cita (crear o actualizar) ─────────────────────────────────────
@@ -110,7 +110,7 @@ public class CitaController {
                           RedirectAttributes redirectAttrs) {
         if (result.hasErrors()) {
             cargarFormulario(model);
-            return "formulario-cita";
+            return "citas/formulario";
         }
 
         if (authentication != null && authentication.getName() != null) {
@@ -130,7 +130,7 @@ public class CitaController {
     public String editar(@PathVariable Long id, Model model) {
         model.addAttribute("cita", citaService.obtenerPorId(id));
         cargarFormulario(model);
-        return "formulario-cita";
+        return "citas/formulario";
     }
 
     // ── Cancelar cita ─────────────────────────────────────────────────────────
@@ -179,7 +179,7 @@ public class CitaController {
 
     private void cargarFormulario(Model model) {
         model.addAttribute("pacientes", pacienteService.listarTodos(null));
-        model.addAttribute("personal", personalService.listarVeterinarios());
+        model.addAttribute("listaVeterinarios", personalService.listarVeterinarios());
         model.addAttribute("activePage", "citas");
     }
 }

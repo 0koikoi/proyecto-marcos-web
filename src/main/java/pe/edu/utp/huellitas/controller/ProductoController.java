@@ -8,7 +8,7 @@ import jakarta.validation.Valid;
 
 import pe.edu.utp.huellitas.model.Producto;
 import pe.edu.utp.huellitas.service.ProductoService;
-import pe.edu.utp.huellitas.service.ProveedorService;
+
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -18,21 +18,18 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public class ProductoController {
 
     private final ProductoService productoService;
-    private final ProveedorService proveedorService;
 
-    public ProductoController(ProductoService productoService, ProveedorService proveedorService) {
+    public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
-        this.proveedorService = proveedorService;
     }
 
     // MOSTRAR VISTA + LISTAR
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("listaProductos", productoService.listar());
-        model.addAttribute("listaProveedores", proveedorService.listar());
         model.addAttribute("nuevoProducto", new Producto());
         model.addAttribute("activePage", "productos"); // Esto activa el color azul en el menú
-        return "productos";
+        return "productos/lista";
     }
 
     // GUARDAR
@@ -40,9 +37,8 @@ public class ProductoController {
     public String guardar(@Valid @ModelAttribute("nuevoProducto") Producto producto, BindingResult result, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("listaProductos", productoService.listar());
-            model.addAttribute("listaProveedores", proveedorService.listar());
             model.addAttribute("activePage", "productos");
-            return "productos";
+            return "productos/lista";
         }
         productoService.guardar(producto);
         return "redirect:/productos";

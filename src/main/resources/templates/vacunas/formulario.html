@@ -11,9 +11,7 @@
         </h2>
     </div>
 
-    <div th:if="${error}" class="alert alert-danger">
-        <i class="fa-solid fa-circle-exclamation me-2"></i><span th:text="${error}"></span>
-    </div>
+    <div th:replace="~{layout :: alerts}"></div>
 
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -36,11 +34,10 @@
 
                     <div class="mb-3">
                         <label class="form-label">Veterinario</label>
-                        <select name="personal" class="form-select" required>
+                        <select th:field="*{personal}" class="form-select" required>
                             <option value="">-- Seleccione un veterinario --</option>
-                            <option th:each="v : ${personal}" th:value="${v.id}"
-                                    th:text="${v.nombreCompleto}"
-                                    th:selected="${vacuna.personal != null and vacuna.personal.id == v.id}">
+                            <option th:each="v : ${listaVeterinarios}" th:value="${v.id}"
+                                    th:text="${v.nombreCompleto}">
                             </option>
                         </select>
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('personal')}" th:errors="*{personal}"></div>
@@ -83,7 +80,7 @@
     </div>
 </main>
 
-<th:block id="custom-scripts">
+<div id="custom-scripts">
 <script>
     // La próxima dosis nunca puede ser anterior a la fecha de aplicación.
     (function () {
@@ -105,6 +102,6 @@
         actualizarMinimo();
     })();
 </script>
-</th:block>
+</div>
 
 </html>

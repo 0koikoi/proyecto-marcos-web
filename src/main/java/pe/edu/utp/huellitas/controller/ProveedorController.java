@@ -31,7 +31,7 @@ public class ProveedorController {
         model.addAttribute("listaProveedores", proveedorService.listar());
         model.addAttribute("nuevoProveedor", new ProveedorDTO());
         model.addAttribute("activePage", "proveedores"); // Esto activa el color azul en el menú
-        return "proveedores";
+        return "proveedores/lista";
     }
 
     // GUARDAR
@@ -41,7 +41,7 @@ public class ProveedorController {
         if (result.hasErrors()) {
             model.addAttribute("listaProveedores", proveedorService.listar());
             model.addAttribute("activePage", "proveedores");
-            return "proveedores";
+            return "proveedores/lista";
         }
         proveedorService.guardar(proveedor);
 
@@ -68,6 +68,6 @@ public class ProveedorController {
         model.addAttribute("nuevoProveedor", proveedor);
         model.addAttribute("listaProveedores", proveedorService.listar());
         model.addAttribute("activePage", "proveedores");
-        return "proveedores";
+        return "proveedores/lista";
     }
 }

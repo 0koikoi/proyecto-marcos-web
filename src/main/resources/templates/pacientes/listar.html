@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<!-- se cambian los títulos así como estoy a 2 tics de cambiar de carrera -->
 <html th:replace="~{layout :: page('Gestión de Pacientes', 'pacientes', ~{::main}, ~{})}">
 
 <!-- SOLO EXISTE EL MAIN -->
@@ -17,6 +15,8 @@
 
         <a th:href="@{/pacientes/nuevo}" class="btn btn-primary">Nuevo paciente</a>
     </div>
+
+    <div th:replace="~{layout :: alerts}"></div>
 
     <div class="card shadow-sm border-0">
         <div class="card-body p-0">

@@ -158,7 +158,7 @@ public class HistoriaClinicaController {
 
     private void cargarFormulario(Model model) {
         model.addAttribute("pacientes", pacienteService.listarTodos(null));
-        model.addAttribute("personal", personalService.listarVeterinarios());
+        model.addAttribute("listaVeterinarios", personalService.listarVeterinarios());
         model.addAttribute("citas", citaService.listarTodas().stream()
                 .filter(c -> c.getEstado() == EstadoCita.PENDIENTE || c.getEstado() == EstadoCita.EN_PROCESO)
                 .toList());

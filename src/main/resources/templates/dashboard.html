@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<html
-xmlns:th="http://www.thymeleaf.org"
-xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-th:replace="~{layout :: page('Dashboard Principal', 'dashboard', ~{::main}, ~{})}">
+<html th:replace="~{layout :: page('Dashboard Principal', 'dashboard', ~{::main}, ~{})}">
 
 <!-- SOLO EXISTE EL MAIN. NADA DE BODYS, NADA DE WRAPPERS DE BOOTSTRAP -->
 <main>
@@ -10,6 +6,8 @@ th:replace="~{layout :: page('Dashboard Principal', 'dashboard', ~{::main}, ~{})
         <h2 class="fw-bold">PANEL DE CONTROL PRINCIPAL</h2>
         <p class="text-muted">Bienvenido al sistema de gestión veterinaria</p>
     </div>
+
+    <div th:replace="~{layout :: alerts}"></div>
 
     <!-- Tarjetas de estadísticas -->
     <section class="row g-4 mb-4">

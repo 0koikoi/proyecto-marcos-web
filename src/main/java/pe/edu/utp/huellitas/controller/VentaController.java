@@ -39,7 +39,7 @@ public class VentaController {
         model.addAttribute("ventas", ventaService.listarVentas(estado));
         model.addAttribute("estadoFiltro", estado);
         model.addAttribute("estados", EstadoVenta.values());
-        return "ventas";
+        return "ventas/lista";
     }
 
     @GetMapping("/nuevo")
@@ -49,7 +49,7 @@ public class VentaController {
         model.addAttribute("servicios", servicioService.listarTodos());
         model.addAttribute("propietarios", propietarioService.listarTodos());
         model.addAttribute("personal", personalService.listarTodos());
-        return "formulario-venta";
+        return "ventas/formulario";
     }
 
     /**
@@ -89,6 +89,6 @@ public class VentaController {
     public String verDetalle(@PathVariable Long id, Model model) {
         model.addAttribute("venta", ventaService.obtenerPorId(id));
         model.addAttribute("detalles", ventaService.obtenerDetallesPorVenta(id));
-        return "detalle-venta";
+        return "ventas/detalle";
     }
 }

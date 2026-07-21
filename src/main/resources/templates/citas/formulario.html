@@ -47,12 +47,11 @@
                         <label for="personalSelect" class="form-label">
                             <i class="fa-solid fa-user-doctor text-success me-1"></i> Veterinario Encargado
                         </label>
-                        <select id="personalSelect" name="personal" class="form-select" required>
+                        <select id="personalSelect" th:field="*{personal}" class="form-select" required>
                             <option value="">-- Seleccione un veterinario --</option>
-                            <option th:each="v : ${personal}"
+                            <option th:each="v : ${listaVeterinarios}"
                                     th:value="${v.id}"
-                                    th:text="${v.nombreCompleto} + ' — ' + ${v.rol.nombre}"
-                                    th:selected="${cita.personal != null and cita.personal.id == v.id}">
+                                    th:text="${v.nombreCompleto} + ' — ' + ${v.rol.nombre}">
                             </option>
                         </select>
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('personal')}" th:errors="*{personal}"></div>
@@ -122,7 +121,7 @@
     </div>
 </main>
 
-<th:block id="custom-scripts">
+<div id="custom-scripts">
 <script>
     function mostrarPropietario(selectEl) {
         const option = selectEl.options[selectEl.selectedIndex];
@@ -138,15 +137,15 @@
         }
 
         // Mínimo de fecha: ahora mismo (para evitar agendar en el pasado desde el navegador)
-        const now = new Date();
-        const tzOffset = now.getTimezoneOffset() * 60000;
-        const localNow = new Date(Date.now() - tzOffset).toISOString().slice(0, 16);
-        const fechaInput = document.getElementById('fechaHora');
-        if (fechaInput && !fechaInput.value) {
-            fechaInput.setAttribute('min', localNow);
+        const fechaEl = document.getElementById('fechaHora');
+        if (fechaEl && !fechaEl.value) { // si no tiene valor (nueva cita)
+            const now = new Date();
+            // Ajustar al huso horario local para el min="YYYY-MM-DDTHH:mm"
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            fechaEl.min = now.toISOString().slice(0, 16);
         }
     });
 </script>
-</th:block>
+</div>
 
 </html>

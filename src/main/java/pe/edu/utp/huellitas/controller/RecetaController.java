@@ -109,7 +109,7 @@ public class RecetaController {
 
     private void cargarFormulario(Model model) {
         model.addAttribute("historias", historiaClinicaService.listarTodas());
-        model.addAttribute("personal", personalService.listarVeterinarios());
+        model.addAttribute("listaVeterinarios", personalService.listarVeterinarios());
         model.addAttribute("productos", productoService.listar().stream()
                 .filter(p -> Boolean.TRUE.equals(p.getActivo()))
                 .toList());

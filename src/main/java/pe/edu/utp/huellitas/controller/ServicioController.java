@@ -23,13 +23,13 @@ public class ServicioController {
     public String listar(Model model) {
         model.addAttribute("servicios", service.listarTodos());
         model.addAttribute("activePage", "servicios");
-        return "servicios";
+        return "servicios/lista";
     }
 
     @GetMapping("/nuevo")
     public String formulario(Model model) {
         model.addAttribute("servicio", new Servicio());
-        return "formulario-servicio";
+        return "servicios/formulario";
     }
 
     @PostMapping("/guardar")
@@ -44,7 +44,7 @@ public class ServicioController {
         if (servicio != null) {
             model.addAttribute("servicio", servicio);
             // Reutilizamos el mismo formulario de 'nuevo' para editar
-            return "formulario-servicio";
+            return "servicios/formulario";
         }
         return "redirect:/servicios";
     }

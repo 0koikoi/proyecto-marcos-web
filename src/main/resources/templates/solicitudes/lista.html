@@ -1,6 +1,4 @@
-<html th:replace="~{layout :: page('Solicitudes de Material', 'solicitudes', ~{::main}, ~{})}"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<html th:replace="~{layout :: page('Solicitudes de Material', 'solicitudes', ~{::main}, ~{})}">
 
 <main>
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
@@ -19,15 +17,7 @@
         </a>
     </div>
 
-    <!-- Mensajes flash -->
-    <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show">
-        <span th:text="${successMsg}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show">
-        <span th:text="${errorMsg}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+    <div th:replace="~{layout :: alerts}"></div>
 
 
     <div class="card shadow-sm border-0 mb-4">

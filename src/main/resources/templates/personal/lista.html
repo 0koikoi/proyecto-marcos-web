@@ -34,21 +34,7 @@
 
                                         </div>
 
-                                        <!-- Alertas flash -->
-                                        <div th:if="${successMsg}"
-                                            class="alert alert-success alert-dismissible fade show shadow-sm border-0"
-                                            role="alert">
-                                            <i class="fa-solid fa-circle-check me-2"></i>
-                                            <span th:text="${successMsg}"></span>
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                        </div>
-                                        <div th:if="${errorMsg}"
-                                            class="alert alert-danger alert-dismissible fade show shadow-sm border-0"
-                                            role="alert">
-                                            <i class="fa-solid fa-triangle-exclamation me-2"></i>
-                                            <span th:text="${errorMsg}"></span>
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                        </div>
+                                        <div th:replace="~{layout :: alerts}"></div>
 
 
                 <div class="row g-4">

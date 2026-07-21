@@ -115,7 +115,7 @@ public class VacunaController {
 
     private void cargarFormulario(Model model) {
         model.addAttribute("pacientes", pacienteService.listarTodos(null));
-        model.addAttribute("personal", personalService.listarVeterinarios());
+        model.addAttribute("listaVeterinarios", personalService.listarVeterinarios());
         model.addAttribute("activePage", "vacunas");
     }
 

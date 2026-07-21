@@ -39,11 +39,10 @@
                     <!-- Veterinario -->
                     <div class="mb-3">
                         <label class="form-label">Veterinario</label>
-                        <select name="personal" class="form-select" required>
+                        <select th:field="*{personal}" class="form-select" required>
                             <option value="">-- Seleccione un veterinario --</option>
-                            <option th:each="v : ${personal}" th:value="${v.id}"
-                                    th:text="${v.nombreCompleto}"
-                                    th:selected="${historia.personal != null and historia.personal.id == v.id}">
+                            <option th:each="v : ${listaVeterinarios}" th:value="${v.id}"
+                                    th:text="${v.nombreCompleto}">
                             </option>
                         </select>
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('personal')}" th:errors="*{personal}"></div>
@@ -101,7 +100,9 @@
             </div>
         </div>
     </div>
-    
+</main>
+
+<div id="custom-scripts">
     <script>
         document.getElementById('pesoKg').addEventListener('blur', function() {
             const peso = parseFloat(this.value);
@@ -135,34 +136,31 @@
             }
         });
     </script>
-</main>
+    <script>
+        // Filtra las citas mostradas según el paciente seleccionado,
+        // para evitar asociar por error la cita de otra mascota.
+        (function () {
+            const pacienteSelect = document.getElementById('pacienteSelect');
+            const citaSelect = document.getElementById('citaSelect');
+            const opciones = Array.from(citaSelect.options);
 
-<th:block id="custom-scripts">
-<script>
-    // Filtra las citas mostradas según el paciente seleccionado,
-    // para evitar asociar por error la cita de otra mascota.
-    (function () {
-        const pacienteSelect = document.getElementById('pacienteSelect');
-        const citaSelect = document.getElementById('citaSelect');
-        const opciones = Array.from(citaSelect.options);
-
-        function filtrarCitas() {
-            const pacienteId = pacienteSelect.value;
-            opciones.forEach(function (opt) {
-                const pacienteDeLaCita = opt.getAttribute('data-paciente-id');
-                const visible = !pacienteDeLaCita || pacienteDeLaCita === pacienteId;
-                opt.hidden = !visible;
-            });
-            const seleccionada = citaSelect.options[citaSelect.selectedIndex];
-            if (seleccionada && seleccionada.hidden) {
-                citaSelect.value = '';
+            function filtrarCitas() {
+                const pacienteId = pacienteSelect.value;
+                opciones.forEach(function (opt) {
+                    const pacienteDeLaCita = opt.getAttribute('data-paciente-id');
+                    const visible = !pacienteDeLaCita || pacienteDeLaCita === pacienteId;
+                    opt.hidden = !visible;
+                });
+                const seleccionada = citaSelect.options[citaSelect.selectedIndex];
+                if (seleccionada && seleccionada.hidden) {
+                    citaSelect.value = '';
+                }
             }
-        }
 
-        pacienteSelect.addEventListener('change', filtrarCitas);
-        filtrarCitas();
-    })();
-</script>
-</th:block>
+            pacienteSelect.addEventListener('change', filtrarCitas);
+            filtrarCitas();
+        })();
+    </script>
+</div>
 
 </html>

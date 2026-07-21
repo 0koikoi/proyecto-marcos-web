@@ -22,6 +22,7 @@ public class PacienteDTO {
 
     private String raza;
 
+    @NotNull(message = "La fecha de nacimiento es obligatoria")
     @PastOrPresent(message = "La fecha de nacimiento no puede ser en el futuro")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaNacimiento;

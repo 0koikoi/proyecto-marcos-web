@@ -15,15 +15,7 @@
         </a>
     </div>
 
-    <!-- Mensajes flash -->
-    <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <span th:text="${successMsg}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <span th:text="${errorMsg}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+    <div th:replace="~{layout :: alerts}"></div>
 
     <div class="card shadow-sm border-0">
         <div class="card-body p-0">
