@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.edu.utp.huellitas.model.DetalleVenta;
 import pe.edu.utp.huellitas.model.EstadoVenta;
 import pe.edu.utp.huellitas.model.Producto;
+import pe.edu.utp.huellitas.model.Servicio;
 import pe.edu.utp.huellitas.model.Venta;
 import pe.edu.utp.huellitas.repository.DetalleVentaRepository;
 import pe.edu.utp.huellitas.repository.ProductoRepository;
@@ -23,15 +24,18 @@ public class VentaService {
     private final DetalleVentaRepository detalleVentaRepository;
     private final ProductoRepository productoRepository;
     private final InventarioService inventarioService;
+    private final ServicioService servicioService;
 
     public VentaService(VentaRepository ventaRepository,
             DetalleVentaRepository detalleVentaRepository,
             ProductoRepository productoRepository,
-            InventarioService inventarioService) {
+            InventarioService inventarioService,
+            ServicioService servicioService) {
         this.ventaRepository = ventaRepository;
         this.detalleVentaRepository = detalleVentaRepository;
         this.productoRepository = productoRepository;
         this.inventarioService = inventarioService;
+        this.servicioService = servicioService;
     }
 
     public List<Venta> listarVentas() {
@@ -54,11 +58,23 @@ public class VentaService {
         return detalleVentaRepository.findByVentaId(ventaId);
     }
 
+    /**
+     * Registra una venta con líneas mixtas: cada línea es un producto del inventario
+     * O un servicio veterinario (nunca ambos), alineados por índice entre los tres arrays.
+     *
+     * @param itemIds   ID de producto o de servicio según corresponda a esa línea
+     * @param itemTipos "PRODUCTO" o "SERVICIO" para cada línea (mismo índice que itemIds)
+     * @param cantidades cantidad de esa línea (mismo índice)
+     * @param metodoPago EFECTIVO / TARJETA / TRANSFERENCIA
+     */
     @Transactional
-    public void registrarVentaMultilinea(Venta venta, List<Long> productoIds, List<Integer> cantidades,
-            String metodoPago) {
-        if (productoIds == null || productoIds.isEmpty()) {
-            throw new IllegalArgumentException("La venta debe tener al menos un producto.");
+    public void registrarVentaMultilinea(Venta venta, List<Long> itemIds, List<String> itemTipos,
+            List<Integer> cantidades, String metodoPago) {
+        if (itemIds == null || itemIds.isEmpty()) {
+            throw new IllegalArgumentException("La venta debe tener al menos una línea (producto o servicio).");
+        }
+        if (itemTipos == null || itemTipos.size() != itemIds.size() || cantidades.size() != itemIds.size()) {
+            throw new IllegalArgumentException("Las líneas de la venta están incompletas o mal formadas.");
         }
 
         BigDecimal totalVenta = BigDecimal.ZERO;
@@ -69,24 +85,44 @@ public class VentaService {
         venta.setEstado(EstadoVenta.PENDIENTE);
         Venta ventaGuardada = ventaRepository.save(venta);
 
-        // 2. Procesar detalles
-        for (int i = 0; i < productoIds.size(); i++) {
-            Long productoId = productoIds.get(i);
+        // 2. Procesar detalles: cada línea es producto (descuenta stock vía InventarioService,
+        //    nunca tocando Producto directamente) o servicio (no mueve stock).
+        for (int i = 0; i < itemIds.size(); i++) {
+            Long itemId = itemIds.get(i);
             Integer cantidad = cantidades.get(i);
-
-            Producto producto = productoRepository.findById(productoId)
-                    .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado: " + productoId));
-
-            inventarioService.descontarStock(producto.getId(), cantidad, OrigenMovimiento.VENTA, ventaGuardada.getId());
-
-            BigDecimal precioUnitario = producto.getPrecioVenta();
-            BigDecimal subtotal = precioUnitario.multiply(BigDecimal.valueOf(cantidad));
-            totalVenta = totalVenta.add(subtotal);
+            String tipo = itemTipos.get(i) != null ? itemTipos.get(i).toUpperCase() : "";
 
             DetalleVenta detalle = new DetalleVenta();
             detalle.setVenta(ventaGuardada);
-            detalle.setProducto(producto);
             detalle.setCantidad(cantidad);
+
+            BigDecimal precioUnitario;
+
+            if ("SERVICIO".equals(tipo)) {
+                Servicio servicio = servicioService.buscarPorId(itemId);
+                if (servicio == null) {
+                    throw new IllegalArgumentException("Servicio no encontrado: " + itemId);
+                }
+                if (Boolean.FALSE.equals(servicio.getActivo())) {
+                    throw new IllegalArgumentException("El servicio '" + servicio.getNombre() + "' no está activo.");
+                }
+                precioUnitario = servicio.getPrecio();
+                detalle.setServicio(servicio);
+            } else if ("PRODUCTO".equals(tipo)) {
+                Producto producto = productoRepository.findById(itemId)
+                        .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado: " + itemId));
+
+                inventarioService.descontarStock(producto.getId(), cantidad, OrigenMovimiento.VENTA, ventaGuardada.getId());
+
+                precioUnitario = producto.getPrecioVenta();
+                detalle.setProducto(producto);
+            } else {
+                throw new IllegalArgumentException("Tipo de línea inválido: '" + tipo + "' (debe ser PRODUCTO o SERVICIO).");
+            }
+
+            BigDecimal subtotal = precioUnitario.multiply(BigDecimal.valueOf(cantidad));
+            totalVenta = totalVenta.add(subtotal);
+
             detalle.setPrecioUnitario(precioUnitario);
             detalle.setSubtotal(subtotal);
             detalleVentaRepository.save(detalle);

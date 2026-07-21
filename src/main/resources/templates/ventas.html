@@ -1,9 +1,10 @@
-<html th:replace="~{layout :: page('Ventas', 'ventas', ~{::main}, ~{})}">
+<html th:replace="~{layout :: page('Ventas', 'ventas', ~{::main}, ~{})}"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 
 <main>
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
         <h2 class="fw-bold">Registro de Ventas</h2>
-        <a th:href="@{/ventas/nuevo}" class="btn btn-primary">
+        <a th:href="@{/ventas/nuevo}" class="btn btn-primary" sec:authorize="hasRole('RECEPCION')">
             <i class="fa-solid fa-plus me-1"></i> Nueva Venta
         </a>
     </div>
@@ -56,8 +57,8 @@
                     </thead>
                     <tbody>
                     <tr th:each="venta : ${ventas}">
-                        <td class="ps-4 fw-bold text-secondary" th:text="${venta.nroBoleta}"></td>
-                        <td th:text="${#temporals.format(venta.fechaEmision, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td class="ps-4 fw-bold text-secondary" th:text="'#' + ${venta.id}"></td>
+                        <td th:text="${#temporals.format(venta.fecha, 'dd/MM/yyyy HH:mm')}"></td>
                         <td th:text="${venta.propietario != null ? venta.propietario.nombreCompleto : 'Público General'}"></td>
                         <td th:text="${venta.tipoPago != null ? venta.tipoPago : 'EFECTIVO'}"></td>
                         <td th:text="${venta.personal != null ? venta.personal.nombreCompleto : '—'}"></td>

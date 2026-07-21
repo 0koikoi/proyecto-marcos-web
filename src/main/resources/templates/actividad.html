@@ -131,7 +131,7 @@
                             th:each="venta : ${ventas}">
 
                             <strong
-                                th:text="${venta.nroBoleta}">
+                                th:text="'#' + ${venta.id}">
                             </strong>
 
                             <br>

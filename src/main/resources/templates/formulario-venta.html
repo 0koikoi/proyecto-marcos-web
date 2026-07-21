@@ -41,27 +41,32 @@
                             <select name="metodoPago" class="form-select" required>
                                 <option value="" disabled selected>Seleccione...</option>
                                 <option value="EFECTIVO">Efectivo</option>
-                                <option value="TARJETA">Tarjeta</option>
-                                <option value="TRANSFERENCIA">Transferencia</option>
+                                <option value="YAPE">Yape</option>
+                                <option value="PLIN">Plin</option>
+                                <option value="TARJETA_BCP">Tarjeta - BCP</option>
+                                <option value="TARJETA_BBVA">Tarjeta - BBVA</option>
+                                <option value="TARJETA_INTERBANK">Tarjeta - Interbank</option>
+                                <option value="TARJETA_SCOTIABANK">Tarjeta - Scotiabank</option>
+                                <option value="TRANSFERENCIA">Transferencia bancaria</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- DETALLES DE PRODUCTOS -->
+                    <!-- DETALLES DE PRODUCTOS Y SERVICIOS -->
                     <div class="d-flex justify-content-between align-items-end mb-3 pb-2 border-bottom">
                         <h6 class="fw-bold text-muted m-0">
-                            <i class="fa-solid fa-box me-1"></i> Detalle de Productos
+                            <i class="fa-solid fa-box me-1"></i> Detalle (Productos y Servicios)
                         </h6>
                         <button type="button" class="btn btn-sm btn-success" id="btnAgregarProducto">
                             <i class="fa-solid fa-plus"></i> Agregar Fila
                         </button>
                     </div>
-                    
+
                     <div class="table-responsive mb-4">
                         <table class="table table-bordered align-middle" id="tablaDetalles">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Producto</th>
+                                    <th>Producto / Servicio</th>
                                     <th width="15%">Precio Unit. (S/)</th>
                                     <th width="15%">Cantidad</th>
                                     <th width="15%">Subtotal (S/)</th>
@@ -92,15 +97,29 @@
         </div>
     </div>
 
-    <!-- Template oculto para las filas -->
-    <select id="productoTemplate" style="display:none;">
-        <option value="" disabled selected data-precio="0" data-stock="0">Seleccione un producto...</option>
-        <option th:each="prod : ${productos}" 
-                th:value="${prod.id}" 
-                th:data-precio="${prod.precioVenta}"
-                th:data-stock="${prod.stockActual}"
-                th:text="${prod.nombre + ' (Stock: ' + prod.stockActual + ')'}">
-        </option>
+    <!-- Template oculto para las filas: agrupa productos (con stock) y servicios (sin stock) -->
+    <select id="itemTemplate" style="display:none;">
+        <option value="" disabled selected data-tipo="" data-precio="0" data-stock="">Seleccione...</option>
+        <optgroup label="Productos">
+            <option th:each="prod : ${productos}"
+                    th:value="${'P-' + prod.id}"
+                    th:data-tipo="PRODUCTO"
+                    th:data-id="${prod.id}"
+                    th:data-precio="${prod.precioVenta}"
+                    th:data-stock="${prod.stockActual}"
+                    th:text="${prod.nombre + ' (Stock: ' + prod.stockActual + ')'}">
+            </option>
+        </optgroup>
+        <optgroup label="Servicios">
+            <option th:each="serv : ${servicios}" th:if="${serv.activo}"
+                    th:value="${'S-' + serv.id}"
+                    th:data-tipo="SERVICIO"
+                    th:data-id="${serv.id}"
+                    th:data-precio="${serv.precio}"
+                    th:data-stock=""
+                    th:text="${serv.nombre}">
+            </option>
+        </optgroup>
     </select>
 
     <!-- Script de lógica de ventas -->
@@ -108,7 +127,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const tbody = document.getElementById('tbodyDetalles');
             const btnAgregar = document.getElementById('btnAgregarProducto');
-            const templateOptions = document.getElementById('productoTemplate').innerHTML;
+            const templateOptions = document.getElementById('itemTemplate').innerHTML;
             const lblTotal = document.getElementById('lblTotal');
 
             function calcularTotal() {
@@ -128,9 +147,11 @@
                 tr.className = 'fila-producto';
                 tr.innerHTML = `
                     <td>
-                        <select name="productoId[]" class="form-select select-producto" required>
+                        <select class="form-select select-producto" required>
                             ${templateOptions}
                         </select>
+                        <input type="hidden" name="itemId[]" class="input-item-id">
+                        <input type="hidden" name="itemTipo[]" class="input-item-tipo">
                     </td>
                     <td>
                         <input type="text" class="form-control precio-unitario text-end" readonly value="0.00">
@@ -152,16 +173,29 @@
                 // Eventos de la fila
                 tr.querySelector('.select-producto').addEventListener('change', function(e) {
                     const selected = e.target.options[e.target.selectedIndex];
+                    const tipo = selected.dataset.tipo || '';
+                    tr.querySelector('.input-item-id').value = selected.dataset.id || '';
+                    tr.querySelector('.input-item-tipo').value = tipo;
                     tr.querySelector('.precio-unitario').value = parseFloat(selected.dataset.precio || 0).toFixed(2);
-                    tr.querySelector('.input-cantidad').max = selected.dataset.stock;
+
+                    const inputCantidad = tr.querySelector('.input-cantidad');
+                    const warning = tr.querySelector('.stock-warning');
+                    if (tipo === 'PRODUCTO') {
+                        inputCantidad.max = selected.dataset.stock;
+                    } else {
+                        // Los servicios no tienen límite de stock.
+                        inputCantidad.removeAttribute('max');
+                        warning.classList.add('d-none');
+                        inputCantidad.classList.remove('is-invalid');
+                    }
                     calcularTotal();
                 });
 
                 tr.querySelector('.input-cantidad').addEventListener('input', function(e) {
-                    const max = parseInt(this.max);
+                    const max = this.max ? parseInt(this.max) : null;
                     const val = parseInt(this.value);
                     const warning = tr.querySelector('.stock-warning');
-                    if (val > max) {
+                    if (max !== null && !isNaN(max) && val > max) {
                         warning.classList.remove('d-none');
                         this.classList.add('is-invalid');
                     } else {
@@ -183,13 +217,21 @@
             agregarFila();
 
             btnAgregar.addEventListener('click', agregarFila);
-            
-            // Prevenir submit si no hay filas o hay errores de stock
+
+            // Prevenir submit si no hay filas, hay errores de stock, o falta seleccionar item
             document.getElementById('formVenta').addEventListener('submit', function(e) {
-                if (document.querySelectorAll('.fila-producto').length === 0) {
+                const filas = document.querySelectorAll('.fila-producto');
+                if (filas.length === 0) {
                     e.preventDefault();
-                    alert('Debe agregar al menos un producto a la venta.');
+                    alert('Debe agregar al menos un producto o servicio a la venta.');
                     return;
+                }
+                for (const fila of filas) {
+                    if (!fila.querySelector('.input-item-id').value) {
+                        e.preventDefault();
+                        alert('Hay una fila sin producto/servicio seleccionado.');
+                        return;
+                    }
                 }
                 if (document.querySelectorAll('.is-invalid').length > 0) {
                     e.preventDefault();

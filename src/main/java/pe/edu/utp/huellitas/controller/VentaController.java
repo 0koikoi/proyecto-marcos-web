@@ -9,6 +9,7 @@ import pe.edu.utp.huellitas.model.Venta;
 import pe.edu.utp.huellitas.service.PersonalService;
 import pe.edu.utp.huellitas.service.ProductoService;
 import pe.edu.utp.huellitas.service.PropietarioService;
+import pe.edu.utp.huellitas.service.ServicioService;
 import pe.edu.utp.huellitas.service.VentaService;
 
 import java.util.List;
@@ -19,13 +20,16 @@ public class VentaController {
 
     private final VentaService ventaService;
     private final ProductoService productoService;
+    private final ServicioService servicioService;
     private final PropietarioService propietarioService;
     private final PersonalService personalService;
 
-    public VentaController(VentaService ventaService, ProductoService productoService, 
-                           PropietarioService propietarioService, PersonalService personalService) {
+    public VentaController(VentaService ventaService, ProductoService productoService,
+                           ServicioService servicioService, PropietarioService propietarioService,
+                           PersonalService personalService) {
         this.ventaService = ventaService;
         this.productoService = productoService;
+        this.servicioService = servicioService;
         this.propietarioService = propietarioService;
         this.personalService = personalService;
     }
@@ -42,19 +46,26 @@ public class VentaController {
     public String formularioVenta(Model model) {
         model.addAttribute("venta", new Venta());
         model.addAttribute("productos", productoService.listar());
+        model.addAttribute("servicios", servicioService.listarTodos());
         model.addAttribute("propietarios", propietarioService.listarTodos());
         model.addAttribute("personal", personalService.listarTodos());
         return "formulario-venta";
     }
 
+    /**
+     * Cada línea de la venta llega como una terna alineada por índice:
+     * itemId[i] + itemTipo[i] ("PRODUCTO" o "SERVICIO") + cantidad[i].
+     * Así una sola venta puede mezclar productos del inventario y servicios veterinarios.
+     */
     @PostMapping("/guardar")
     public String procesarVenta(@ModelAttribute Venta venta,
-                                @RequestParam(value = "productoId[]") List<Long> productoIds,
+                                @RequestParam(value = "itemId[]") List<Long> itemIds,
+                                @RequestParam(value = "itemTipo[]") List<String> itemTipos,
                                 @RequestParam(value = "cantidad[]") List<Integer> cantidades,
                                 @RequestParam(value = "metodoPago") String metodoPago,
                                 RedirectAttributes redirectAttributes) {
         try {
-            ventaService.registrarVentaMultilinea(venta, productoIds, cantidades, metodoPago);
+            ventaService.registrarVentaMultilinea(venta, itemIds, itemTipos, cantidades, metodoPago);
             redirectAttributes.addFlashAttribute("successMsg", "Venta registrada exitosamente.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
