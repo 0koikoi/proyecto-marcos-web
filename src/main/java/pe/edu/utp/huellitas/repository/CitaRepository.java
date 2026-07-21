@@ -48,4 +48,17 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
                                @Param("inicio") OffsetDateTime inicio,
                                @Param("fin") OffsetDateTime fin,
                                @Param("excludeId") Long excludeId);
+
+    /**
+     * Verifica si el paciente ya tiene una cita activa (no cancelada) en el mismo bloque de tiempo.
+     */
+    @Query("SELECT COUNT(c) > 0 FROM Cita c WHERE " +
+           "c.paciente.id = :pacienteId AND " +
+           "c.estado <> pe.edu.utp.huellitas.model.EstadoCita.CANCELADA AND " +
+           "(:excludeId IS NULL OR c.id <> :excludeId) AND " +
+           "c.fechaHora < :fin AND c.fechaHora > :inicio")
+    boolean existeSolapamientoPaciente(@Param("pacienteId") Long pacienteId,
+                                       @Param("inicio") OffsetDateTime inicio,
+                                       @Param("fin") OffsetDateTime fin,
+                                       @Param("excludeId") Long excludeId);
 }

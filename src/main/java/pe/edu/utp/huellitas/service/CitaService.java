@@ -7,6 +7,8 @@ import pe.edu.utp.huellitas.model.Cita;
 import pe.edu.utp.huellitas.model.EstadoCita;
 import pe.edu.utp.huellitas.repository.CitaRepository;
 
+import pe.edu.utp.huellitas.repository.PersonalRepository;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -25,9 +27,11 @@ import java.util.List;
 public class CitaService {
 
     private final CitaRepository citaRepository;
+    private final PersonalRepository personalRepository;
 
-    public CitaService(CitaRepository citaRepository) {
+    public CitaService(CitaRepository citaRepository, PersonalRepository personalRepository) {
         this.citaRepository = citaRepository;
+        this.personalRepository = personalRepository;
     }
 
     public List<Cita> listarTodas() {
@@ -52,6 +56,20 @@ public class CitaService {
         if (cita.getFechaHora() == null) {
             throw new NegocioException("La fecha y hora de la cita son obligatorias.");
         }
+        if (cita.getFechaHora().isBefore(OffsetDateTime.now()) && cita.getId() == null) {
+            throw new NegocioException("No se puede registrar una cita en una fecha y hora pasada.");
+        }
+
+        pe.edu.utp.huellitas.model.Personal personalCompleto = personalRepository.findById(cita.getPersonal().getId())
+                .orElseThrow(() -> new NegocioException("El personal seleccionado no existe."));
+
+        if (!"VETERINARIO".equalsIgnoreCase(personalCompleto.getRol().getNombre())) {
+            throw new NegocioException("El personal asignado a la cita debe ser un VETERINARIO.");
+        }
+        
+        if (!Boolean.TRUE.equals(personalCompleto.getActivo())) {
+            throw new NegocioException("El veterinario asignado se encuentra inactivo.");
+        }
 
         // Duración por defecto si no se especifica
         int duracion = (cita.getDuracionMinutos() != null && cita.getDuracionMinutos() > 0)
@@ -71,6 +89,19 @@ public class CitaService {
             throw new NegocioException(
                 "El veterinario ya tiene una cita activa en ese horario. " +
                 "Por favor elige otra fecha u hora."
+            );
+        }
+
+        // Validación de solapamiento para el paciente
+        boolean solapamientoPaciente = citaRepository.existeSolapamientoPaciente(
+                cita.getPaciente().getId(),
+                inicio,
+                fin,
+                cita.getId()
+        );
+        if (solapamientoPaciente) {
+            throw new NegocioException(
+                "El paciente ya tiene una cita activa en ese horario."
             );
         }
 
