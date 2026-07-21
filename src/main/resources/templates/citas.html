@@ -127,7 +127,9 @@
                                         th:data-dni="${cita.paciente.propietario.dni}"
                                         th:data-vet="${cita.personal.nombreCompleto}"
                                         th:data-fecha="${#temporals.format(cita.fechaHora, 'dd/MM/yyyy HH:mm')} + ' hrs'"
-                                        th:data-estado="${cita.estado}" th:data-motivo="${cita.motivo}"
+                                        th:data-estado="${cita.estado}"
+                                        th:data-motivo="${cita.motivo}"
+                                        th:data-duracion="${cita.duracionMinutos} + ' min'"
                                         onclick="abrirModalCita(this)">
                                         <i class="fa-solid fa-eye"></i>
                                     </button>
@@ -191,9 +193,13 @@
                             <span class="text-muted d-block"><i class="fa-solid fa-user-doctor me-1"></i> Veterinario</span>
                             <span class="fw-medium" id="modalVet">Vet</span>
                         </div>
-                        <div class="col-12 mt-2">
+                        <div class="col-6 mt-2">
                             <span class="text-muted d-block"><i class="fa-solid fa-calendar-day me-1"></i> Fecha y Hora</span>
                             <span class="fw-medium" id="modalFecha">Fecha</span>
+                        </div>
+                        <div class="col-6 mt-2">
+                            <span class="text-muted d-block"><i class="fa-solid fa-hourglass-half me-1"></i> Duración</span>
+                            <span class="fw-medium" id="modalDuracion">Duración</span>
                         </div>
                     </div>
                     <div class="bg-light p-3 rounded">
@@ -218,7 +224,8 @@
             document.getElementById('modalDni').textContent = btn.getAttribute('data-dni');
             document.getElementById('modalVet').textContent = btn.getAttribute('data-vet');
             document.getElementById('modalFecha').textContent = btn.getAttribute('data-fecha');
-            document.getElementById('modalMotivo').textContent = btn.getAttribute('data-motivo');
+            document.getElementById('modalMotivo').textContent = btn.getAttribute('data-motivo') || '—';
+            document.getElementById('modalDuracion').textContent = btn.getAttribute('data-duracion') || '30 min';
 
             const estado = btn.getAttribute('data-estado');
             const badge = document.getElementById('modalEstado');

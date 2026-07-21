@@ -2,10 +2,11 @@ package pe.edu.utp.huellitas.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pe.edu.utp.huellitas.exception.NegocioException;
 import pe.edu.utp.huellitas.model.Vacuna;
 import pe.edu.utp.huellitas.repository.VacunaRepository;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -42,14 +43,14 @@ public class VacunaService {
      * @param diasAnticipacion Número de días de anticipación (ej: 7)
      */
     public List<Vacuna> listarProximasDosis(int diasAnticipacion) {
-        OffsetDateTime hoy = OffsetDateTime.now();
-        OffsetDateTime limite = hoy.plusDays(diasAnticipacion);
+        LocalDate hoy = LocalDate.now();
+        LocalDate limite = hoy.plusDays(diasAnticipacion);
         return vacunaRepository.findByFechaProximaDosisBetween(hoy, limite);
     }
 
     public Vacuna obtenerPorId(Long id) {
         return vacunaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new NegocioException(
                         "No se encontró la vacuna con ID: " + id));
     }
 
@@ -59,20 +60,20 @@ public class VacunaService {
     @Transactional
     public Vacuna guardar(Vacuna vacuna) {
         if (vacuna.getPaciente() == null) {
-            throw new IllegalArgumentException("El paciente es obligatorio.");
+            throw new NegocioException("El paciente es obligatorio.");
         }
         if (vacuna.getPersonal() == null) {
-            throw new IllegalArgumentException("El veterinario es obligatorio.");
+            throw new NegocioException("El veterinario es obligatorio.");
         }
         if (vacuna.getNombre() == null || vacuna.getNombre().isBlank()) {
-            throw new IllegalArgumentException("El nombre de la vacuna es obligatorio.");
+            throw new NegocioException("El nombre de la vacuna es obligatorio.");
         }
         if (vacuna.getFechaAplicacion() == null) {
-            throw new IllegalArgumentException("La fecha de aplicación es obligatoria.");
+            throw new NegocioException("La fecha de aplicación es obligatoria.");
         }
         if (vacuna.getFechaProximaDosis() != null &&
                 vacuna.getFechaProximaDosis().isBefore(vacuna.getFechaAplicacion())) {
-            throw new IllegalArgumentException(
+            throw new NegocioException(
                     "La fecha de próxima dosis debe ser posterior a la fecha de aplicación.");
         }
         return vacunaRepository.save(vacuna);
@@ -83,7 +84,7 @@ public class VacunaService {
     @Transactional
     public void eliminar(Long id) {
         if (!vacunaRepository.existsById(id)) {
-            throw new IllegalArgumentException("No se encontró la vacuna con ID: " + id);
+            throw new NegocioException("No se encontró la vacuna con ID: " + id);
         }
         vacunaRepository.deleteById(id);
     }

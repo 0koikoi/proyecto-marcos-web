@@ -28,9 +28,24 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
            "(CAST(:start AS timestamp) IS NULL OR c.fechaHora >= :start) AND " +
            "(CAST(:end AS timestamp) IS NULL OR c.fechaHora <= :end) " +
            "ORDER BY c.fechaHora DESC")
-    List<Cita> buscarPorFiltros(@Param("dni") String dni, 
-                                @Param("start") OffsetDateTime start, 
+    List<Cita> buscarPorFiltros(@Param("dni") String dni,
+                                @Param("start") OffsetDateTime start,
                                 @Param("end") OffsetDateTime end);
-                                
+
     boolean existsByPacienteId(Long pacienteId);
+
+    /**
+     * Verifica si ya existe una cita activa (no cancelada) para el mismo veterinario
+     * en el mismo bloque de tiempo (ventana de ±duracionMinutos alrededor de fechaHora),
+     * excluyendo opcionalmente la cita con el id dado (para edición).
+     */
+    @Query("SELECT COUNT(c) > 0 FROM Cita c WHERE " +
+           "c.personal.id = :personalId AND " +
+           "c.estado <> pe.edu.utp.huellitas.model.EstadoCita.CANCELADA AND " +
+           "(:excludeId IS NULL OR c.id <> :excludeId) AND " +
+           "c.fechaHora < :fin AND c.fechaHora > :inicio")
+    boolean existeSolapamiento(@Param("personalId") Long personalId,
+                               @Param("inicio") OffsetDateTime inicio,
+                               @Param("fin") OffsetDateTime fin,
+                               @Param("excludeId") Long excludeId);
 }

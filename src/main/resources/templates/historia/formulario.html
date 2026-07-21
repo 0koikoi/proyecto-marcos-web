@@ -1,4 +1,4 @@
-<html th:replace="~{layout :: page('Nueva Consulta', 'historia', ~{::main}, ~{})}"
+<html th:replace="~{layout :: page('Nueva Consulta', 'historia', ~{::main}, ~{::#custom-scripts})}"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 
 <main>
@@ -25,7 +25,7 @@
                     <!-- Paciente -->
                     <div class="mb-3">
                         <label class="form-label">Paciente</label>
-                        <select name="paciente" class="form-select" required>
+                        <select id="pacienteSelect" name="paciente" class="form-select" required>
                             <option value="">-- Seleccione un paciente --</option>
                             <option th:each="p : ${pacientes}" th:value="${p.id}"
                                     th:attr="data-especie=${p.especie}"
@@ -42,7 +42,7 @@
                         <select name="personal" class="form-select" required>
                             <option value="">-- Seleccione un veterinario --</option>
                             <option th:each="v : ${personal}" th:value="${v.id}"
-                                    th:text="${v.nombreCompleto} + ' — ' + ${v.cargo}"
+                                    th:text="${v.nombreCompleto}"
                                     th:selected="${historia.personal != null and historia.personal.id == v.id}">
                             </option>
                         </select>
@@ -52,20 +52,14 @@
                     <!-- Cita asociada (opcional) -->
                     <div class="mb-3">
                         <label class="form-label">Cita asociada (opcional)</label>
-                        <select name="citaId" class="form-select">
+                        <select id="citaSelect" name="citaId" class="form-select">
                             <option value="">-- Consulta directa (sin cita) --</option>
                             <option th:each="c : ${citas}" th:value="${c.id}"
+                                    th:attr="data-paciente-id=${c.paciente.id}"
                                     th:text="${c.paciente.nombre} + ' — ' + ${#temporals.format(c.fechaHora, 'dd/MM/yyyy HH:mm')}"
                                     th:selected="${historia.cita != null and historia.cita.id == c.id}">
                             </option>
                         </select>
-                    </div>
-
-                    <!-- Motivo -->
-                    <div class="mb-3">
-                        <label class="form-label">Motivo de consulta</label>
-                        <textarea th:field="*{motivoConsulta}" class="form-control" rows="2" required></textarea>
-                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('motivoConsulta')}" th:errors="*{motivoConsulta}"></div>
                     </div>
 
                     <!-- Diagnóstico -->
@@ -93,7 +87,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Temperatura (°C)</label>
-                            <input type="number" step="0.1" th:field="*{temperaturaC}" class="form-control">
+                            <input type="number" step="0.1" th:field="*{temperatura}" class="form-control">
                         </div>
                     </div>
 
@@ -142,5 +136,33 @@
         });
     </script>
 </main>
+
+<th:block id="custom-scripts">
+<script>
+    // Filtra las citas mostradas según el paciente seleccionado,
+    // para evitar asociar por error la cita de otra mascota.
+    (function () {
+        const pacienteSelect = document.getElementById('pacienteSelect');
+        const citaSelect = document.getElementById('citaSelect');
+        const opciones = Array.from(citaSelect.options);
+
+        function filtrarCitas() {
+            const pacienteId = pacienteSelect.value;
+            opciones.forEach(function (opt) {
+                const pacienteDeLaCita = opt.getAttribute('data-paciente-id');
+                const visible = !pacienteDeLaCita || pacienteDeLaCita === pacienteId;
+                opt.hidden = !visible;
+            });
+            const seleccionada = citaSelect.options[citaSelect.selectedIndex];
+            if (seleccionada && seleccionada.hidden) {
+                citaSelect.value = '';
+            }
+        }
+
+        pacienteSelect.addEventListener('change', filtrarCitas);
+        filtrarCitas();
+    })();
+</script>
+</th:block>
 
 </html>

@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import pe.edu.utp.huellitas.exception.NegocioException;
 import pe.edu.utp.huellitas.model.Cita;
 import pe.edu.utp.huellitas.model.EstadoCita;
 import pe.edu.utp.huellitas.model.HistoriaClinica;
@@ -85,18 +86,12 @@ public class HistoriaClinicaController {
      * Útil para la ficha del paciente.
      */
     @GetMapping("/paciente/{pacienteId}")
-    public String listarPorPaciente(@PathVariable Long pacienteId, Model model,
-                                     RedirectAttributes redirectAttrs) {
-        try {
-            model.addAttribute("historias",
-                    historiaClinicaService.listarPorPaciente(pacienteId));
-            model.addAttribute("paciente", pacienteService.obtenerPorId(pacienteId));
-            model.addAttribute("activePage", "historia");
-            return "historia/lista";
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("errorMsg", "No se encontró el paciente.");
-            return "redirect:/pacientes";
-        }
+    public String listarPorPaciente(@PathVariable Long pacienteId, Model model) {
+        model.addAttribute("historias",
+                historiaClinicaService.listarPorPaciente(pacienteId));
+        model.addAttribute("paciente", pacienteService.obtenerPorId(pacienteId));
+        model.addAttribute("activePage", "historia");
+        return "historia/lista";
     }
 
     // ── Formulario nueva historia ─────────────────────────────────────────────
@@ -141,27 +136,22 @@ public class HistoriaClinicaController {
             cargarFormulario(model);
             return "historia/formulario";
         }
-        try {
-            if (citaId != null) {
-                Cita cita = citaService.obtenerPorId(citaId);
-                if (!cita.getPaciente().getId().equals(historia.getPaciente().getId())) {
-                    throw new IllegalArgumentException("El paciente de la historia clínica no coincide con el paciente de la cita seleccionada.");
-                }
-                historia.setCita(cita);
-            } else {
-                historia.setCita(null);
+        if (citaId != null) {
+            Cita cita = citaService.obtenerPorId(citaId);
+            if (!cita.getPaciente().getId().equals(historia.getPaciente().getId())) {
+                throw new NegocioException(
+                        "El paciente de la historia clínica no coincide con el paciente de la cita seleccionada.");
             }
-            HistoriaClinica guardada = historiaClinicaService.guardar(historia, pacienteService);
-            if (guardada.getCita() != null) {
-                citaService.completar(guardada.getCita().getId());
-            }
-            redirectAttrs.addFlashAttribute("successMsg", "Consulta registrada correctamente.");
-            return "redirect:/historia/" + guardada.getId();
-        } catch (RuntimeException e) {
-            cargarFormulario(model);
-            model.addAttribute("error", e.getMessage());
-            return "historia/formulario";
+            historia.setCita(cita);
+        } else {
+            historia.setCita(null);
         }
+        HistoriaClinica guardada = historiaClinicaService.guardar(historia, pacienteService);
+        if (guardada.getCita() != null) {
+            citaService.completar(guardada.getCita().getId());
+        }
+        redirectAttrs.addFlashAttribute("successMsg", "Consulta registrada correctamente.");
+        return "redirect:/historia/" + guardada.getId();
     }
 
     // ── Métodos privados ──────────────────────────────────────────────────────
@@ -182,18 +172,13 @@ public class HistoriaClinicaController {
      * Incluye en el modelo: la historia, sus recetas y las vacunas del paciente.
      */
     @GetMapping("/{id}")
-    public String detalle(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
-        try {
-            var historia = historiaClinicaService.obtenerPorId(id);
-            model.addAttribute("historia", historia);
-            model.addAttribute("recetas", recetaService.listarPorHistoria(historia.getId()));
-            model.addAttribute("vacunas", vacunaService.listarPorPaciente(historia.getPaciente().getId()));
-            model.addAttribute("activePage", "historia");
-            return "historia/detalle";
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("errorMsg", "No se encontró la historia clínica.");
-            return "redirect:/historia";
-        }
+    public String detalle(@PathVariable Long id, Model model) {
+        var historia = historiaClinicaService.obtenerPorId(id);
+        model.addAttribute("historia", historia);
+        model.addAttribute("recetas", recetaService.listarPorHistoria(historia.getId()));
+        model.addAttribute("vacunas", vacunaService.listarPorPaciente(historia.getPaciente().getId()));
+        model.addAttribute("activePage", "historia");
+        return "historia/detalle";
     }
 
     // ── Eliminar historia (solo ADMIN) ────────────────────────────────────────
@@ -201,13 +186,8 @@ public class HistoriaClinicaController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
-        try {
-            historiaClinicaService.eliminar(id);
-            redirectAttrs.addFlashAttribute("successMsg", "Historia clínica eliminada.");
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("errorMsg",
-                    "No se pudo eliminar: " + e.getMessage());
-        }
+        historiaClinicaService.eliminar(id);
+        redirectAttrs.addFlashAttribute("successMsg", "Historia clínica eliminada.");
         return "redirect:/historia";
     }
 }

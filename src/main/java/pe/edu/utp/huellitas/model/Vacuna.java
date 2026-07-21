@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 
 /**
  * Registro de vacunación de un paciente.
@@ -15,9 +15,10 @@ import java.time.OffsetDateTime;
  *                 nombre, lote, fecha_aplicacion, fecha_proxima_dosis
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "vacuna")
-public class Vacuna {
+public class Vacuna extends pe.edu.utp.huellitas.audit.Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,11 +48,11 @@ public class Vacuna {
 
     @NotNull(message = "La fecha de aplicación es obligatoria")
     @Column(name = "fecha_aplicacion", nullable = false)
-    @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
-    private OffsetDateTime fechaAplicacion;
+    @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
+    private LocalDate fechaAplicacion;
 
     /** Fecha programada para la siguiente dosis. Puede ser null. */
     @Column(name = "fecha_proxima_dosis")
-    @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
-    private OffsetDateTime fechaProximaDosis;
+    @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
+    private LocalDate fechaProximaDosis;
 }

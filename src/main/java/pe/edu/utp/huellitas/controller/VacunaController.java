@@ -1,12 +1,6 @@
 package pe.edu.utp.huellitas.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import java.beans.PropertyEditorSupport;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,26 +29,6 @@ import java.util.List;
 @RequestMapping("/vacunas")
 @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO')")
 public class VacunaController {
-
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(OffsetDateTime.class, new PropertyEditorSupport() {
-            @Override
-            public void setAsText(String text) {
-                if (text == null || text.isBlank()) {
-                    setValue(null);
-                    return;
-                }
-                if (text.length() == 10) {
-                    setValue(LocalDate.parse(text).atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime());
-                } else if (text.length() == 16) {
-                    setValue(LocalDateTime.parse(text).atZone(ZoneId.systemDefault()).toOffsetDateTime());
-                } else {
-                    setValue(OffsetDateTime.parse(text));
-                }
-            }
-        });
-    }
 
     private final VacunaService vacunaService;
     private final PacienteService pacienteService;
@@ -94,17 +68,11 @@ public class VacunaController {
     // ── Vacunas por paciente ──────────────────────────────────────────────────
 
     @GetMapping("/paciente/{pacienteId}")
-    public String listarPorPaciente(@PathVariable Long pacienteId, Model model,
-                                     RedirectAttributes redirectAttrs) {
-        try {
-            model.addAttribute("vacunas", vacunaService.listarPorPaciente(pacienteId));
-            model.addAttribute("paciente", pacienteService.obtenerPorId(pacienteId));
-            model.addAttribute("activePage", "vacunas");
-            return "vacunas/lista";
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("errorMsg", "No se encontró el paciente.");
-            return "redirect:/pacientes";
-        }
+    public String listarPorPaciente(@PathVariable Long pacienteId, Model model) {
+        model.addAttribute("vacunas", vacunaService.listarPorPaciente(pacienteId));
+        model.addAttribute("paciente", pacienteService.obtenerPorId(pacienteId));
+        model.addAttribute("activePage", "vacunas");
+        return "vacunas/lista";
     }
 
     // ── Formulario nueva vacuna ───────────────────────────────────────────────
@@ -147,7 +115,7 @@ public class VacunaController {
 
     private void cargarFormulario(Model model) {
         model.addAttribute("pacientes", pacienteService.listarTodos(null));
-        model.addAttribute("personal", personalService.listarTodos());
+        model.addAttribute("personal", personalService.listarVeterinarios());
         model.addAttribute("activePage", "vacunas");
     }
 
@@ -156,12 +124,8 @@ public class VacunaController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttrs) {
-        try {
-            vacunaService.eliminar(id);
-            redirectAttrs.addFlashAttribute("successMsg", "Registro de vacuna eliminado.");
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("errorMsg", "No se pudo eliminar: " + e.getMessage());
-        }
+        vacunaService.eliminar(id);
+        redirectAttrs.addFlashAttribute("successMsg", "Registro de vacuna eliminado.");
         return "redirect:/vacunas";
     }
 }

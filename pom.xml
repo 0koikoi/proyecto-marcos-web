@@ -88,9 +88,11 @@
 			<scope>runtime</scope>
 		</dependency>
 		<!--flyway-->
+		<!-- Spring Boot 4.0 modularizó la autoconfiguración: declarar solo flyway-core
+		     ya NO activa FlywayAutoConfiguration. Hace falta este starter dedicado. -->
 		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-flyway</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>

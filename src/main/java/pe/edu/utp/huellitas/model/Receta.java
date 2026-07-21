@@ -3,6 +3,7 @@ package pe.edu.utp.huellitas.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -15,9 +16,10 @@ import java.util.List;
  * V1 SQL columns: id, historia_clinica_id, personal_id, fecha, indicaciones
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "receta")
-public class Receta {
+public class Receta extends pe.edu.utp.huellitas.audit.Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

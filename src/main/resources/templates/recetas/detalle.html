@@ -33,17 +33,13 @@
                 </div>
                 <div class="col-md-3">
                     <div class="text-muted small">Fecha de emisión</div>
-                    <div class="fw-semibold" th:text="${#temporals.format(receta.fechaEmision, 'dd/MM/yyyy')}"></div>
+                    <div class="fw-semibold" th:text="${#temporals.format(receta.fecha, 'dd/MM/yyyy')}"></div>
                 </div>
             </div>
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <div class="text-muted small">Veterinario firmante</div>
                     <div class="fw-semibold" th:text="${receta.personal.nombreCompleto}"></div>
-                </div>
-                <div class="col-md-6" th:if="${receta.personal.especialidad}">
-                    <div class="text-muted small">Especialidad</div>
-                    <div class="fw-semibold" th:text="${receta.personal.especialidad}"></div>
                 </div>
             </div>
 
@@ -54,32 +50,30 @@
                     <thead class="table-light">
                         <tr>
                             <th>Medicamento</th>
-                            <th>Presentación</th>
                             <th>Dosis</th>
                             <th>Frecuencia</th>
                             <th>Duración</th>
-                            <th>Cantidad</th>
+                            <th class="no-print">Producto (inventario)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="d : ${receta.detalles}">
                             <td th:text="${d.medicamento}"></td>
-                            <td th:text="${d.presentacion ?: '—'}"></td>
                             <td th:text="${d.dosis}"></td>
                             <td th:text="${d.frecuencia}"></td>
-                            <td th:text="${d.duracionDias != null ? d.duracionDias + ' días' : '—'}"></td>
-                            <td th:text="${d.cantidad ?: '—'}"></td>
+                            <td th:text="${d.duracion ?: '—'}"></td>
+                            <td class="no-print" th:text="${d.producto != null ? d.producto.nombre : '—'}"></td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(receta.detalles)}">
-                            <td colspan="6" class="text-center text-muted py-3">Sin medicamentos registrados.</td>
+                            <td colspan="5" class="text-center text-muted py-3">Sin medicamentos registrados.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <div class="mt-3" th:if="${receta.observacionesGenerales}">
-                <div class="text-muted small">Observaciones generales</div>
-                <div th:text="${receta.observacionesGenerales}"></div>
+            <div class="mt-3" th:if="${receta.indicaciones}">
+                <div class="text-muted small">Indicaciones generales</div>
+                <div th:text="${receta.indicaciones}"></div>
             </div>
 
             <div class="mt-5 pt-5 text-center">

@@ -47,7 +47,7 @@
                     <tbody>
                         <tr th:each="r : ${recetas}">
                             <td class="ps-4" th:text="${r.id}"></td>
-                            <td th:text="${#temporals.format(r.fechaEmision, 'dd/MM/yyyy')}"></td>
+                            <td th:text="${#temporals.format(r.fecha, 'dd/MM/yyyy')}"></td>
                             <td th:text="${r.historiaClinica.paciente.nombre}"></td>
                             <td th:text="${r.personal.nombreCompleto}"></td>
                             <td th:text="${#lists.size(r.detalles)}"></td>
