@@ -18,6 +18,7 @@ import pe.edu.utp.huellitas.service.PropietarioService;
 import java.util.List;
 
 @Controller
+
 @RequestMapping("/pacientes")
 @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCION', 'VETERINARIO')")
 public class PacienteController {

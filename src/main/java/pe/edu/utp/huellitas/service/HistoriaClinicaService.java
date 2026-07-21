@@ -87,7 +87,6 @@ public class HistoriaClinicaService {
         if (historiaClinica.getPersonal() == null) {
             throw new IllegalArgumentException("El veterinario tratante es obligatorio.");
         }
-        
         HistoriaClinica saved = historiaClinicaRepository.save(historiaClinica);
         if (historiaClinica.getPesoKg() != null) {
             pacienteService.actualizarPesoReferencia(historiaClinica.getPaciente().getId(), historiaClinica.getPesoKg());
