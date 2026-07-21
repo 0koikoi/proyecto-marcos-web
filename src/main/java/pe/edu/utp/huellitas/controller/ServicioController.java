@@ -6,8 +6,11 @@ import org.springframework.web.bind.annotation.*;
 import pe.edu.utp.huellitas.model.Servicio;
 import pe.edu.utp.huellitas.service.ServicioService;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @Controller
 @RequestMapping("/servicios")
+@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCION', 'VETERINARIO')")
 public class ServicioController {
 
     private final ServicioService service;

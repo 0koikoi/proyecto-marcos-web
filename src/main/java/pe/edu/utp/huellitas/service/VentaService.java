@@ -10,6 +10,8 @@ import pe.edu.utp.huellitas.repository.DetalleVentaRepository;
 import pe.edu.utp.huellitas.repository.ProductoRepository;
 import pe.edu.utp.huellitas.repository.VentaRepository;
 
+import pe.edu.utp.huellitas.model.OrigenMovimiento;
+
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -20,13 +22,16 @@ public class VentaService {
     private final VentaRepository ventaRepository;
     private final DetalleVentaRepository detalleVentaRepository;
     private final ProductoRepository productoRepository;
+    private final InventarioService inventarioService;
 
     public VentaService(VentaRepository ventaRepository,
             DetalleVentaRepository detalleVentaRepository,
-            ProductoRepository productoRepository) {
+            ProductoRepository productoRepository,
+            InventarioService inventarioService) {
         this.ventaRepository = ventaRepository;
         this.detalleVentaRepository = detalleVentaRepository;
         this.productoRepository = productoRepository;
+        this.inventarioService = inventarioService;
     }
 
     public List<Venta> listarVentas() {
@@ -72,14 +77,7 @@ public class VentaService {
             Producto producto = productoRepository.findById(productoId)
                     .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado: " + productoId));
 
-            if (producto.getStockActual() < cantidad) {
-                throw new IllegalArgumentException("Stock insuficiente para: " + producto.getNombre());
-            }
-
-            // Descontar stock
-            // TODO (Fase 3): mover a InventarioService.descontarStock()
-            producto.setStockActual(producto.getStockActual() - cantidad);
-            productoRepository.save(producto);
+            inventarioService.descontarStock(producto.getId(), cantidad, OrigenMovimiento.VENTA, ventaGuardada.getId());
 
             BigDecimal precioUnitario = producto.getPrecioVenta();
             BigDecimal subtotal = precioUnitario.multiply(BigDecimal.valueOf(cantidad));
@@ -108,13 +106,10 @@ public class VentaService {
         }
 
         // Revertir stock
-        // TODO (Fase 3): mover a InventarioService.incrementarStock()
         List<DetalleVenta> detalles = detalleVentaRepository.findByVentaId(ventaId);
         for (DetalleVenta detalle : detalles) {
             if (detalle.getProducto() != null) {
-                Producto producto = detalle.getProducto();
-                producto.setStockActual(producto.getStockActual() + detalle.getCantidad());
-                productoRepository.save(producto);
+                inventarioService.incrementarStock(detalle.getProducto().getId(), detalle.getCantidad(), OrigenMovimiento.VENTA, venta.getId());
             }
         }
 

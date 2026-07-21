@@ -10,8 +10,11 @@ import pe.edu.utp.huellitas.model.Producto;
 import pe.edu.utp.huellitas.service.ProductoService;
 import pe.edu.utp.huellitas.service.ProveedorService;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @Controller
 @RequestMapping("/productos")
+@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCION', 'VETERINARIO')")
 public class ProductoController {
 
     private final ProductoService productoService;

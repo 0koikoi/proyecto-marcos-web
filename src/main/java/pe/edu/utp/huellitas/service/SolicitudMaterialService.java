@@ -10,6 +10,8 @@ import pe.edu.utp.huellitas.repository.PersonalRepository;
 import pe.edu.utp.huellitas.repository.ProductoRepository;
 import pe.edu.utp.huellitas.repository.SolicitudMaterialRepository;
 
+import pe.edu.utp.huellitas.model.OrigenMovimiento;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -27,13 +29,16 @@ public class SolicitudMaterialService {
     private final SolicitudMaterialRepository solicitudRepository;
     private final PersonalRepository personalRepository;
     private final ProductoRepository productoRepository;
+    private final InventarioService inventarioService;
 
     public SolicitudMaterialService(SolicitudMaterialRepository solicitudRepository,
                                     PersonalRepository personalRepository,
-                                    ProductoRepository productoRepository) {
+                                    ProductoRepository productoRepository,
+                                    InventarioService inventarioService) {
         this.solicitudRepository = solicitudRepository;
         this.personalRepository = personalRepository;
         this.productoRepository = productoRepository;
+        this.inventarioService = inventarioService;
     }
 
     // ── Consultas ─────────────────────────────────────────────────────────────
@@ -136,12 +141,7 @@ public class SolicitudMaterialService {
 
         // Descontar stock del inventario
         Producto producto = solicitud.getProducto();
-        if (producto.getStockActual() < solicitud.getCantidad()) {
-            throw new IllegalArgumentException(
-                    "Stock insuficiente en inventario. Disponible: " + producto.getStockActual());
-        }
-        producto.setStockActual(producto.getStockActual() - solicitud.getCantidad());
-        productoRepository.save(producto);
+        inventarioService.descontarStock(producto.getId(), solicitud.getCantidad(), OrigenMovimiento.SOLICITUD, solicitud.getId());
 
         solicitud.setEstado(EstadoSolicitud.ENTREGADA);
         solicitud.setFechaRespuesta(OffsetDateTime.now());

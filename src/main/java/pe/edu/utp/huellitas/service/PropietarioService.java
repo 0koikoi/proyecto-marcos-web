@@ -13,11 +13,11 @@ import pe.edu.utp.huellitas.repository.PropietarioRepository;
 public class PropietarioService {
 
     private final PropietarioRepository propietarioRepository;
-    private final pe.edu.utp.huellitas.repository.PacienteRepository pacienteRepository;
+    private final org.springframework.context.ApplicationContext context;
 
-    public PropietarioService(PropietarioRepository propietarioRepository, pe.edu.utp.huellitas.repository.PacienteRepository pacienteRepository) {
+    public PropietarioService(PropietarioRepository propietarioRepository, org.springframework.context.ApplicationContext context) {
         this.propietarioRepository = propietarioRepository;
-        this.pacienteRepository = pacienteRepository;
+        this.context = context;
     }
 
     public List<Propietario> listarTodos() {
@@ -63,7 +63,8 @@ public class PropietarioService {
         }
 
         // REGLA DE NEGOCIO: Un propietario con pacientes, historia clínica, etc. no se puede eliminar físicamente.
-        if (!pacienteRepository.findByPropietarioId(id).isEmpty()) {
+        pe.edu.utp.huellitas.service.PacienteService pacienteService = context.getBean(pe.edu.utp.huellitas.service.PacienteService.class);
+        if (pacienteService.tienePacientes(id)) {
             throw new pe.edu.utp.huellitas.exception.NegocioException("No se puede eliminar al propietario porque tiene pacientes asociados (historial clínico).");
         }
 
@@ -102,6 +103,16 @@ public class PropietarioService {
             throw new IllegalArgumentException("El teléfono debe tener exactamente 9 dígitos.");
         }
         // La dirección es opcional en la nueva versión
+    }
+    
+    public boolean existeDni(String dni) {
+        return propietarioRepository.existsByDni(dni);
+    }
+    
+    public boolean existeSimilar(String nombres, String telefono) {
+        String tel = telefono != null && telefono.startsWith("+51 ") ? telefono.substring(4) : telefono;
+        List<Propietario> similares = propietarioRepository.buscarSimilares(nombres, tel);
+        return !similares.isEmpty();
     }
     
 

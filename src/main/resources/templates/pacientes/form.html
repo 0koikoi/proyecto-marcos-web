@@ -15,7 +15,7 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card shadow-sm border-0 p-4">
-                <form th:action="@{/pacientes/guardar}" th:object="${paciente}" method="post" class="row g-3">
+                <form id="pacienteForm" th:action="@{/pacientes/guardar}" th:object="${paciente}" method="post" class="row g-3">
                     <input type="hidden" th:field="*{id}">
 
                     <div class="col-md-6">
@@ -56,13 +56,22 @@
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('raza')}" th:errors="*{raza}"></div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label">
                             <i class="fa-solid fa-calendar text-primary me-1"></i> Fecha de Nacimiento
                         </label>
                         <input type="date" th:field="*{fechaNacimiento}" class="form-control"
                                th:classappend="${#fields.hasErrors('fechaNacimiento')} ? 'is-invalid' : ''">
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}"></div>
+                    </div>
+                    
+                    <div class="col-md-2 d-flex align-items-center mt-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" th:field="*{fechaNacimientoEstimada}" id="fechaNacimientoEstimada">
+                            <label class="form-check-label" for="fechaNacimientoEstimada">
+                                Es estimada
+                            </label>
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -74,7 +83,6 @@
                             <option value="" disabled selected>Seleccione...</option>
                             <option value="MACHO">Macho</option>
                             <option value="HEMBRA">Hembra</option>
-                            <option value="DESCONOCIDO">Desconocido</option>
                         </select>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('genero')}" th:errors="*{genero}"></div>
                     </div>
@@ -93,6 +101,33 @@
                         </select>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('propietarioId')}" th:errors="*{propietarioId}"></div>
                     </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="fa-solid fa-notes-medical text-primary me-1"></i> Alergias
+                        </label>
+                        <textarea th:field="*{alergias}" class="form-control" rows="2" placeholder="Especifique alergias si las hay"></textarea>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">
+                            <i class="fa-solid fa-heart-pulse text-primary me-1"></i> Estado
+                        </label>
+                        <select th:field="*{estado}" class="form-select">
+                            <option value="ACTIVO">Activo</option>
+                            <option value="INACTIVO">Inactivo</option>
+                            <option value="FALLECIDO">Fallecido</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 d-flex align-items-center mt-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" th:field="*{esterilizado}" id="esterilizado">
+                            <label class="form-check-label" for="esterilizado">
+                                Esterilizado
+                            </label>
+                        </div>
+                    </div>
 
                     <div class="col-12 mt-4 pt-3 border-top d-flex justify-content-end gap-2">
                         <a th:href="@{/pacientes}" class="btn btn-outline-secondary px-4">Cancelar</a>
@@ -104,5 +139,40 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('pacienteForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = this;
+            const id = document.getElementById('id').value;
+            if (id) {
+                // Skip if editing
+                form.submit();
+                return;
+            }
+            const nombre = document.getElementById('nombre').value;
+            const especie = document.getElementById('especie').value;
+            const propietarioId = document.getElementById('propietarioId').value;
+            
+            if (!nombre || !especie || !propietarioId) {
+                form.submit();
+                return;
+            }
+            
+            try {
+                const res = await fetch(`/pacientes/api/validar-similar?propietarioId=${propietarioId}&nombre=${encodeURIComponent(nombre)}&especie=${encodeURIComponent(especie)}`);
+                const existe = await res.json();
+                
+                if (existe) {
+                    if (confirm('Advertencia: El propietario ya tiene una mascota registrada con el mismo nombre y especie. ¿Desea continuar?')) {
+                        form.submit();
+                    }
+                } else {
+                    form.submit();
+                }
+            } catch (err) {
+                form.submit();
+            }
+        });
+    </script>
 </main>
 </html>

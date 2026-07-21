@@ -12,8 +12,11 @@ import pe.edu.utp.huellitas.model.Proveedor;
 import pe.edu.utp.huellitas.dto.ProveedorDTO;
 import pe.edu.utp.huellitas.service.ProveedorService;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @Controller
 @RequestMapping("/proveedores")
+@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCION', 'VETERINARIO')")
 public class ProveedorController {
 
     private final ProveedorService proveedorService;

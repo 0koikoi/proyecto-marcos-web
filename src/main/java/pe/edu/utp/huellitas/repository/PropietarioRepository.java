@@ -14,4 +14,6 @@ public interface PropietarioRepository extends JpaRepository<Propietario, Long> 
 
     java.util.List<Propietario> findByNombresContainingIgnoreCaseOrApellidosContainingIgnoreCaseOrDniContaining(
             String nombres, String apellidos, String dni);
+    @org.springframework.data.jpa.repository.Query("SELECT p FROM Propietario p WHERE LOWER(p.nombres) = LOWER(:nombres) OR p.telefono = :telefono")
+    java.util.List<Propietario> buscarSimilares(@org.springframework.data.repository.query.Param("nombres") String nombres, @org.springframework.data.repository.query.Param("telefono") String telefono);
 }
