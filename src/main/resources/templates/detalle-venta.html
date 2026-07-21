@@ -48,7 +48,7 @@
         <div class="col-md-8 mb-4">
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-header bg-light fw-bold">
-                    <i class="fa-solid fa-list me-1"></i> Líneas de Producto
+                    <i class="fa-solid fa-list me-1"></i> Líneas de Detalle (Productos/Servicios)
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -63,7 +63,11 @@
                             </thead>
                             <tbody>
                                 <tr th:each="det : ${detalles}">
-                                    <td class="ps-4" th:text="${det.producto.nombre}"></td>
+                                    <td class="ps-4">
+                                        <span th:if="${det.producto != null}" th:text="${det.producto.nombre}"></span>
+                                        <span th:if="${det.servicio != null}" th:text="${det.servicio.nombre}"></span>
+                                        <span th:if="${det.producto == null and det.servicio == null}">Ítem Desconocido</span>
+                                    </td>
                                     <td class="text-end" th:text="'S/ ' + ${det.precioUnitario}"></td>
                                     <td class="text-center" th:text="${det.cantidad}"></td>
                                     <td class="text-end pe-4 fw-bold" th:text="'S/ ' + ${det.subtotal}"></td>
