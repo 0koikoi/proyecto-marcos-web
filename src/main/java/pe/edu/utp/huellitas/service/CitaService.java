@@ -1,12 +1,14 @@
 package pe.edu.utp.huellitas.service;
 
+import java.time.OffsetDateTime;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import pe.edu.utp.huellitas.model.Cita;
 import pe.edu.utp.huellitas.model.EstadoCita;
 import pe.edu.utp.huellitas.repository.CitaRepository;
-import java.util.List;
-import java.time.OffsetDateTime;
 
 @Service
 public class CitaService {
@@ -37,9 +39,42 @@ public class CitaService {
             throw new IllegalArgumentException("La fecha y hora de la cita son obligatorias.");
         }
         if (cita.getEstado() == null) {
-            cita.setEstado(EstadoCita.PENDIENTE);
-        }
-        return citaRepository.save(cita);
+    cita.setEstado(EstadoCita.PENDIENTE);
+}
+
+// Calcular el fin de la nueva cita
+OffsetDateTime inicioNueva = cita.getFechaHora();
+OffsetDateTime finNueva = inicioNueva.plusMinutes(cita.getDuracionMinutos());
+
+// Obtener todas las citas del veterinario
+List<Cita> citasVeterinario = citaRepository.buscarCitasDelVeterinario(
+        cita.getPersonal().getId()
+);
+
+// Verificar si existe cruce de horarios
+for (Cita existente : citasVeterinario) {
+
+    // Si es una edición, ignorar la misma cita
+    if (cita.getId() != null && cita.getId().equals(existente.getId())) {
+        continue;
+    }
+
+    OffsetDateTime inicioExistente = existente.getFechaHora();
+    OffsetDateTime finExistente =
+            inicioExistente.plusMinutes(existente.getDuracionMinutos());
+
+    boolean hayCruce =
+            inicioNueva.isBefore(finExistente)
+            && finNueva.isAfter(inicioExistente);
+
+    if (hayCruce) {
+        throw new IllegalArgumentException(
+                "El veterinario ya tiene una cita programada en ese horario."
+        );
+    }
+}
+
+return citaRepository.save(cita);
     }
 
     public Cita obtenerPorId(Long id) {
