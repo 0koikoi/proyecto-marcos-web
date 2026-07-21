@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pe.edu.utp.huellitas.model.Personal;
+import pe.edu.utp.huellitas.model.SolicitudMaterial;
 import pe.edu.utp.huellitas.service.PersonalService;
 import pe.edu.utp.huellitas.service.ProductoService;
 import pe.edu.utp.huellitas.service.SolicitudMaterialService;
@@ -69,12 +70,6 @@ public class SolicitudMaterialController {
     /**
      * ADMIN: ve todas las solicitudes.
      * VETERINARIO: ve solo las propias.
-     *
-     * TODO: Detectar el rol del usuario autenticado usando Authentication
-     * y llamar al método correspondiente del servicio.
-     *
-     * Ejemplo de cómo obtener el usuario autenticado:
-     * Personal usuarioActual = (Personal) authentication.getPrincipal();
      */
     @GetMapping
     public String listar(Authentication authentication, Model model) {
@@ -102,32 +97,24 @@ public class SolicitudMaterialController {
         return "solicitudes/formulario";
     }
 
-    // ── Guardar solicitud ─────────────────────────────────────────────────────
-
-    /**
-     * TODO: Implementar el binding del formulario.
-     * TODO: Obtener el solicitante desde el SecurityContext (usuario autenticado).
-     *
-     * Ejemplo de cómo obtener el usuario autenticado en un @PostMapping:
-     * 
-     * @AuthenticationPrincipal Personal usuarioActual
-     *                          (requiere import
-     *                          org.springframework.security.core.annotation.AuthenticationPrincipal)
-     */
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO')")
     @PostMapping("/guardar")
-    public String guardar(RedirectAttributes redirectAttrs) {
-        // TODO: Implementar este método
-        redirectAttrs.addFlashAttribute("infoMsg",
-                "Módulo en construcción. Implementar el formulario de solicitudes.");
+    public String guardar(@ModelAttribute SolicitudMaterial solicitud,
+            Authentication authentication,
+            RedirectAttributes redirectAttrs) {
+        try {
+            Personal usuarioActual = (Personal) authentication.getPrincipal();
+            solicitud.setSolicitante(usuarioActual);
+            solicitudService.guardar(solicitud);
+            redirectAttrs.addFlashAttribute("successMsg", "Solicitud de material enviada correctamente.");
+        } catch (Exception e) {
+            redirectAttrs.addFlashAttribute("errorMsg", "Error al crear la solicitud: " + e.getMessage());
+        }
         return "redirect:/solicitudes";
     }
 
     // ── Aprobar (solo ADMINISTRADOR) ──────────────────────────────────────────
 
-    /**
-     * TODO: Recibir observacion como @RequestParam del formulario modal.
-     */
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/aprobar/{id}")
     public String aprobar(@PathVariable Long id,
@@ -136,7 +123,7 @@ public class SolicitudMaterialController {
             RedirectAttributes redirectAttrs) {
         try {
             Personal admin = (Personal) authentication.getPrincipal();
-            solicitudService.aprobar(id, admin.getId(), observacion);
+            solicitudService.aprobar(id, admin.getId());
             redirectAttrs.addFlashAttribute("successMsg", "Solicitud aprobada correctamente.");
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("errorMsg", "No se pudo aprobar: " + e.getMessage());
@@ -158,7 +145,7 @@ public class SolicitudMaterialController {
             RedirectAttributes redirectAttrs) {
         try {
             Personal admin = (Personal) authentication.getPrincipal();
-            solicitudService.rechazar(id, admin.getId(), motivoRechazo);
+            solicitudService.rechazar(id, admin.getId());
             redirectAttrs.addFlashAttribute("successMsg", "Solicitud rechazada.");
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("errorMsg", "No se pudo rechazar: " + e.getMessage());
@@ -177,7 +164,7 @@ public class SolicitudMaterialController {
             @RequestParam Integer cantidadEntregada,
             RedirectAttributes redirectAttrs) {
         try {
-            solicitudService.marcarEntregada(id, cantidadEntregada);
+            solicitudService.marcarEntregada(id);
             redirectAttrs.addFlashAttribute("successMsg", "Material marcado como entregado. Stock actualizado.");
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("errorMsg", "No se pudo marcar como entregado: " + e.getMessage());

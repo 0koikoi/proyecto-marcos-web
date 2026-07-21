@@ -8,6 +8,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.OffsetDateTime;
+
 import pe.edu.utp.huellitas.model.HistoriaClinica;
 import pe.edu.utp.huellitas.model.Receta;
 import pe.edu.utp.huellitas.service.HistoriaClinicaService;
@@ -76,7 +78,7 @@ public class RecetaController {
     @GetMapping("/nueva")
     public String nueva(@RequestParam(required = false) Long historiaId, Model model) {
         Receta receta = new Receta();
-        receta.setFechaEmision(LocalDate.now());
+        receta.setFecha(OffsetDateTime.now());
         if (historiaId != null) {
             HistoriaClinica historia = new HistoriaClinica();
             historia.setId(historiaId);

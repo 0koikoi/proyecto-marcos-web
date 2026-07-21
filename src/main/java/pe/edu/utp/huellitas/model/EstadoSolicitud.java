@@ -29,3 +29,4 @@ public enum EstadoSolicitud {
     /** El material fue entregado físicamente al veterinario. */
     ENTREGADA
 }
+

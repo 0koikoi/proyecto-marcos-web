@@ -9,7 +9,7 @@
 
         <form method="GET" th:action="@{/pacientes}" class="d-flex">
             <input type="text" name="buscar" th:value="${buscar}" class="form-control me-2"
-                placeholder="Buscar por nombre, especie o dueño...">
+                placeholder="Buscar por nombre...">
             <button type="submit" class="btn btn-primary">Buscar</button>
             <a th:if="${buscar != null and !buscar.isEmpty()}" th:href="@{/pacientes}"
                 class="btn btn-secondary ms-2">Limpiar</a>
@@ -24,7 +24,7 @@
                 <table class="table table-hover mb-0 align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th class="border-0 rounded-start">ID</th>
+                            <th class="border-0 rounded-start px-4">ID</th>
                             <th>Nombre</th>
                             <th>Especie</th>
                             <th>Raza</th>
@@ -36,7 +36,7 @@
                     </thead>
                     <tbody class="border-top-0">
                         <tr th:each="paciente : ${pacientes}">
-                            <td th:text="${paciente.id}"></td>
+                            <td class="px-4" th:text="${paciente.id}"></td>
                             <td th:text="${paciente.nombre}"></td>
                             <td th:text="${paciente.especie}"></td>
                             <td th:text="${paciente.raza}"></td>
@@ -45,17 +45,17 @@
                             <td th:text="${paciente.propietarioNombreCompleto}"></td>
                             <td class="text-end px-4">
                                 <a th:href="@{/pacientes/editar/{id}(id=${paciente.id})}"
-                                    class="btn btn-sm btn-outline-warning rounded-pill px-3 shadow-sm">
-                                    <i class="fa-solid fa-pen-to-square"></i> Editar
+                                    class="btn btn-outline-warning btn-icon" title="Editar">
+                                    <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
 
                                 <!-- CORRECCIÓN DE SEGURIDAD CSRF: Eliminar debe ser POST -->
                                 <form th:action="@{/pacientes/eliminar/{id}(id=${paciente.id})}" method="post"
-                                    class="d-inline" th:data-nombre="${paciente.nombre}"
-                                    onsubmit="return confirmDelete(this.getAttribute('data-nombre'))">
+                                    class="d-inline"
+                                    onsubmit="return confirm('¿Seguro que desea eliminar este paciente?');">
                                     <button type="submit"
-                                        class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm ms-2">
-                                        <i class="fa-solid fa-trash"></i> Eliminar
+                                        class="btn btn-outline-danger btn-icon ms-1" title="Eliminar">
+                                        <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
                             </td>

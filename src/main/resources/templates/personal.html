@@ -1,381 +1,417 @@
 <html th:replace="~{layout :: page('Gestión de Personal', 'personal', ~{::main}, ~{::#custom-scripts})}">
 
-<main>
-    <!-- Encabezado con contadores rápidos -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold mb-0">
-                <i class="fa-solid fa-user-doctor me-2"></i>Gestión de Personal
-            </h2>
-            <p class="text-muted small mt-1 mb-0">Administra los usuarios y roles del sistema</p>
-        </div>
-        <div class="d-flex gap-2">
-            <span class="stat-pill stat-admin">
-                <i class="fa-solid fa-shield-halved"></i>
-                <span th:text="${listaPersonal.?[rol.nombre == 'ADMINISTRADOR'].size()}">0</span> Admin
-            </span>
-            <span class="stat-pill stat-recep">
-                <i class="fa-solid fa-headset"></i>
-                <span th:text="${listaPersonal.?[rol.nombre == 'RECEPCION'].size()}">0</span> Recepción
-            </span>
-            <span class="stat-pill stat-vet">
-                <i class="fa-solid fa-stethoscope"></i>
-                <span th:text="${listaPersonal.?[rol.nombre == 'VETERINARIO'].size()}">0</span> Veterinarios
-            </span>
-        </div>
-    </div>
 
-    <!-- Alertas flash -->
-    <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert">
-        <i class="fa-solid fa-circle-check me-2"></i>
-        <span th:text="${successMsg}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show shadow-sm border-0" role="alert">
-        <i class="fa-solid fa-triangle-exclamation me-2"></i>
-        <span th:text="${errorMsg}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+                                    <main>
+                                        <!-- Encabezado con contadores rápidos -->
+                                        <div class="d-flex justify-content-between align-items-center mb-4">
+                                            <div>
+                                                <h2 class="fw-bold mb-0">
+                                                    <i class="fa-solid fa-user-doctor me-2"></i>Gestión de Personal
+                                                </h2>
+                                                <p class="text-muted small mt-1 mb-0">Administra los usuarios y roles
+                                                    del sistema</p>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <span class="stat-pill stat-admin">
+                                                    <i class="fa-solid fa-shield-halved"></i>
+                                                    <span
+                                                        th:text="${listaPersonal.?[rol.nombre == 'ADMINISTRADOR'].size()}">0</span>
+                                                    Admin
+                                                </span>
+                                                <span class="stat-pill stat-recep">
+                                                    <i class="fa-solid fa-headset"></i>
+                                                    <span
+                                                        th:text="${listaPersonal.?[rol.nombre == 'RECEPCION'].size()}">0</span>
+                                                    Recepción
+                                                </span>
+                                                <span class="stat-pill stat-vet">
+                                                    <i class="fa-solid fa-stethoscope"></i>
+                                                    <span
+                                                        th:text="${listaPersonal.?[rol.nombre == 'VETERINARIO'].size()}">0</span>
+                                                    Veterinarios
+                                                </span>
+                                            </div>
 
-    <div class="row g-4">
+                                        </div>
 
-        <!-- Panel formulario (izquierda) -->
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow-sm border-0">
-                <div class="card-header-custom" th:classappend="${editando == true} ? 'editing' : ''">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="header-icon" th:classappend="${editando == true} ? 'editing' : ''">
-                            <i class="fa-solid" th:classappend="${editando == true} ? 'fa-user-pen' : 'fa-user-plus'"></i>
-                        </div>
-                        <div>
-                            <h5 class="mb-0 fw-semibold" th:text="${editando == true} ? 'Editar Miembro' : 'Nuevo Miembro'">
-                                Nuevo Miembro
-                            </h5>
-                            <small class="opacity-75"
-                                   th:text="${editando == true} ? 'Modifica los datos del registro' : 'Completa todos los campos requeridos'">
-                            </small>
+                                        <!-- Alertas flash -->
+                                        <div th:if="${successMsg}"
+                                            class="alert alert-success alert-dismissible fade show shadow-sm border-0"
+                                            role="alert">
+                                            <i class="fa-solid fa-circle-check me-2"></i>
+                                            <span th:text="${successMsg}"></span>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        </div>
+                                        <div th:if="${errorMsg}"
+                                            class="alert alert-danger alert-dismissible fade show shadow-sm border-0"
+                                            role="alert">
+                                            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                                            <span th:text="${errorMsg}"></span>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        </div>
+
+
+                <div class="row g-4">
+
+
+                    <!-- Panel formulario (izquierda) -->
+                    <div class="col-xl-4 col-lg-5">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header-custom" th:classappend="${editando == true} ? 'editing' : ''">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="header-icon" th:classappend="${editando == true} ? 'editing' : ''">
+                                        <i class="fa-solid"
+                                            th:classappend="${editando == true} ? 'fa-user-pen' : 'fa-user-plus'"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0 fw-semibold"
+                                            th:text="${editando == true} ? 'Editar Miembro' : 'Nuevo Miembro'">
+                                            Nuevo Miembro
+                                        </h5>
+                                        <small class="opacity-75"
+                                            th:text="${editando == true} ? 'Modifica los datos del registro' : 'Completa todos los campos requeridos'">
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-body p-4">
+                                <div th:if="${errorCodigo}" class="alert alert-warning py-2 small mb-3">
+                                    <i class="fa-solid fa-circle-exclamation me-1"></i>
+                                    <span th:text="${errorCodigo}"></span>
+                                </div>
+
+                                <form th:action="@{/personal/guardar}" th:object="${nuevoPersonal}" method="post">
+                                    <input type="hidden" th:field="*{id}">
+
+
+
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <i class="fa-solid fa-user me-1 text-primary"></i>
+                                            Nombre(s) <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="nombre" th:field="*{nombre}"
+                                            class="form-control"
+                                            th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'"
+                                            placeholder="Ej: Juan Pablo">
+                                        <div class="invalid-feedback" th:errors="*{nombre}"></div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <i class="fa-solid fa-user-tag me-1 text-primary"></i>
+                                            Apellidos <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="apellido" th:field="*{apellido}"
+                                            class="form-control"
+                                            th:classappend="${#fields.hasErrors('apellido')} ? 'is-invalid'"
+                                            placeholder="Ej: Pérez García">
+                                        <div class="invalid-feedback" th:errors="*{apellido}"></div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <i class="fa-solid fa-shield-halved me-1 text-primary"></i>
+                                            Rol del Sistema <span class="text-danger">*</span>
+                                        </label>
+                                        <select id="rolId" name="rol.id" class="form-select">
+                                            <option value="" disabled>Seleccionar rol...</option>
+                                            <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.nombre}"
+                                                th:selected="${nuevoPersonal.rol != null and nuevoPersonal.rol.id == r.id}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+
+
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <i class="fa-solid fa-envelope me-1 text-primary"></i>
+                                            Correo Electrónico <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="email" id="email" th:field="*{email}" class="form-control"
+                                            th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                                            placeholder="usuario@huellitas.com">
+                                        <div class="invalid-feedback" th:errors="*{email}"></div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <i class="fa-solid fa-phone me-1 text-primary"></i>
+                                            Teléfono
+                                        </label>
+                                        <input type="text" id="telefono" th:field="*{telefono}" class="form-control"
+                                            maxlength="9" placeholder="912345678"
+                                            th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{telefono}"></div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <i class="fa-solid fa-at me-1 text-primary"></i>
+                                            Usuario de Acceso <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="username" th:field="*{username}" class="form-control"
+                                            th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'"
+                                            placeholder="Ej: jperez" autocomplete="off">
+                                        <div class="invalid-feedback" th:errors="*{username}"></div>
+                                    </div>
+
+
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary fw-semibold">
+                                            <i class="fa-solid me-2"
+                                                th:classappend="${editando == true} ? 'fa-floppy-disk' : 'fa-user-plus'"></i>
+                                            <span
+                                                th:text="${editando == true} ? 'Guardar Cambios' : 'Registrar Personal'">Guardar</span>
+                                        </button>
+                                        <a th:if="${editando == true}" href="/personal"
+                                            class="btn btn-outline-secondary">
+                                            <i class="fa-solid fa-xmark me-1"></i> Cancelar edición
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="card-body p-4">
-                    <div th:if="${errorCodigo}" class="alert alert-warning py-2 small mb-3">
-                        <i class="fa-solid fa-circle-exclamation me-1"></i>
-                        <span th:text="${errorCodigo}"></span>
-                    </div>
+                    <!-- Panel lista (derecha) -->
+                    <div class="col-xl-8 col-lg-7">
 
-                    <form th:action="@{/personal/guardar}" th:object="${nuevoPersonal}" method="post">
-                        <input type="hidden" th:field="*{id}">
-
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="fa-solid fa-id-card me-1 text-primary"></i>
-                                Código Institucional <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" id="codigoInstitucional" th:field="*{codigoInstitucional}"
-                                   class="form-control"
-                                   th:classappend="${#fields.hasErrors('codigoInstitucional')} ? 'is-invalid'"
-                                   placeholder="C000001" maxlength="7">
-                            <div class="invalid-feedback" th:errors="*{codigoInstitucional}"></div>
-                            <div class="form-text">Formato: C seguido de 6 dígitos</div>
+                        <!-- Filtros rápidos por rol -->
+                        <div class="role-filter-tabs mb-3">
+                            <button type="button" class="role-tab active" data-filter="all"
+                                onclick="filtrarPersonal(this, 'all')">
+                                <i class="fa-solid fa-users"></i> Todos
+                            </button>
+                            <button type="button" class="role-tab" data-filter="ADMINISTRADOR"
+                                onclick="filtrarPersonal(this, 'ADMINISTRADOR')">
+                                <i class="fa-solid fa-shield-halved"></i> Administradores
+                            </button>
+                            <button type="button" class="role-tab" data-filter="RECEPCION"
+                                onclick="filtrarPersonal(this, 'RECEPCION')">
+                                <i class="fa-solid fa-headset"></i> Recepción
+                            </button>
+                            <button type="button" class="role-tab" data-filter="VETERINARIO"
+                                onclick="filtrarPersonal(this, 'VETERINARIO')">
+                                <i class="fa-solid fa-stethoscope"></i> Veterinarios
+                            </button>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="fa-solid fa-user me-1 text-primary"></i>
-                                Nombre Completo <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" id="nombreCompleto" th:field="*{nombreCompleto}" class="form-control"
-                                   th:classappend="${#fields.hasErrors('nombreCompleto')} ? 'is-invalid'"
-                                   placeholder="Ej: Dr. Juan Pérez García">
-                            <div class="invalid-feedback" th:errors="*{nombreCompleto}"></div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="fa-solid fa-shield-halved me-1 text-primary"></i>
-                                Rol del Sistema <span class="text-danger">*</span>
-                            </label>
-                            <select id="rolId" name="rol.id" class="form-select">
-                                <option value="" disabled>Seleccionar rol...</option>
-                                <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.nombre}"
-                                        th:selected="${nuevoPersonal.rol != null and nuevoPersonal.rol.id == r.id}">
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="fa-solid fa-briefcase me-1 text-primary"></i>
-                                Cargo (generado automáticamente)
-                            </label>
-                            <input type="text" id="cargo" th:field="*{cargo}" class="form-control bg-light"
-                                   placeholder="Se autocompleta con el rol" readonly>
-                        </div>
-
-                        <div class="mb-3" id="especialidadGroup">
-                            <label class="form-label">
-                                <i class="fa-solid fa-graduation-cap me-1 text-primary"></i>
-                                Especialidad
-                            </label>
-                            <input type="text" id="especialidad" th:field="*{especialidad}" class="form-control"
-                                   placeholder="Solo para veterinarios">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="fa-solid fa-envelope me-1 text-primary"></i>
-                                Correo Electrónico <span class="text-danger">*</span>
-                            </label>
-                            <input type="email" id="email" th:field="*{email}" class="form-control"
-                                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
-                                   placeholder="usuario@huellitas.com">
-                            <div class="invalid-feedback" th:errors="*{email}"></div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="fa-solid fa-phone me-1 text-primary"></i>
-                                Teléfono
-                            </label>
-                            <input type="text" id="telefono" th:field="*{telefono}" class="form-control"
-                                   th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid'"
-                                   placeholder="912345678" maxlength="9">
-                            <div class="invalid-feedback" th:errors="*{telefono}"></div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="fa-solid fa-at me-1 text-primary"></i>
-                                Usuario de Acceso <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" id="username" th:field="*{username}" class="form-control"
-                                   th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'"
-                                   placeholder="Ej: jperez" autocomplete="off">
-                            <div class="invalid-feedback" th:errors="*{username}"></div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label">
-                                <i class="fa-solid fa-lock me-1 text-primary"></i>
-                                Contraseña
-                                <span th:if="${editando != true}" class="text-danger">*</span>
-                                <span th:if="${editando == true}" class="text-muted small fw-normal">(dejar vacío para conservar)</span>
-                            </label>
-                            <div class="input-group">
-                                <input type="password" id="rawPassword" name="rawPassword" class="form-control"
-                                       placeholder="Mín. 8 caracteres" autocomplete="new-password">
-                                <button class="btn btn-outline-secondary" type="button"
-                                        onclick="togglePassword('rawPassword', this)">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
+                        <!-- Tabla de tarjetas (Vista Horizontal) -->
+                        <div class="card border-0 shadow-sm" id="personalGrid">
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th class="ps-4">Personal</th>
+                                                <th>Contacto</th>
+                                                <th>Credenciales</th>
+                                                <th>Código</th>
+                                                <th>Estado</th>
+                                                <th class="text-center pe-4">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="staff-card" th:each="persona : ${listaPersonal}"
+                                                th:data-rol="${persona.rol.nombre}"
+                                                th:style="${!persona.activo} ? 'opacity: 0.65;' : ''">
+                                                <td class="ps-4">
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <div class="staff-avatar"
+                                                            th:classappend="'avatar-' + ${persona.rol.nombre.toLowerCase()}">
+                                                            <span
+                                                                th:text="${persona.nombreCompleto.substring(0,1).toUpperCase()}">A</span>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="fw-bold mb-1 text-truncate"
+                                                                style="max-width: 180px;"
+                                                                th:text="${persona.nombreCompleto}">Nombre</h6>
+                                                            <span class="badge-rol"
+                                                                th:classappend="'badge-rol-' + ${persona.rol.nombre.toLowerCase()}"
+                                                                th:text="${persona.rol.nombre}">ROL</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="small">
+                                                        <div th:if="${persona.telefono != null and !persona.telefono.isBlank()}"
+                                                            class="mb-1">
+                                                            <i class="fa-solid fa-phone text-muted me-1"></i>
+                                                            <span th:text="${persona.telefono}"></span>
+                                                        </div>
+                                                        <div th:if="${persona.telefono == null or persona.telefono.isBlank()}"
+                                                            class="text-muted fst-italic">
+                                                            Sin datos
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="small">
+                                                        <div class="mb-1"><i
+                                                                class="fa-solid fa-id-badge text-muted me-1"></i> <span
+                                                                class="font-monospace fw-medium text-primary"
+                                                                th:text="${persona.codigoInstitucional}"></span></div>
+                                                        <div><i class="fa-solid fa-at text-muted me-1"></i> <span
+                                                                th:text="${persona.username}"></span></div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span
+                                                        class="badge rounded-pill bg-success-subtle text-success small"
+                                                        th:if="${persona.activo}">
+                                                        <i class="fa-solid fa-circle" style="font-size:0.45rem"></i>
+                                                        Activo
+                                                    </span>
+                                                    <span class="badge rounded-pill bg-danger-subtle text-danger small"
+                                                        th:unless="${persona.activo}">
+                                                        <i class="fa-solid fa-circle" style="font-size:0.45rem"></i>
+                                                        Inactivo
+                                                    </span>
+                                                </td>
+                                                <td class="text-center pe-4">
+                                                    <div class="d-flex gap-1 justify-content-center">
+                                                        <a th:href="@{/personal/editar/{id}(id=${persona.id})}"
+                                                            class="btn btn-sm btn-outline-primary" title="Editar">
+                                                            <i class="fa-solid fa-pen-to-square"></i>
+                                                        </a>
+                                                        <form th:if="${persona.activo}"
+                                                            th:action="@{/personal/desactivar/{id}(id=${persona.id})}"
+                                                            method="post"
+                                                            onsubmit="return confirm('¿Desactivar el acceso de este usuario?')">
+                                                            <input type="hidden" th:name="${_csrf.parameterName}"
+                                                                th:value="${_csrf.token}">
+                                                            <button type="submit" class="btn btn-sm btn-outline-warning"
+                                                                title="Desactivar">
+                                                                <i class="fa-solid fa-user-slash"></i>
+                                                            </button>
+                                                        </form>
+                                                        <form th:unless="${persona.activo}"
+                                                            th:action="@{/personal/activar/{id}(id=${persona.id})}"
+                                                            method="post">
+                                                            <input type="hidden" th:name="${_csrf.parameterName}"
+                                                                th:value="${_csrf.token}">
+                                                            <button type="submit" class="btn btn-sm btn-outline-success"
+                                                                title="Activar">
+                                                                <i class="fa-solid fa-user-check"></i>
+                                                            </button>
+                                                        </form>
+                                                        <form th:action="@{/personal/eliminar/{id}(id=${persona.id})}"
+                                                            method="post" th:data-nombre="${persona.nombreCompleto}"
+                                                            onsubmit="return confirmDelete(this.getAttribute('data-nombre'))">
+                                                            <input type="hidden" th:name="${_csrf.parameterName}"
+                                                                th:value="${_csrf.token}">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                                title="Eliminar">
+                                                                <i class="fa-solid fa-trash-can"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary fw-semibold">
-                                <i class="fa-solid me-2"
-                                   th:classappend="${editando == true} ? 'fa-floppy-disk' : 'fa-user-plus'"></i>
-                                <span th:text="${editando == true} ? 'Guardar Cambios' : 'Registrar Personal'">Guardar</span>
-                            </button>
-                            <a th:if="${editando == true}" href="/personal" class="btn btn-outline-secondary">
-                                <i class="fa-solid fa-xmark me-1"></i> Cancelar edición
-                            </a>
+                        <!-- Estado vacío -->
+                        <div class="text-center py-5 d-none" id="emptyState">
+                            <i class="fa-solid fa-users-slash fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No hay personal en esta categoría</p>
                         </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Panel lista (derecha) -->
-        <div class="col-xl-8 col-lg-7">
-
-            <!-- Filtros rápidos por rol -->
-            <div class="role-filter-tabs mb-3">
-                <button type="button" class="role-tab active" data-filter="all" onclick="filtrarPersonal(this, 'all')">
-                    <i class="fa-solid fa-users"></i> Todos
-                </button>
-                <button type="button" class="role-tab" data-filter="ADMINISTRADOR" onclick="filtrarPersonal(this, 'ADMINISTRADOR')">
-                    <i class="fa-solid fa-shield-halved"></i> Administradores
-                </button>
-                <button type="button" class="role-tab" data-filter="RECEPCION" onclick="filtrarPersonal(this, 'RECEPCION')">
-                    <i class="fa-solid fa-headset"></i> Recepción
-                </button>
-                <button type="button" class="role-tab" data-filter="VETERINARIO" onclick="filtrarPersonal(this, 'VETERINARIO')">
-                    <i class="fa-solid fa-stethoscope"></i> Veterinarios
-                </button>
-            </div>
-
-            <!-- Tabla de tarjetas (Vista Horizontal) -->
-            <div class="card border-0 shadow-sm" id="personalGrid">
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th class="ps-4">Personal</th>
-                                    <th>Contacto</th>
-                                    <th>Credenciales</th>
-                                    <th>Estado</th>
-                                    <th class="text-end pe-4">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="staff-card" th:each="persona : ${listaPersonal}" th:data-rol="${persona.rol.nombre}" th:style="${!persona.activo} ? 'opacity: 0.65;' : ''">
-                                    <td class="ps-4">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <div class="staff-avatar" th:classappend="'avatar-' + ${persona.rol.nombre.toLowerCase()}">
-                                                <span th:text="${persona.nombreCompleto.substring(0,1).toUpperCase()}">A</span>
-                                            </div>
-                                            <div>
-                                                <h6 class="fw-bold mb-1 text-truncate" style="max-width: 180px;" th:text="${persona.nombreCompleto}">Nombre</h6>
-                                                <span class="badge-rol" th:classappend="'badge-rol-' + ${persona.rol.nombre.toLowerCase()}" th:text="${persona.rol.nombre}">ROL</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="small">
-                                            <div th:if="${persona.telefono != null and !persona.telefono.isBlank()}" class="mb-1">
-                                                <i class="fa-solid fa-phone text-muted me-1"></i>
-                                                <span th:text="${persona.telefono}"></span>
-                                            </div>
-                                            <div th:if="${persona.especialidad != null and !persona.especialidad.isBlank()}">
-                                                <i class="fa-solid fa-graduation-cap text-muted me-1"></i>
-                                                <span class="text-truncate d-inline-block" style="max-width: 120px; vertical-align: bottom;" th:text="${persona.especialidad}"></span>
-                                            </div>
-                                            <div th:if="${(persona.telefono == null or persona.telefono.isBlank()) and (persona.especialidad == null or persona.especialidad.isBlank())}" class="text-muted fst-italic">
-                                                Sin datos
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="small">
-                                            <div class="mb-1"><i class="fa-solid fa-id-badge text-muted me-1"></i> <span class="font-monospace fw-medium text-primary" th:text="${persona.codigoInstitucional}"></span></div>
-                                            <div><i class="fa-solid fa-at text-muted me-1"></i> <span th:text="${persona.username}"></span></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge rounded-pill bg-success-subtle text-success small" th:if="${persona.activo}">
-                                            <i class="fa-solid fa-circle" style="font-size:0.45rem"></i> Activo
-                                        </span>
-                                        <span class="badge rounded-pill bg-danger-subtle text-danger small" th:unless="${persona.activo}">
-                                            <i class="fa-solid fa-circle" style="font-size:0.45rem"></i> Inactivo
-                                        </span>
-                                    </td>
-                                    <td class="pe-4">
-                                        <div class="d-flex gap-2 justify-content-end">
-                                            <a th:href="@{/personal/editar/{id}(id=${persona.id})}" class="btn btn-sm btn-outline-primary" title="Editar">
-                                                <i class="fa-solid fa-pen-to-square"></i>
-                                            </a>
-                                            <form th:if="${persona.activo}" th:action="@{/personal/desactivar/{id}(id=${persona.id})}" method="post" onsubmit="return confirm('¿Desactivar el acceso de este usuario?')">
-                                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                                <button type="submit" class="btn btn-sm btn-outline-warning" title="Desactivar">
-                                                    <i class="fa-solid fa-user-slash"></i>
-                                                </button>
-                                            </form>
-                                            <form th:unless="${persona.activo}" th:action="@{/personal/activar/{id}(id=${persona.id})}" method="post">
-                                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                                <button type="submit" class="btn btn-sm btn-outline-success" title="Activar">
-                                                    <i class="fa-solid fa-user-check"></i>
-                                                </button>
-                                            </form>
-                                            <form th:action="@{/personal/eliminar/{id}(id=${persona.id})}" method="post" 
-                                                  th:data-nombre="${persona.nombreCompleto}" 
-                                                  onsubmit="return confirmDelete(this.getAttribute('data-nombre'))">
-                                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                 </div>
+                </div>
+
+                <!-- Modal de Credenciales Temporales -->
+                <div th:if="${newUserTempPassword != null}" class="modal fade" id="credentialsModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title"><i class="fa-solid fa-key me-2"></i>Credenciales Generadas</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center p-4">
+                                <p class="mb-3 text-muted">El usuario ha sido creado correctamente. Por favor, entrega estas credenciales al trabajador:</p>
+                                <div class="bg-light rounded p-3 mb-3 text-start border">
+                                    <div class="mb-2"><strong>Usuario:</strong> <span th:text="${newUserUsername}"></span></div>
+                                    <div><strong>Contraseña Temporal:</strong> <span id="tempPwdText" class="fw-bold text-success font-monospace" th:text="${newUserTempPassword}"></span></div>
+                                </div>
+                                <div class="alert alert-warning small mb-0">
+                                    <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                                    Se le pedirá cambiar esta contraseña obligatoriamente al iniciar sesión por primera vez.
+                                </div>
+                            </div>
+                            <div class="modal-footer bg-light">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="button" class="btn btn-success" onclick="copyCredentials()">
+                                    <i class="fa-solid fa-copy me-2"></i>Copiar al portapapeles
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <div id="custom-scripts">
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        // El formulario ya no requiere autocompletar cargo ni especialidad
+                        
+                        // Mostrar modal si existen credenciales temporales
+                        const credentialsModalEl = document.getElementById('credentialsModal');
+                        if (credentialsModalEl) {
+                            const modal = new bootstrap.Modal(credentialsModalEl);
+                            modal.show();
+                        }
+                    });
+
+                    function copyCredentials() {
+                        const pwd = document.getElementById('tempPwdText').innerText;
+                        navigator.clipboard.writeText(pwd).then(() => {
+                            alert('¡Contraseña copiada al portapapeles!');
+                        }).catch(err => {
+                            console.error('Error copiando al portapapeles: ', err);
+                        });
+                    }
+                    function confirmDelete(nombre) {
+                        return confirm(
+                            '¿Eliminar permanentemente a "' + nombre + '"?\n\n' +
+                            'Esta acción no se puede deshacer.\n' +
+                            'Si el usuario tiene registros asociados, considera desactivarlo en su lugar.'
+                        );
+                    }
+
+                    function filtrarPersonal(btn, filtro) {
+                        document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+                        btn.classList.add('active');
+                        const cards = document.querySelectorAll('.staff-card');
+                        let visibles = 0;
+                        const filtroUpper = filtro.trim().toUpperCase();
+
+                        cards.forEach(card => {
+                            const rol = card.dataset.rol ? card.dataset.rol.trim().toUpperCase() : '';
+                            if (filtroUpper === 'ALL' || rol === filtroUpper) {
+                                card.classList.remove('d-none');
+                                visibles++;
+                            } else {
+                                card.classList.add('d-none');
+                            }
+                        });
+                        document.getElementById('emptyState').classList.toggle('d-none', visibles > 0);
+                    }
+
+                    setTimeout(() => {
+                        document.querySelectorAll('.alert').forEach(a => {
+                            const bsAlert = bootstrap.Alert.getOrCreateInstance(a);
+                            if (bsAlert) bsAlert.close();
+                        });
+                    }, 5000);
+                </script>
             </div>
-
-            <!-- Estado vacío -->
-            <div class="text-center py-5 d-none" id="emptyState">
-                <i class="fa-solid fa-users-slash fa-3x text-muted mb-3"></i>
-                <p class="text-muted">No hay personal en esta categoría</p>
-            </div>
-        </div>
-    </div>
-</main>
-
-<div id="custom-scripts">
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const rolSelect = document.getElementById('rolId');
-        const cargoInput = document.getElementById('cargo');
-        const especialidadInput = document.getElementById('especialidad');
-
-        function updateFormBasedOnRole() {
-            if (!rolSelect.value) return;
-            const rolName = rolSelect.options[rolSelect.selectedIndex].text.toUpperCase();
-            
-            if (rolName.includes('ADMINISTRADOR')) cargoInput.value = 'Administrador';
-            else if (rolName.includes('RECEPCION')) cargoInput.value = 'Recepcionista';
-            else if (rolName.includes('VETERINARIO')) cargoInput.value = 'Veterinario';
-            else cargoInput.value = rolName;
-
-            if (rolName.includes('ADMINISTRADOR') || rolName.includes('RECEPCION')) {
-                especialidadInput.value = '';
-                especialidadInput.disabled = true;
-                especialidadInput.placeholder = 'No aplica para este rol';
-            } else {
-                especialidadInput.disabled = false;
-                especialidadInput.placeholder = 'Solo para veterinarios';
-            }
-        }
-
-        rolSelect.addEventListener('change', updateFormBasedOnRole);
-        updateFormBasedOnRole();
-    });
-
-    function togglePassword(inputId, btn) {
-        const input = document.getElementById(inputId);
-        const icon = btn.querySelector('i');
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.replace('fa-eye', 'fa-eye-slash');
-        } else {
-            input.type = 'password';
-            icon.classList.replace('fa-eye-slash', 'fa-eye');
-        }
-    }
-
-    function confirmDelete(nombre) {
-        return confirm(
-            '¿Eliminar permanentemente a "' + nombre + '"?\n\n' +
-            'Esta acción no se puede deshacer.\n' +
-            'Si el usuario tiene registros asociados, considera desactivarlo en su lugar.'
-        );
-    }
-
-    function filtrarPersonal(btn, filtro) {
-        document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
-        btn.classList.add('active');
-        const cards = document.querySelectorAll('.staff-card');
-        let visibles = 0;
-        const filtroUpper = filtro.trim().toUpperCase();
-        
-        cards.forEach(card => {
-            const rol = card.dataset.rol ? card.dataset.rol.trim().toUpperCase() : '';
-            if (filtroUpper === 'ALL' || rol === filtroUpper) {
-                card.classList.remove('d-none');
-                visibles++;
-            } else {
-                card.classList.add('d-none');
-            }
-        });
-        document.getElementById('emptyState').classList.toggle('d-none', visibles > 0);
-    }
-
-
-</script>
-</div>
 
 </html>

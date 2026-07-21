@@ -7,6 +7,7 @@ import pe.edu.utp.huellitas.model.EstadoCita;
 import pe.edu.utp.huellitas.repository.CitaRepository;
 import java.util.List;
 import java.time.OffsetDateTime;
+
 @Service
 public class CitaService {
 
@@ -54,6 +55,9 @@ public class CitaService {
     @Transactional
     public void cancelar(Long id) {
         Cita cita = obtenerPorId(id);
+        if (cita.getEstado() == EstadoCita.COMPLETADA || cita.getEstado() == EstadoCita.CANCELADA) {
+            throw new IllegalStateException("No se puede cancelar una cita que ya está " + cita.getEstado());
+        }
         cita.setEstado(EstadoCita.CANCELADA);
         citaRepository.save(cita);
     }
@@ -61,14 +65,19 @@ public class CitaService {
     @Transactional
     public void iniciar(Long id) {
         Cita cita = obtenerPorId(id);
+        if (cita.getEstado() != EstadoCita.PENDIENTE) {
+            throw new IllegalStateException("Solo se pueden iniciar citas en estado PENDIENTE.");
+        }
         cita.setEstado(EstadoCita.EN_PROCESO);
         citaRepository.save(cita);
     }
 
-    /** Marca la cita como COMPLETADA. Usado al registrar la historia clínica derivada de ella. */
     @Transactional
     public void completar(Long id) {
         Cita cita = obtenerPorId(id);
+        if (cita.getEstado() == EstadoCita.CANCELADA || cita.getEstado() == EstadoCita.COMPLETADA) {
+            throw new IllegalStateException("No se puede completar una cita " + cita.getEstado());
+        }
         cita.setEstado(EstadoCita.COMPLETADA);
         citaRepository.save(cita);
     }

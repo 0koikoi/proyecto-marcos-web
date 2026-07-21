@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import pe.edu.utp.huellitas.service.PersonalUserDetailsService;
 
@@ -93,6 +94,11 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
+    }
+
     // ─── Security filter chain ────────────────────────────────────────────────
 
     @Bean
@@ -155,7 +161,10 @@ public class SecurityConfig {
 
                 // ── ADMINISTRADOR + RECEPCION ──────────────────────────────────
 
-                // Ventas y facturación
+                // Ventas y facturación (anulación solo admin)
+                .requestMatchers(
+                    "/ventas/*/anular"
+                ).hasRole("ADMINISTRADOR")
                 .requestMatchers(
                     "/ventas/**"
                 ).hasAnyRole("ADMINISTRADOR", "RECEPCION")

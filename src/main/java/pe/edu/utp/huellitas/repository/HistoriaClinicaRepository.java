@@ -12,21 +12,24 @@ import java.util.List;
 @Repository
 public interface HistoriaClinicaRepository extends JpaRepository<HistoriaClinica, Long> {
 
-    // El equipo puede agregar consultas personalizadas aquí, por ejemplo:
-    List<HistoriaClinica> findByPacienteIdOrderByFechaConsultaDesc(Long pacienteId);
-    List<HistoriaClinica> findByPersonalIdOrderByFechaConsultaDesc(Long personalId);
+    /** Historial de un paciente, más reciente primero. Campo renombrado: fecha */
+    List<HistoriaClinica> findByPacienteIdOrderByFechaDesc(Long pacienteId);
+
+    /** Historias atendidas por un veterinario específico. */
+    List<HistoriaClinica> findByPersonalIdOrderByFechaDesc(Long personalId);
 
     /**
-     * Busca historias clínicas filtrando por nombre de paciente o de propietario
-     * (búsqueda parcial, insensible a mayúsculas) y por rango de fecha de consulta.
-     * Cualquiera de los parámetros puede ser nulo para omitir ese filtro.
+     * Busca historias clínicas filtrando por nombre de paciente o propietario y por rango de fechas.
+     * Todos los parámetros son opcionales (null = sin filtro).
+     * Nota: propietario ahora usa nombres+apellidos separados.
      */
     @Query("SELECT h FROM HistoriaClinica h WHERE " +
            "(LOWER(h.paciente.nombre) LIKE LOWER(CONCAT('%', COALESCE(:buscar, h.paciente.nombre), '%')) OR " +
-           " LOWER(h.paciente.propietario.nombreCompleto) LIKE LOWER(CONCAT('%', COALESCE(:buscar, h.paciente.propietario.nombreCompleto), '%'))) " +
-           "AND h.fechaConsulta >= COALESCE(:desde, h.fechaConsulta) " +
-           "AND h.fechaConsulta <= COALESCE(:hasta, h.fechaConsulta) " +
-           "ORDER BY h.fechaConsulta DESC")
+           " LOWER(h.paciente.propietario.nombres) LIKE LOWER(CONCAT('%', COALESCE(:buscar, h.paciente.propietario.nombres), '%')) OR " +
+           " LOWER(h.paciente.propietario.apellidos) LIKE LOWER(CONCAT('%', COALESCE(:buscar, h.paciente.propietario.apellidos), '%'))) " +
+           "AND h.fecha >= COALESCE(:desde, h.fecha) " +
+           "AND h.fecha <= COALESCE(:hasta, h.fecha) " +
+           "ORDER BY h.fecha DESC")
     List<HistoriaClinica> buscar(@Param("buscar") String buscar,
                                   @Param("desde") OffsetDateTime desde,
                                   @Param("hasta") OffsetDateTime hasta);

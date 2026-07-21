@@ -185,10 +185,10 @@
 
     <script>
         // Auto-close flash messages after 5 seconds
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             setTimeout(() => {
                 document.querySelectorAll('.alert').forEach(a => {
-                    if(typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
                         const bsAlert = bootstrap.Alert.getOrCreateInstance(a);
                         if (bsAlert) bsAlert.close();
                     }

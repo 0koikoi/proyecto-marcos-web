@@ -20,24 +20,30 @@ import java.util.List;
  *   - Anular: solo ADMINISTRADOR
  *
  * Flujo de estados: PENDIENTE → PAGADA | ANULADA
+ *
+ * V1 SQL columns: id, propietario_id, cita_id, personal_id, fecha,
+ *                 total, tipo_pago, estado, motivo_anulacion,
+ *                 anulado_por, anulado_en, creado_en, creado_por
  */
 @Data
 @Entity
 @Table(name = "venta")
+@EntityListeners(org.springframework.data.jpa.domain.support.AuditingEntityListener.class)
 public class Venta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Número de boleta auto-generado. Formato: BOL-XXXXXXXX */
-    @Column(unique = true, nullable = false, length = 20)
-    private String nroBoleta;
-
     /** Propietario que paga. Puede ser null para clientes sin registro. */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "propietario_id")
     private Propietario propietario;
+
+    /** Cita de la cual se originó esta venta. Opcional. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cita_id")
+    private Cita cita;
 
     /** Recepcionista que registró la venta. */
     @NotNull(message = "El personal responsable es obligatorio")
@@ -45,38 +51,46 @@ public class Venta {
     @JoinColumn(name = "personal_id", nullable = false)
     private Personal personal;
 
-    /** Cita de la cual se originó esta venta. Opcional. */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cita_id")
-    private Cita cita;
+    /** Fecha de emisión de la venta. */
+    @Column(name = "fecha", nullable = false)
+    private OffsetDateTime fecha = OffsetDateTime.now();
 
-    /** Suma de subtotales antes de IGV. */
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal subtotal = BigDecimal.ZERO;
-
-    /** IGV aplicado. Por defecto 0 (muchas clínicas vet. no aplican IGV). */
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal igv = BigDecimal.ZERO;
-
-    /** Total a cobrar = subtotal + igv. */
-    @Column(nullable = false, precision = 10, scale = 2)
+    /** Total a cobrar. */
+    @Column(name = "total", nullable = false, precision = 10, scale = 2)
     private BigDecimal total = BigDecimal.ZERO;
 
     /** Método de pago utilizado. */
-    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_pago", length = 20, nullable = false)
-    private TipoPago tipoPago = TipoPago.EFECTIVO;
+    private String tipoPago = "EFECTIVO";
 
     /** Estado actual de la venta. */
     @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
-    private EstadoVenta estado = EstadoVenta.PAGADA;
+    @Column(name = "estado", length = 20, nullable = false)
+    private EstadoVenta estado = EstadoVenta.PENDIENTE;
 
-    @Column(nullable = false)
-    private OffsetDateTime fechaEmision = OffsetDateTime.now();
+    /** Motivo de anulación (solo ADMINISTRADOR puede anular). */
+    @Column(name = "motivo_anulacion", columnDefinition = "TEXT")
+    private String motivoAnulacion;
 
-    @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    /** Personal que anuló la venta. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "anulado_por")
+    private Personal anuladoPor;
+
+    /** Fecha de anulación. */
+    @Column(name = "anulado_en")
+    private OffsetDateTime anuladoEn;
+
+    // --- Auditoría ---
+
+    @org.springframework.data.annotation.CreatedDate
+    @Column(name = "creado_en", nullable = false, updatable = false)
+    private OffsetDateTime creadoEn;
+
+    @org.springframework.data.annotation.CreatedBy
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creado_por", updatable = false)
+    private Personal creadoPor;
 
     /** Líneas del detalle de la venta (productos y/o servicios). */
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
 import pe.edu.utp.huellitas.model.Propietario;
+import pe.edu.utp.huellitas.dto.PropietarioDTO;
 import pe.edu.utp.huellitas.service.PropietarioService;
 
 @Controller
@@ -24,7 +25,8 @@ public class PropietarioController {
     }
 
     @GetMapping
-    public String listar(@org.springframework.web.bind.annotation.RequestParam(required = false) String buscar, Model model) {
+    public String listar(@org.springframework.web.bind.annotation.RequestParam(required = false) String buscar,
+            Model model) {
         model.addAttribute("propietarios", propietarioService.buscarPropietarios(buscar));
         model.addAttribute("buscar", buscar);
         return "propietarios/listar";
@@ -32,48 +34,70 @@ public class PropietarioController {
 
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
-        Propietario propietario = new Propietario();
-        propietario.setTelefono("+51 9");
-        propietario.setCorreo("@gmail.com");
-        
+        PropietarioDTO propietario = new PropietarioDTO();
+        propietario.setEmail("@gmail.com");
+
         model.addAttribute("propietario", propietario);
         model.addAttribute("titulo", "Registrar propietario");
         return "propietarios/form";
     }
 
     @PostMapping("/guardar")
-public String guardar(@Valid @ModelAttribute("propietario") Propietario propietario,
-                      BindingResult result,
-                      Model model) {
+    public String guardar(@Valid @ModelAttribute("propietario") PropietarioDTO dto,
+                          BindingResult result,
+                          Model model) {
 
-    if (result.hasErrors()) {
-        model.addAttribute("propietario", propietario);
-        model.addAttribute("titulo", propietario.getId() == null ? "Registrar propietario" : "Editar propietario");
-        return "propietarios/form";
-    }
+        if (result.hasErrors()) {
+            model.addAttribute("propietario", dto);
+            model.addAttribute("titulo", dto.getId() == null ? "Registrar propietario" : "Editar propietario");
+            return "propietarios/form";
+        }
 
-    try {
-        propietarioService.guardar(propietario);
-        return "redirect:/propietarios";
-    } catch (IllegalArgumentException e) {
-        model.addAttribute("propietario", propietario);
-        model.addAttribute("titulo", propietario.getId() == null ? "Registrar propietario" : "Editar propietario");
-        model.addAttribute("error", e.getMessage());
-        return "propietarios/form";
+        try {
+            Propietario propietario = null;
+            if (dto.getId() != null) {
+                propietario = propietarioService.obtenerPorId(dto.getId());
+            } else {
+                propietario = new Propietario();
+            }
+            
+            propietario.setDni(dto.getDni());
+            propietario.setNombres(dto.getNombres());
+            propietario.setApellidos(dto.getApellidos());
+            propietario.setTelefono(dto.getTelefono());
+            propietario.setEmail(dto.getEmail());
+            propietario.setDireccion(dto.getDireccion());
+            
+            propietarioService.guardar(propietario);
+            return "redirect:/propietarios";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("propietario", dto);
+            model.addAttribute("titulo", dto.getId() == null ? "Registrar propietario" : "Editar propietario");
+            model.addAttribute("error", e.getMessage());
+            return "propietarios/form";
+        }
     }
-}
 
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id, Model model) {
-        model.addAttribute("propietario", propietarioService.obtenerPorId(id));
+        Propietario prop = propietarioService.obtenerPorId(id);
+        PropietarioDTO dto = new PropietarioDTO();
+        dto.setId(prop.getId());
+        dto.setDni(prop.getDni());
+        dto.setNombres(prop.getNombres());
+        dto.setApellidos(prop.getApellidos());
+        dto.setTelefono(prop.getTelefono());
+        dto.setEmail(prop.getEmail());
+        dto.setDireccion(prop.getDireccion());
+
+        model.addAttribute("propietario", dto);
         model.addAttribute("titulo", "Editar propietario");
         return "propietarios/form";
     }
 
-    @GetMapping("/eliminar/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id) {
         propietarioService.eliminar(id);
         return "redirect:/propietarios";
     }
 }
-

@@ -25,3 +25,4 @@ public enum EstadoCita {
     /** La cita fue cancelada por recepción o administrador. */
     CANCELADA
 }
+

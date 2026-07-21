@@ -10,6 +10,9 @@ import java.time.OffsetDateTime;
 
 /**
  * Registro de vacunación de un paciente.
+ *
+ * V1 SQL columns: id, paciente_id, historia_clinica_id, personal_id,
+ *                 nombre, lote, fecha_aplicacion, fecha_proxima_dosis
  */
 @Data
 @Entity
@@ -25,36 +28,28 @@ public class Vacuna {
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
 
-    @NotNull(message = "El veterinario es obligatorio")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "personal_id", nullable = false)
-    private Personal personal;
-
     /** Relación opcional para trazabilidad clínica completa. */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "historia_clinica_id")
     private HistoriaClinica historiaClinica;
 
+    @NotNull(message = "El veterinario es obligatorio")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "personal_id", nullable = false)
+    private Personal personal;
+
     @NotBlank(message = "El nombre de la vacuna es obligatorio")
-    @Column(nullable = false, length = 100)
-    private String nombreVacuna;
+    @Column(name = "nombre", nullable = false, length = 100)
+    private String nombre;
 
-    @Column(length = 100)
-    private String laboratorio;
-
-    @Column(length = 50)
+    @Column(name = "lote", length = 50)
     private String lote;
 
     @NotNull(message = "La fecha de aplicación es obligatoria")
-    @Column(nullable = false)
+    @Column(name = "fecha_aplicacion", nullable = false)
     private LocalDate fechaAplicacion;
 
     /** Fecha programada para la siguiente dosis. Puede ser null. */
+    @Column(name = "fecha_proxima_dosis")
     private LocalDate fechaProximaDosis;
-
-    @Column(columnDefinition = "TEXT")
-    private String observaciones;
-
-    @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
 }

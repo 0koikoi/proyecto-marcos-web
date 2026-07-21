@@ -22,3 +22,4 @@ public enum EstadoVenta {
     /** Venta anulada. Solo el administrador puede realizarlo. */
     ANULADA
 }
+

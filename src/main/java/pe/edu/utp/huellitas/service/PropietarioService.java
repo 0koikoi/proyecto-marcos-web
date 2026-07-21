@@ -13,9 +13,11 @@ import pe.edu.utp.huellitas.repository.PropietarioRepository;
 public class PropietarioService {
 
     private final PropietarioRepository propietarioRepository;
+    private final pe.edu.utp.huellitas.repository.PacienteRepository pacienteRepository;
 
-    public PropietarioService(PropietarioRepository propietarioRepository) {
+    public PropietarioService(PropietarioRepository propietarioRepository, pe.edu.utp.huellitas.repository.PacienteRepository pacienteRepository) {
         this.propietarioRepository = propietarioRepository;
+        this.pacienteRepository = pacienteRepository;
     }
 
     public List<Propietario> listarTodos() {
@@ -26,7 +28,7 @@ public class PropietarioService {
         if (estaVacio(buscar)) {
             return listarTodos();
         }
-        return propietarioRepository.findByNombreCompletoContainingIgnoreCaseOrDniContaining(buscar, buscar);
+        return propietarioRepository.findByNombresContainingIgnoreCaseOrApellidosContainingIgnoreCaseOrDniContaining(buscar, buscar, buscar);
     }
 
     public Propietario obtenerPorId(Long id) {
@@ -39,11 +41,12 @@ public class PropietarioService {
         validarPropietario(propietario);
 
         propietario.setDni(propietario.getDni().trim());
-        propietario.setNombreCompleto(propietario.getNombreCompleto().trim());
+        if (propietario.getNombres() != null) propietario.setNombres(propietario.getNombres().trim());
+        if (propietario.getApellidos() != null) propietario.setApellidos(propietario.getApellidos().trim());
         propietario.setTelefono(propietario.getTelefono().trim());
 
-        if (propietario.getCorreo() != null) {
-            propietario.setCorreo(propietario.getCorreo().trim());
+        if (propietario.getEmail() != null) {
+            propietario.setEmail(propietario.getEmail().trim());
         }
 
         if (propietario.getDireccion() != null) {
@@ -57,6 +60,11 @@ public class PropietarioService {
     public void eliminar(Long id) {
         if (!propietarioRepository.existsById(id)) {
             throw new IllegalArgumentException("No se encontró el propietario con ID: " + id);
+        }
+
+        // REGLA DE NEGOCIO: Un propietario con pacientes, historia clínica, etc. no se puede eliminar físicamente.
+        if (!pacienteRepository.findByPropietarioId(id).isEmpty()) {
+            throw new pe.edu.utp.huellitas.exception.NegocioException("No se puede eliminar al propietario porque tiene pacientes asociados (historial clínico).");
         }
 
         propietarioRepository.deleteById(id);
@@ -82,8 +90,8 @@ public class PropietarioService {
             throw new IllegalArgumentException("Ya existe un propietario registrado con ese DNI.");
         }
 
-        if (estaVacio(propietario.getNombreCompleto())) {
-            throw new IllegalArgumentException("El nombre completo es obligatorio.");
+        if (estaVacio(propietario.getNombres())) {
+            throw new IllegalArgumentException("Los nombres son obligatorios.");
         }
 
         if (estaVacio(propietario.getTelefono())) {
@@ -93,9 +101,7 @@ public class PropietarioService {
         if (!propietario.getTelefono().matches("^(\\+51\\s?)?9\\d{8}$")) {
             throw new IllegalArgumentException("El teléfono debe tener exactamente 9 dígitos.");
         }
-        if (estaVacio(propietario.getDireccion())) {
-            throw new IllegalArgumentException("La dirección es obligatoria.");
-        }
+        // La dirección es opcional en la nueva versión
     }
     
 

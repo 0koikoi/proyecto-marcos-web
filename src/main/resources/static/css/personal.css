@@ -1,0 +1,103 @@
+/* =============================================================
+   MÓDULO PERSONAL — estilos específicos del módulo de gestión
+   de personal. Solo aplican a personal.html.
+   ============================================================= */
+
+/* Pills de conteo en el encabezado */
+.stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.stat-admin { background: rgba(37,132,167,0.12); color: var(--primary); }
+.stat-recep { background: rgba(255,203,119,0.25); color: #a67c00; }
+.stat-vet   { background: rgba(16,185,129,0.12); color: #059669; }
+
+/* Encabezado del formulario */
+.card-header-custom {
+    background: linear-gradient(135deg, var(--primary), #1a6b8a);
+    color: #fff;
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px 12px 0 0;
+}
+.card-header-custom.editing {
+    background: linear-gradient(135deg, #a67c00, var(--warning));
+}
+.header-icon {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    display: grid; place-items: center;
+    font-size: 1rem;
+}
+.header-icon.editing { background: rgba(255,255,255,0.25); }
+
+/* Tabs de filtro por rol */
+.role-filter-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.role-tab {
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--border-color);
+    background: #fff;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.role-tab:hover  { border-color: var(--primary); color: var(--primary); }
+.role-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* Barra de color superior de la tarjeta */
+.role-accent-bar {
+    height: 4px;
+    border-radius: 12px 12px 0 0;
+}
+.bar-administrador { background: var(--primary); }
+.bar-recepcion     { background: var(--warning); }
+.bar-veterinario   { background: #10b981; }
+
+/* Avatar circular con inicial */
+.staff-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: #fff;
+}
+.avatar-administrador { background: var(--primary); }
+.avatar-recepcion     { background: var(--warning); color: #333 !important; }
+.avatar-veterinario   { background: #10b981; }
+
+/* Badge de rol */
+.badge-rol {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+.badge-rol-administrador { background: rgba(37,132,167,0.12); color: var(--primary); }
+.badge-rol-recepcion     { background: rgba(255,203,119,0.3); color: #a67c00; }
+.badge-rol-veterinario   { background: rgba(16,185,129,0.12); color: #059669; }
+
+/* Grid de información del staff */
+.staff-info-grid { display: flex; flex-direction: column; gap: 6px; }
+.info-row {
+    display: grid;
+    grid-template-columns: 18px 70px 1fr;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+}

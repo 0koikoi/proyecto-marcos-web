@@ -17,15 +17,14 @@ import java.time.OffsetDateTime;
  *   PENDIENTE → RECHAZADA
  *
  * Permisos:
- *   - Crear:                    VETERINARIO
- *   - Ver todas:                ADMINISTRADOR
- *   - Ver las propias:          VETERINARIO
- *   - Aprobar/Rechazar/Entregar: solo ADMINISTRADOR
+ *   - Crear:                      VETERINARIO
+ *   - Ver todas:                  ADMINISTRADOR
+ *   - Ver las propias:            VETERINARIO
+ *   - Aprobar/Rechazar/Entregar:  solo ADMINISTRADOR
  *
- * Lógica pendiente de implementar:
- *   Al marcar como ENTREGADA, el servicio debe descontar del stock del producto
- *   la cantidad indicada en {@code cantidadEntregada} (o {@code cantidadSolicitada}
- *   si se entrega el total).
+ * V1 SQL columns: id, personal_id_solicitante, producto_id, cantidad,
+ *                 motivo, estado, personal_id_respuesta,
+ *                 fecha_solicitud, fecha_respuesta
  */
 @Data
 @Entity
@@ -36,10 +35,10 @@ public class SolicitudMaterial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Veterinario que realiza la solicitud. */
+    /** Veterinario que realiza la solicitud. Columna: personal_id_solicitante */
     @NotNull(message = "El solicitante es obligatorio")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "solicitante_id", nullable = false)
+    @JoinColumn(name = "personal_id_solicitante", nullable = false)
     private Personal solicitante;
 
     @NotNull(message = "Debe seleccionar un producto")
@@ -49,19 +48,11 @@ public class SolicitudMaterial {
 
     @NotNull(message = "La cantidad es obligatoria")
     @Min(value = 1, message = "La cantidad debe ser mayor a cero")
-    @Column(nullable = false)
-    private Integer cantidadSolicitada;
-
-    /**
-     * Cantidad realmente entregada por el administrador.
-     * Puede ser menor a {@code cantidadSolicitada} en aprobaciones parciales.
-     * Se establece al marcar la solicitud como ENTREGADA.
-     */
-    @Column
-    private Integer cantidadEntregada;
+    @Column(name = "cantidad", nullable = false)
+    private Integer cantidad;
 
     @NotBlank(message = "El motivo es obligatorio")
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(name = "motivo", columnDefinition = "TEXT")
     private String motivo;
 
     /**
@@ -69,21 +60,19 @@ public class SolicitudMaterial {
      * Solo el ADMINISTRADOR puede cambiar el estado.
      */
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(name = "estado", nullable = false, length = 20)
     private EstadoSolicitud estado = EstadoSolicitud.PENDIENTE;
 
-    /** Administrador que responde la solicitud. */
+    /** Personal que responde la solicitud (admin). Columna: personal_id_respuesta */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "aprobado_por")
-    private Personal aprobadoPor;
+    @JoinColumn(name = "personal_id_respuesta")
+    private Personal personalRespuesta;
 
-    /** Observación o motivo de rechazo del administrador. */
-    @Column(columnDefinition = "TEXT")
-    private String observacionRespuesta;
+    /** Fecha en que se realizó la solicitud. */
+    @Column(name = "fecha_solicitud", nullable = false, updatable = false)
+    private OffsetDateTime fechaSolicitud = OffsetDateTime.now();
 
-    @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
-
-    /** Fecha en que el administrador respondió (aprobó, rechazó o entregó). */
+    /** Fecha en que el administrador respondió. */
+    @Column(name = "fecha_respuesta")
     private OffsetDateTime fechaRespuesta;
 }

@@ -2,7 +2,6 @@ package pe.edu.utp.huellitas.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -27,28 +26,11 @@ import java.time.OffsetDateTime;
 @Data
 @Entity
 @Table(name = "cita")
-public class Cita {
+public class Cita extends pe.edu.utp.huellitas.audit.Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotNull(message = "La fecha y hora son obligatorias")
-    @FutureOrPresent(message = "La cita no puede programarse en el pasado")
-    @Column(name = "fecha_hora", nullable = false)
-    private OffsetDateTime fechaHora;
-
-    @NotBlank(message = "El motivo de la cita es obligatorio")
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String motivo;
-
-    /**
-     * Estado actual de la cita.
-     * Se persiste como String en la BD (EnumType.STRING).
-     */
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
-    private EstadoCita estado = EstadoCita.PENDIENTE;
 
     @NotNull(message = "Debe seleccionar un paciente")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -60,15 +42,28 @@ public class Cita {
     @JoinColumn(name = "personal_id", nullable = false)
     private Personal personal;
 
-    /** Auditoría: cuándo se creó el registro. */
-    @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    @NotNull(message = "La fecha y hora son obligatorias")
+    @FutureOrPresent(message = "La cita no puede programarse en el pasado")
+    @Column(name = "fecha_hora", nullable = false)
+    private OffsetDateTime fechaHora;
+
+    /** Duración estimada de la cita en minutos. Mínimo 1 minuto. */
+    @Column(name = "duracion_minutos", nullable = false)
+    private Integer duracionMinutos = 30;
+
+    @Column(name = "motivo", length = 200)
+    private String motivo;
 
     /**
-     * Auditoría: quién agendó la cita (recepcionista).
-     * Puede ser null si fue creada por el sistema o migración.
+     * Estado actual de la cita.
+     * Se persiste como String en la BD (EnumType.STRING).
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
-    private Personal createdBy;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", length = 20, nullable = false)
+    private EstadoCita estado = EstadoCita.PENDIENTE;
+
+    @Column(name = "observaciones", columnDefinition = "TEXT")
+    private String observaciones;
+
+
 }

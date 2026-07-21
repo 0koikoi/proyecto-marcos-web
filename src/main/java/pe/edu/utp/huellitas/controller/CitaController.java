@@ -28,10 +28,10 @@ import pe.edu.utp.huellitas.service.PersonalService;
  * Controller de gestión de citas.
  *
  * Permisos:
- *   - Ver lista y detalle: todos los roles autenticados
- *   - Crear / Editar:      ADMINISTRADOR + RECEPCION
- *   - Cancelar:            ADMINISTRADOR + RECEPCION
- *   - Eliminar:            solo ADMINISTRADOR
+ * - Ver lista y detalle: todos los roles autenticados
+ * - Crear / Editar: ADMINISTRADOR + RECEPCION
+ * - Cancelar: ADMINISTRADOR + RECEPCION
+ * - Eliminar: solo ADMINISTRADOR
  */
 @Controller
 @RequestMapping("/citas")
@@ -42,8 +42,8 @@ public class CitaController {
     private final PersonalService personalService;
 
     public CitaController(CitaService citaService,
-                          PacienteService pacienteService,
-                          PersonalService personalService) {
+            PacienteService pacienteService,
+            PersonalService personalService) {
         this.citaService = citaService;
         this.pacienteService = pacienteService;
         this.personalService = personalService;
@@ -70,20 +70,20 @@ public class CitaController {
 
     @GetMapping
     public String listar(@RequestParam(required = false) String dni,
-                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
-                         Model model) {
-                         
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+            Model model) {
+
         OffsetDateTime start = null;
         OffsetDateTime end = null;
-        
+
         if (fechaInicio != null) {
             start = fechaInicio.atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime();
         }
         if (fechaFin != null) {
             end = fechaFin.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toOffsetDateTime();
         }
-        
+
         model.addAttribute("citas", citaService.buscarPorFiltros(dni, start, end));
         model.addAttribute("paramDni", dni);
         model.addAttribute("paramFechaInicio", fechaInicio);
@@ -109,21 +109,21 @@ public class CitaController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR','RECEPCION','VETERINARIO')")
     @PostMapping("/guardar")
     public String guardar(@Valid @ModelAttribute("cita") Cita cita,
-                          BindingResult result,
-                          Authentication authentication,
-                          Model model,
-                          RedirectAttributes redirectAttrs) {
+            BindingResult result,
+            Authentication authentication,
+            Model model,
+            RedirectAttributes redirectAttrs) {
         if (result.hasErrors()) {
             model.addAttribute("pacientes", pacienteService.listarTodos(null));
             model.addAttribute("personal", personalService.listarVeterinarios());
             model.addAttribute("activePage", "citas");
             return "formulario-cita";
         }
-        
+
         try {
             if (authentication != null && authentication.getName() != null) {
                 personalService.obtenerPorUsername(authentication.getName())
-                        .ifPresent(cita::setCreatedBy);
+                        .ifPresent(cita::setCreadoPor);
             }
             citaService.guardar(cita);
             redirectAttrs.addFlashAttribute("successMsg", "Cita registrada correctamente.");

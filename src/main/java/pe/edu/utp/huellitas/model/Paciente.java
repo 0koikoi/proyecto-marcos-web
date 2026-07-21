@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
@@ -18,36 +19,41 @@ import java.time.OffsetDateTime;
  *
  * Permisos:
  *   - Ver/Crear/Editar: todos los roles autenticados
- *   - Eliminar: solo ADMINISTRADOR
+ *   - Eliminar: solo ADMINISTRADOR (con validación de historial)
  */
 @Data
 @Entity
 @Table(name = "paciente")
-public class Paciente {
+public class Paciente extends pe.edu.utp.huellitas.audit.Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Debe seleccionar un propietario")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "propietario_id", nullable = false)
+    private Propietario propietario;
+
     @NotBlank(message = "El nombre del paciente es obligatorio")
     @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
-    @Pattern(
-        regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$",
-        message = "El nombre solo debe contener letras y espacios"
-    )
     @Column(name = "nombre", length = 100, nullable = false)
     private String nombre;
 
     @NotBlank(message = "La especie es obligatoria")
-    @Column(name = "especie", length = 50, nullable = false)
+    @Column(name = "especie", length = 30, nullable = false)
     private String especie;
 
     @Pattern(
         regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]*$",
         message = "La raza solo debe contener letras y espacios"
     )
-    @Column(name = "raza", length = 50)
+    @Column(name = "raza", length = 100)
     private String raza;
+
+    /** Género del paciente. Valores válidos: MACHO, HEMBRA. */
+    @Column(name = "genero", length = 10)
+    private String genero;
 
     @PastOrPresent(message = "La fecha de nacimiento no puede ser en el futuro")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -55,31 +61,31 @@ public class Paciente {
     private LocalDate fechaNacimiento;
 
     /**
-     * Género del paciente. Valores válidos: MACHO, HEMBRA, DESCONOCIDO.
-     * Compatible con el CHECK constraint de la BD.
+     * Si la fecha de nacimiento es estimada (mascota adoptada/encontrada).
+     * Cuando es true, no se fuerza una fecha exacta.
      */
-    @Pattern(regexp = "^(MACHO|HEMBRA|DESCONOCIDO)$", message = "El género debe ser MACHO, HEMBRA o DESCONOCIDO")
-    @Column(name = "genero", length = 10)
-    private String genero;
-
-    @NotNull(message = "Debe seleccionar un propietario")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "propietario_id", nullable = false)
-    private Propietario propietario;
-
-    /** Auditoría: cuándo fue registrado el paciente. */
-    @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
-
-    /** Auditoría: última actualización del registro. */
-    @Column(nullable = false)
-    private OffsetDateTime updatedAt = OffsetDateTime.now();
+    @Column(name = "fecha_nacimiento_estimada", nullable = false)
+    private Boolean fechaNacimientoEstimada = false;
 
     /**
-     * Auditoría: quién registró al paciente (recepcionista o admin).
-     * Nullable para registros migrados o creados por el sistema.
+     * Peso de referencia actualizado automáticamente desde la última HistoriaClinica.
+     * NUNCA editar a mano en el formulario de paciente.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
-    private Personal createdBy;
+    @Column(name = "peso_referencia", precision = 5, scale = 2)
+    private BigDecimal pesoReferencia;
+
+    @Column(name = "esterilizado", nullable = false)
+    private Boolean esterilizado = false;
+
+    @Column(name = "alergias", columnDefinition = "TEXT")
+    private String alergias;
+
+    /**
+     * Estado del paciente.
+     * Compatible con el CHECK constraint de la BD: ACTIVO, FALLECIDO, INACTIVO.
+     */
+    @Column(name = "estado", length = 20, nullable = false)
+    private String estado = "ACTIVO";
+
+
 }

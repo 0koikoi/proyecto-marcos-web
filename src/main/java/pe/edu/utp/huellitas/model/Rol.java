@@ -15,11 +15,8 @@ public class Rol {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Column(nullable = false, unique = true, length = 20)
-    private String nombre;   // ADMINISTRADOR | RECEPCION | VETERINARIO
-
-    @Column(columnDefinition = "TEXT")
-    private String descripcion;
+    @Column(nullable = false, unique = true, length = 30)
+    private String nombre; // ADMINISTRADOR | RECEPCION | VETERINARIO
 }

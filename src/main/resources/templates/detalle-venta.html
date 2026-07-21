@@ -1,0 +1,85 @@
+<html th:replace="~{layout :: page('Detalle de Venta', 'ventas', ~{::main}, ~{})}">
+<main>
+    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+        <div class="d-flex align-items-center gap-3">
+            <a th:href="@{/ventas}" class="btn btn-sm btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <h2 class="fw-bold m-0" th:text="'Detalle Venta: ' + ${venta.nroBoleta}"></h2>
+        </div>
+        <span th:text="${venta.estado}"
+              th:class="${venta.estado.name() == 'PAGADA'}   ? 'badge bg-success fs-6'
+                       : (${venta.estado.name() == 'PENDIENTE'} ? 'badge bg-warning text-dark fs-6'
+                       : 'badge bg-danger fs-6')">
+        </span>
+    </div>
+
+    <div class="row">
+        <!-- Tarjeta de Resumen -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-light fw-bold">
+                    <i class="fa-solid fa-circle-info me-1"></i> Información General
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Fecha:</span>
+                            <span class="fw-bold" th:text="${#temporals.format(venta.fechaEmision, 'dd/MM/yyyy HH:mm')}"></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Vendedor:</span>
+                            <span class="fw-bold" th:text="${venta.personal.nombreCompleto}"></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Cliente:</span>
+                            <span class="fw-bold" th:text="${venta.propietario != null ? venta.propietario.nombreCompleto : 'Público General'}"></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Método de Pago:</span>
+                            <span class="fw-bold" th:text="${venta.metodoPago != null ? venta.metodoPago : 'N/A'}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Productos -->
+        <div class="col-md-8 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-light fw-bold">
+                    <i class="fa-solid fa-list me-1"></i> Líneas de Producto
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Item</th>
+                                    <th class="text-end">Precio Unit.</th>
+                                    <th class="text-center">Cant.</th>
+                                    <th class="text-end pe-4">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="det : ${detalles}">
+                                    <td class="ps-4" th:text="${det.producto.nombre}"></td>
+                                    <td class="text-end" th:text="'S/ ' + ${det.precioUnitario}"></td>
+                                    <td class="text-center" th:text="${det.cantidad}"></td>
+                                    <td class="text-end pe-4 fw-bold" th:text="'S/ ' + ${det.subtotal}"></td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold py-3">TOTAL GENERAL:</td>
+                                    <td class="text-end pe-4 fw-bold text-success fs-5 py-3" th:text="'S/ ' + ${venta.total}"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</html>
