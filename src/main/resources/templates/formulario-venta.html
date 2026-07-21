@@ -50,7 +50,7 @@
                     <!-- DETALLES DE PRODUCTOS -->
                     <div class="d-flex justify-content-between align-items-end mb-3 pb-2 border-bottom">
                         <h6 class="fw-bold text-muted m-0">
-                            <i class="fa-solid fa-box me-1"></i> Detalle de Productos
+                            <i class="fa-solid fa-box me-1"></i> Detalle de Ítems (Productos y Servicios)
                         </h6>
                         <button type="button" class="btn btn-sm btn-success" id="btnAgregarProducto">
                             <i class="fa-solid fa-plus"></i> Agregar Fila
@@ -61,7 +61,7 @@
                         <table class="table table-bordered align-middle" id="tablaDetalles">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Producto</th>
+                                    <th>Ítem (Producto / Servicio)</th>
                                     <th width="15%">Precio Unit. (S/)</th>
                                     <th width="15%">Cantidad</th>
                                     <th width="15%">Subtotal (S/)</th>
@@ -94,13 +94,25 @@
 
     <!-- Template oculto para las filas -->
     <select id="productoTemplate" style="display:none;">
-        <option value="" disabled selected data-precio="0" data-stock="0">Seleccione un producto...</option>
-        <option th:each="prod : ${productos}" 
-                th:value="${prod.id}" 
-                th:data-precio="${prod.precioVenta}"
-                th:data-stock="${prod.stockActual}"
-                th:text="${prod.nombre + ' (Stock: ' + prod.stockActual + ')'}">
-        </option>
+        <option value="" disabled selected data-precio="0" data-stock="0" data-tipo="">Seleccione un ítem...</option>
+        <optgroup label="Productos">
+            <option th:each="prod : ${productos}" 
+                    th:value="${prod.id}" 
+                    data-tipo="PRODUCTO"
+                    th:data-precio="${prod.precioVenta}"
+                    th:data-stock="${prod.stockActual}"
+                    th:text="${prod.nombre + ' (Stock: ' + prod.stockActual + ')'}">
+            </option>
+        </optgroup>
+        <optgroup label="Servicios">
+            <option th:each="serv : ${servicios}" 
+                    th:value="${serv.id}" 
+                    data-tipo="SERVICIO"
+                    th:data-precio="${serv.precio}"
+                    data-stock="999999"
+                    th:text="${serv.nombre}">
+            </option>
+        </optgroup>
     </select>
 
     <!-- Script de lógica de ventas -->
@@ -128,9 +140,11 @@
                 tr.className = 'fila-producto';
                 tr.innerHTML = `
                     <td>
-                        <select name="productoId[]" class="form-select select-producto" required>
+                        <select class="form-select select-producto" required>
                             ${templateOptions}
                         </select>
+                        <input type="hidden" name="itemId[]" class="item-id-hidden">
+                        <input type="hidden" name="tipoItem[]" class="tipo-item-hidden">
                     </td>
                     <td>
                         <input type="text" class="form-control precio-unitario text-end" readonly value="0.00">
@@ -152,6 +166,8 @@
                 // Eventos de la fila
                 tr.querySelector('.select-producto').addEventListener('change', function(e) {
                     const selected = e.target.options[e.target.selectedIndex];
+                    tr.querySelector('.item-id-hidden').value = selected.value;
+                    tr.querySelector('.tipo-item-hidden').value = selected.dataset.tipo;
                     tr.querySelector('.precio-unitario').value = parseFloat(selected.dataset.precio || 0).toFixed(2);
                     tr.querySelector('.input-cantidad').max = selected.dataset.stock;
                     calcularTotal();
@@ -188,7 +204,7 @@
             document.getElementById('formVenta').addEventListener('submit', function(e) {
                 if (document.querySelectorAll('.fila-producto').length === 0) {
                     e.preventDefault();
-                    alert('Debe agregar al menos un producto a la venta.');
+                    alert('Debe agregar al menos un ítem a la venta.');
                     return;
                 }
                 if (document.querySelectorAll('.is-invalid').length > 0) {

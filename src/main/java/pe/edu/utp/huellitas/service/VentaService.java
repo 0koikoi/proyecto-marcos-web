@@ -8,6 +8,7 @@ import pe.edu.utp.huellitas.model.Producto;
 import pe.edu.utp.huellitas.model.Venta;
 import pe.edu.utp.huellitas.repository.DetalleVentaRepository;
 import pe.edu.utp.huellitas.repository.ProductoRepository;
+import pe.edu.utp.huellitas.repository.ServicioRepository;
 import pe.edu.utp.huellitas.repository.VentaRepository;
 
 import pe.edu.utp.huellitas.model.OrigenMovimiento;
@@ -22,15 +23,18 @@ public class VentaService {
     private final VentaRepository ventaRepository;
     private final DetalleVentaRepository detalleVentaRepository;
     private final ProductoRepository productoRepository;
+    private final ServicioRepository servicioRepository;
     private final InventarioService inventarioService;
 
     public VentaService(VentaRepository ventaRepository,
             DetalleVentaRepository detalleVentaRepository,
             ProductoRepository productoRepository,
+            ServicioRepository servicioRepository,
             InventarioService inventarioService) {
         this.ventaRepository = ventaRepository;
         this.detalleVentaRepository = detalleVentaRepository;
         this.productoRepository = productoRepository;
+        this.servicioRepository = servicioRepository;
         this.inventarioService = inventarioService;
     }
 
@@ -55,10 +59,10 @@ public class VentaService {
     }
 
     @Transactional
-    public void registrarVentaMultilinea(Venta venta, List<Long> productoIds, List<Integer> cantidades,
+    public void registrarVentaMultilinea(Venta venta, List<Long> itemIds, List<String> tiposItem, List<Integer> cantidades,
             String metodoPago) {
-        if (productoIds == null || productoIds.isEmpty()) {
-            throw new IllegalArgumentException("La venta debe tener al menos un producto.");
+        if (itemIds == null || itemIds.isEmpty()) {
+            throw new IllegalArgumentException("La venta debe tener al menos un producto o servicio.");
         }
 
         BigDecimal totalVenta = BigDecimal.ZERO;
@@ -70,23 +74,34 @@ public class VentaService {
         Venta ventaGuardada = ventaRepository.save(venta);
 
         // 2. Procesar detalles
-        for (int i = 0; i < productoIds.size(); i++) {
-            Long productoId = productoIds.get(i);
+        for (int i = 0; i < itemIds.size(); i++) {
+            Long itemId = itemIds.get(i);
+            String tipo = tiposItem.get(i);
             Integer cantidad = cantidades.get(i);
+            BigDecimal precioUnitario = BigDecimal.ZERO;
+            
+            DetalleVenta detalle = new DetalleVenta();
+            detalle.setVenta(ventaGuardada);
+            detalle.setCantidad(cantidad);
 
-            Producto producto = productoRepository.findById(productoId)
-                    .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado: " + productoId));
+            if ("PRODUCTO".equalsIgnoreCase(tipo)) {
+                Producto producto = productoRepository.findById(itemId)
+                        .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado: " + itemId));
+                inventarioService.descontarStock(producto.getId(), cantidad, OrigenMovimiento.VENTA, ventaGuardada.getId());
+                precioUnitario = producto.getPrecioVenta();
+                detalle.setProducto(producto);
+            } else if ("SERVICIO".equalsIgnoreCase(tipo)) {
+                pe.edu.utp.huellitas.model.Servicio servicio = servicioRepository.findById(itemId)
+                        .orElseThrow(() -> new IllegalArgumentException("Servicio no encontrado: " + itemId));
+                precioUnitario = servicio.getPrecio();
+                detalle.setServicio(servicio);
+            } else {
+                throw new IllegalArgumentException("Tipo de item inválido: " + tipo);
+            }
 
-            inventarioService.descontarStock(producto.getId(), cantidad, OrigenMovimiento.VENTA, ventaGuardada.getId());
-
-            BigDecimal precioUnitario = producto.getPrecioVenta();
             BigDecimal subtotal = precioUnitario.multiply(BigDecimal.valueOf(cantidad));
             totalVenta = totalVenta.add(subtotal);
 
-            DetalleVenta detalle = new DetalleVenta();
-            detalle.setVenta(ventaGuardada);
-            detalle.setProducto(producto);
-            detalle.setCantidad(cantidad);
             detalle.setPrecioUnitario(precioUnitario);
             detalle.setSubtotal(subtotal);
             detalleVentaRepository.save(detalle);
