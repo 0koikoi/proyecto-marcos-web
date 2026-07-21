@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "personal")
 public class Personal extends pe.edu.utp.huellitas.audit.Auditable implements UserDetails {
@@ -140,3 +142,4 @@ public class Personal extends pe.edu.utp.huellitas.audit.Auditable implements Us
         return Boolean.TRUE.equals(this.activo);
     }
 }
+

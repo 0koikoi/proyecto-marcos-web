@@ -8,10 +8,6 @@
         <h2 class="fw-bold m-0" th:text="${cita.id != null} ? 'Editar Cita' : 'Nueva Cita'">Nueva Cita</h2>
     </div>
 
-    <div th:if="${error}" class="alert alert-danger mb-4">
-        <i class="fa-solid fa-circle-exclamation me-2"></i><span th:text="${error}"></span>
-    </div>
-
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card shadow-sm border-0 p-4">
@@ -55,37 +51,52 @@
                             <option value="">-- Seleccione un veterinario --</option>
                             <option th:each="v : ${personal}"
                                     th:value="${v.id}"
-                                    th:text="${v.nombreCompleto} + ' — ' + ${v.cargo}"
+                                    th:text="${v.nombreCompleto} + ' — ' + ${v.rol.nombre}"
                                     th:selected="${cita.personal != null and cita.personal.id == v.id}">
                             </option>
                         </select>
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('personal')}" th:errors="*{personal}"></div>
                     </div>
 
-                    <!-- Fecha y hora -->
-                    <div class="mb-4">
-                        <label for="fechaHora" class="form-label">
-                            <i class="fa-solid fa-clock text-warning me-1"></i> Fecha y Hora Programada
-                        </label>
-                        <input type="datetime-local" id="fechaHora" class="form-control"
-                               th:name="fechaHora"
-                               th:value="${cita.fechaHora != null ? #temporals.format(cita.fechaHora, 'yyyy-MM-dd''T''HH:mm') : ''}"
-                               required>
-                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fechaHora')}" th:errors="*{fechaHora}"></div>
+                    <!-- Fecha/Hora y Duración -->
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <label for="fechaHora" class="form-label">
+                                <i class="fa-solid fa-clock text-warning me-1"></i> Fecha y Hora Programada
+                            </label>
+                            <input type="datetime-local" id="fechaHora" class="form-control"
+                                   th:name="fechaHora"
+                                   th:value="${cita.fechaHora != null ? #temporals.format(cita.fechaHora, 'yyyy-MM-dd''T''HH:mm') : ''}"
+                                   required>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fechaHora')}" th:errors="*{fechaHora}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="duracionMinutos" class="form-label">
+                                <i class="fa-solid fa-hourglass-half me-1"></i> Duración (min)
+                            </label>
+                            <select id="duracionMinutos" th:field="*{duracionMinutos}" class="form-select">
+                                <option value="15">15 min</option>
+                                <option value="30" selected>30 min</option>
+                                <option value="45">45 min</option>
+                                <option value="60">1 hora</option>
+                                <option value="90">1 hora 30 min</option>
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Motivo -->
                     <div class="mb-4">
                         <label for="motivo" class="form-label">
                             <i class="fa-solid fa-stethoscope me-1"></i> Motivo de la Consulta
+                            <span class="text-muted small">(opcional)</span>
                         </label>
                         <textarea id="motivo" th:field="*{motivo}" class="form-control" rows="3"
-                                  placeholder="Describe brevemente el motivo de la visita..." required></textarea>
+                                  placeholder="Describe brevemente el motivo de la visita..."></textarea>
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}"></div>
                     </div>
 
-                    <!-- Estado -->
-                    <div class="mb-4">
+                    <!-- Estado: editable solo si ya tiene id (edición), en nueva cita siempre PENDIENTE -->
+                    <div class="mb-4" th:if="${cita.id != null}">
                         <label for="estado" class="form-label">
                             <i class="fa-solid fa-circle-info me-1"></i> Estado de la Cita
                         </label>
@@ -120,10 +131,13 @@
     }
 
     window.addEventListener('DOMContentLoaded', function () {
+        // Llenar propietario si ya hay un paciente seleccionado (edición)
         const selectEl = document.getElementById('pacienteSelect');
         if (selectEl && selectEl.value) {
             mostrarPropietario(selectEl);
         }
+
+        // Mínimo de fecha: ahora mismo (para evitar agendar en el pasado desde el navegador)
         const now = new Date();
         const tzOffset = now.getTimezoneOffset() * 60000;
         const localNow = new Date(Date.now() - tzOffset).toISOString().slice(0, 16);

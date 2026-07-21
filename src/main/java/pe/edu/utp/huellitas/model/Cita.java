@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.OffsetDateTime;
 
@@ -24,6 +25,7 @@ import java.time.OffsetDateTime;
  *   - Eliminar: solo ADMINISTRADOR
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "cita")
 public class Cita extends pe.edu.utp.huellitas.audit.Auditable {
@@ -67,3 +69,4 @@ public class Cita extends pe.edu.utp.huellitas.audit.Auditable {
 
 
 }
+

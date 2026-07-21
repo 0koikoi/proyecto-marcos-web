@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 @Data
 @Entity
@@ -38,9 +38,8 @@ public class MovimientoStock {
     @Column(name = "referencia_id")
     private Long referenciaId;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "creado_en", nullable = false, updatable = false)
-    private Date creadoEn = new Date();
+    private OffsetDateTime creadoEn = OffsetDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creado_por", updatable = false)

@@ -8,7 +8,7 @@ import pe.edu.utp.huellitas.model.*;
 import pe.edu.utp.huellitas.repository.OrdenCompraRepository;
 import pe.edu.utp.huellitas.repository.DetalleOrdenCompraRepository;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Service
@@ -67,7 +67,7 @@ public class OrdenCompraService {
         }
 
         ordenCompra.setEstado(EstadoOrdenCompra.RECIBIDA);
-        ordenCompra.setFechaRecepcion(new Date());
+        ordenCompra.setFechaRecepcion(OffsetDateTime.now());
         ordenCompraRepository.save(ordenCompra);
     }
 }

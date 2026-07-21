@@ -8,8 +8,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.OffsetDateTime;
-
 import pe.edu.utp.huellitas.model.HistoriaClinica;
 import pe.edu.utp.huellitas.model.Receta;
 import pe.edu.utp.huellitas.service.HistoriaClinicaService;
@@ -17,7 +15,7 @@ import pe.edu.utp.huellitas.service.PersonalService;
 import pe.edu.utp.huellitas.service.ProductoService;
 import pe.edu.utp.huellitas.service.RecetaService;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 /**
  * Controller de Recetas Médicas.

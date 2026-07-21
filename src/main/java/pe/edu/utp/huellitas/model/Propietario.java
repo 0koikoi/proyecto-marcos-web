@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import pe.edu.utp.huellitas.validation.DniPeruano;
 
 import java.time.OffsetDateTime;
@@ -20,6 +21,7 @@ import java.util.List;
  *   - Eliminar: solo ADMINISTRADOR (con validación de historial)
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "propietario")
 public class Propietario extends pe.edu.utp.huellitas.audit.Auditable {
@@ -100,3 +102,4 @@ public class Propietario extends pe.edu.utp.huellitas.audit.Auditable {
         return this.telefono;
     }
 }
+

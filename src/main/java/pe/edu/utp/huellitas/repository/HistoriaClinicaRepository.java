@@ -3,13 +3,11 @@ package pe.edu.utp.huellitas.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 import pe.edu.utp.huellitas.model.HistoriaClinica;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
-@Repository
 public interface HistoriaClinicaRepository extends JpaRepository<HistoriaClinica, Long> {
 
     /** Historial de un paciente, más reciente primero. Campo renombrado: fecha */
