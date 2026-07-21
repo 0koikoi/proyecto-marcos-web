@@ -18,8 +18,8 @@ import pe.edu.utp.huellitas.service.PropietarioService;
 import java.util.List;
 
 @Controller
-
 @RequestMapping("/pacientes")
+@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCION', 'VETERINARIO')")
 public class PacienteController {
 
     private final PacienteService pacienteService;
@@ -66,20 +66,13 @@ public class PacienteController {
             return "pacientes/form";
         }
 
-        try {
-            Paciente paciente = convertirAEntidad(pacienteDTO);
-            pacienteService.guardar(paciente);
-            redirectAttrs.addFlashAttribute("successMsg",
-                    pacienteDTO.getId() == null
-                            ? "Paciente registrado correctamente."
-                            : "Datos del paciente actualizados correctamente.");
-            return "redirect:/pacientes";
-        } catch (IllegalArgumentException e) {
-            cargarFormulario(model, pacienteDTO,
-                    pacienteDTO.getId() == null ? "Registrar paciente" : "Editar paciente");
-            model.addAttribute("error", e.getMessage());
-            return "pacientes/form";
-        }
+        Paciente paciente = convertirAEntidad(pacienteDTO);
+        pacienteService.guardar(paciente);
+        redirectAttrs.addFlashAttribute("successMsg",
+                pacienteDTO.getId() == null
+                        ? "Paciente registrado correctamente."
+                        : "Datos del paciente actualizados correctamente.");
+        return "redirect:/pacientes";
     }
 
     // editar

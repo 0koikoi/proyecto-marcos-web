@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import jakarta.validation.Valid;
 import pe.edu.utp.huellitas.model.Propietario;
@@ -16,6 +17,7 @@ import pe.edu.utp.huellitas.service.PropietarioService;
 
 @Controller
 @RequestMapping("/propietarios")
+@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCION', 'VETERINARIO')")
 public class PropietarioController {
 
     private final PropietarioService propietarioService;
@@ -52,29 +54,22 @@ public class PropietarioController {
             return "propietarios/form";
         }
 
-        try {
-            Propietario propietario = null;
-            if (dto.getId() != null) {
-                propietario = propietarioService.obtenerPorId(dto.getId());
-            } else {
-                propietario = new Propietario();
-            }
-            
-            propietario.setDni(dto.getDni());
-            propietario.setNombres(dto.getNombres());
-            propietario.setApellidos(dto.getApellidos());
-            propietario.setTelefono(dto.getTelefono());
-            propietario.setEmail(dto.getEmail());
-            propietario.setDireccion(dto.getDireccion());
-            
-            propietarioService.guardar(propietario);
-            return "redirect:/propietarios";
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("propietario", dto);
-            model.addAttribute("titulo", dto.getId() == null ? "Registrar propietario" : "Editar propietario");
-            model.addAttribute("error", e.getMessage());
-            return "propietarios/form";
+        Propietario propietario = null;
+        if (dto.getId() != null) {
+            propietario = propietarioService.obtenerPorId(dto.getId());
+        } else {
+            propietario = new Propietario();
         }
+        
+        propietario.setDni(dto.getDni());
+        propietario.setNombres(dto.getNombres());
+        propietario.setApellidos(dto.getApellidos());
+        propietario.setTelefono(dto.getTelefono());
+        propietario.setEmail(dto.getEmail());
+        propietario.setDireccion(dto.getDireccion());
+        
+        propietarioService.guardar(propietario);
+        return "redirect:/propietarios";
     }
 
     @GetMapping("/editar/{id}")
@@ -95,6 +90,7 @@ public class PropietarioController {
     }
 
     @PostMapping("/eliminar/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public String eliminar(@PathVariable Long id) {
         propietarioService.eliminar(id);
         return "redirect:/propietarios";
